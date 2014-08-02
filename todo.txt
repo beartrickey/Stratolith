@@ -1,0 +1,37 @@
+-Tactical
+
+	-R-Scan
+		-Give random/determined item upon success
+		-Make r-scan lines converge
+		-Add r-scan success sequence
+			-dude picks up item
+
+
+	-Stage Design
+		-Make stages 1-29
+		-Add new paths
+			-Drones fly past Stratolith and leave radar
+				-handle deactivation of drones
+
+	-Display stats on radar (remaining drones, etc)
+
+
+	-Allow for three scope states
+		-Reposition scopes
+		-Make sure labels/graphics move accordingly
+
+
+	-Allow for three docks
+
+
+	-Result screens
+		-game clear
+		-game fail
+
+
+-Tech screen
+
+-Map screen	
+
+
+
