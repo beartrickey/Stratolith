@@ -1428,7 +1428,7 @@ function resetCommandButtonGraphics()
 	if( PlayerData.instance.scopeLevel > 1 )
 	{
 		slgd.powerDiversionLabel.gameObject.SetActive( true );
-		slgd.powerDiversionLabel.SetSprite( 70 );
+		slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispOFF" );
 		
 		slgd.veloPowerLabel.gameObject.SetActive( true );
 		slgd.weapPowerLabel.gameObject.SetActive( true );
@@ -1439,22 +1439,22 @@ function resetCommandButtonGraphics()
 		if( dronePowerState == DRONE_POWER_VELO )
 		{
 			scopeList[2].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( 52 );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispVELO" );
 		}
 		else if( dronePowerState == DRONE_POWER_WEAP )
 		{
 			scopeList[2].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( 69 );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispWEAP" );
 		}
 		else if( dronePowerState == DRONE_POWER_SHLD )
 		{
 			scopeList[2].modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( 53 );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
 		}
 		else if( dronePowerState == DRONE_POWER_FUNC )
 		{
 			scopeList[2].modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( 76 );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispFUNC" );
 		}
 	}
 	

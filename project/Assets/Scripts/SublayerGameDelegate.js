@@ -11,10 +11,13 @@ public var gm : GameManager;
 public var sl : Sublayer;
 public var im : InputManager;
 
+
 //frame
 public var frameNumber : int = 0;
 
 
+//base graphics
+public var panel : tk2dSprite = null;
 
 //scanner
 public var shieldScannerCenter : Transform;
@@ -100,6 +103,10 @@ public var draggingScopeWavelength : boolean = false;
 //labels
 
 //commands
+public var scopeOneLabels : GameObject = null;
+public var scopeTwoLabels : GameObject = null;
+public var scopeThreeLabels : GameObject = null;
+
 public var activeCommandLabel : tk2dSprite;
 public var commandRequestLabel : tk2dSprite;
 public var moveCommandLabel : tk2dSprite;
@@ -388,13 +395,13 @@ function startGame()
 {
 
 	GameManager.instance.SFX_NEW_RADAR_ENTITY.Play();
+
+	currentStage = SublayerMapDelegate.instance.currentStage;
 	
 	resetVarsForNewStage();
 
 	addSavedDronesToDockSlots();
-
-	//load stage
-	currentStage = SublayerMapDelegate.instance.currentStage;
+	
 	currentStage.initStage();
 
 }
@@ -1414,18 +1421,40 @@ function setScopesForScopeLevel()
 		scopeList[0].locked = false;
 		scopeList[1].locked = true;
 		scopeList[2].locked = true;
+		panel.SetSprite( "Interface-Tactical-State1Base" );
+
+		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 126.7359, 0.0 );
+		scopeOneLabels.transform.position = Vector3( 490.4458, 128.9894, -225.0 );
 	}
 	else if( PlayerData.instance.scopeLevel == 2 )
 	{
 		scopeList[0].locked = false;
 		scopeList[1].locked = false;
 		scopeList[2].locked = true;
+		panel.SetSprite( "Interface-Tactical-State2Base" );
+
+		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 332.5808, 0.0 );
+		scopeOneLabels.transform.position = Vector3( 490.4458, 335.1377, -225.0 );
+
+		scopeList[1].gameObject.transform.position = Vector3( 613.5668, -77.90067, 0.0 );
+		scopeTwoLabels.transform.position = Vector3( 490.4458, -77.90067, -225.0 );
 	}
 	else if( PlayerData.instance.scopeLevel == 3 )
 	{
 		scopeList[0].locked = false;
 		scopeList[1].locked = false;
 		scopeList[2].locked = false;
+
+		panel.SetSprite( "Interface-Tactical-State3Base" );
+
+		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 537.2813, 0.0 );
+		scopeOneLabels.transform.position = Vector3( 490.4458, 537.2813, -225.0 );
+
+		scopeList[1].gameObject.transform.position = Vector3( 613.5668, 127.4803, 0.0 );
+		scopeTwoLabels.transform.position = Vector3( 490.4458, 127.4803, -225.0 );
+
+		scopeList[2].gameObject.transform.position = Vector3( 613.5668, -283.0268, 0.0 );
+		scopeThreeLabels.transform.position = Vector3( 496.415, -272.2209, -225.0 );
 	}
 	
 	
@@ -1436,6 +1465,7 @@ function setScopesForScopeLevel()
 		if( scopeList[s].locked == true )
 		{
 		
+			scopeList[s].gameObject.SetActive( false );
 			scopeList[s].knob.gameObject.SetActive( false );
 			scopeList[s].phaseDial.gameObject.SetActive( false );
 			scopeList[s].modButtonList[0].gameObject.SetActive( false );
@@ -1447,6 +1477,7 @@ function setScopesForScopeLevel()
 		else
 		{
 		
+			scopeList[s].gameObject.SetActive( true );
 			scopeList[s].knob.gameObject.SetActive( true );
 			scopeList[s].phaseDial.gameObject.SetActive( true );
 			scopeList[s].modButtonList[0].gameObject.SetActive( true );

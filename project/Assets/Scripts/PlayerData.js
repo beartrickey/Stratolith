@@ -54,7 +54,7 @@ function loadData()
 	Debug.Log("loading data");
 	
 	
-	scopeLevel = PlayerPrefs.GetInt( "scopeLevel", 1 );
+	scopeLevel = 3;//PlayerPrefs.GetInt( "scopeLevel", 1 );
 
 	dockLevel = PlayerPrefs.GetInt( "dockLevel", 1 );
 
