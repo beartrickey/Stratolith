@@ -19,6 +19,11 @@ public var numStages : int = 32;
 public var stageList = new Stage[numStages];
 
 
+//PATHS
+public var stratolithSplineT : float = 0.0;
+public var splineList = new DotSpline[1];
+
+
 //BUTTONS
 public var mapActionButton : ButtonScript;
 public var standbyButton : ButtonScript;
@@ -147,24 +152,36 @@ function updateStratolithIconPosition()
 	if( destinationStage == null )
 		return;
 
+	stratolithSplineT += 0.001;
+
+	if( stratolithSplineT > 1.0 )
+		stratolithSplineT = 0.0;
+
+	var newStratolithPosition : Vector2 = splineList[0].getLocationAlongSpline( stratolithSplineT );
+
+	stratolithIcon.gameObject.transform.position = Vector3( newStratolithPosition.x, newStratolithPosition.y, stratolithIcon.gameObject.transform.position.z);
+
+	stratolithIcon.gameObject.transform.localEulerAngles.z = splineList[0].getTangentAtPoint(stratolithSplineT);
 
 	//move toward stage
-	var dif : Vector2 = destinationStage.gameObject.transform.position - stratolithIcon.gameObject.transform.position;
+	// var dif : Vector2 = destinationStage.gameObject.transform.position - stratolithIcon.gameObject.transform.position;
 
-	var speed : float = 0.75;
+	// var speed : float = 0.75;
 
-	var velocity : Vector2 = dif.normalized * speed;
+	// var velocity : Vector2 = dif.normalized * speed;
 
-	stratolithIcon.gameObject.transform.position += velocity;
+	// stratolithIcon.gameObject.transform.position += velocity;
 
 
-	//stop
-	if( dif.magnitude <= 5.0 )
-	{
+	// //stop
+	// if( dif.magnitude <= 5.0 )
+	// {
 
-		stratolithArrivedAtNewStage();
+	// 	stratolithArrivedAtNewStage();
 
-	}
+	// }
+
+
 
 }
 
