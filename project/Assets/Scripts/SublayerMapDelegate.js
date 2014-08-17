@@ -20,8 +20,10 @@ public var stageList = new Stage[numStages];
 
 
 //PATHS
+public var dotPrefab : GameObject = null;
 public var stratolithSplineT : float = 0.0;
-public var splineList = new DotSpline[1];
+public var numSplines = 32;
+public var splineList = new DotSpline[numSplines];
 
 
 //BUTTONS
@@ -103,6 +105,9 @@ function mapActionButtonPressed()
 
 			gm.goFromMapToGame();
 
+			//clear all splines
+			clearMapSplines();
+
 		}
 		else if( currentStage != selectedStage &&
 				areStagesConnected( currentStage, selectedStage ) == true &&
@@ -155,33 +160,18 @@ function updateStratolithIconPosition()
 	stratolithSplineT += 0.001;
 
 	if( stratolithSplineT > 1.0 )
-		stratolithSplineT = 0.0;
+		stratolithSplineT = 1.0;
 
 	var newStratolithPosition : Vector2 = splineList[0].getLocationAlongSpline( stratolithSplineT );
 
 	stratolithIcon.gameObject.transform.position = Vector3( newStratolithPosition.x, newStratolithPosition.y, stratolithIcon.gameObject.transform.position.z);
 
-	stratolithIcon.gameObject.transform.localEulerAngles.z = splineList[0].getTangentAtPoint(stratolithSplineT);
+	stratolithIcon.gameObject.transform.localEulerAngles.z = splineList[0].getTangentAtPoint(stratolithSplineT, newStratolithPosition);
 
-	//move toward stage
-	// var dif : Vector2 = destinationStage.gameObject.transform.position - stratolithIcon.gameObject.transform.position;
-
-	// var speed : float = 0.75;
-
-	// var velocity : Vector2 = dif.normalized * speed;
-
-	// stratolithIcon.gameObject.transform.position += velocity;
-
-
-	// //stop
-	// if( dif.magnitude <= 5.0 )
-	// {
-
-	// 	stratolithArrivedAtNewStage();
-
-	// }
-
-
+	if( stratolithSplineT == 1.0 )
+	{
+		stratolithArrivedAtNewStage();
+	}
 
 }
 
@@ -189,12 +179,19 @@ function updateStratolithIconPosition()
 
 function stratolithArrivedAtNewStage()
 {
+	Debug.Log('stratolithArrivedAtNewStage');
+
+	//clear all splines
+	clearMapSplines();
 
 	currentStage = destinationStage;
 
 	destinationStage = null;
 
 	updateMapLabels();
+
+	//turn on map splines for new stage
+	initStageSplines( currentStage );
 
 }
 
@@ -256,8 +253,6 @@ function updateMapLabels()
 function standbyButtonPressed()
 {
 
-	Debug.Log("hi");
-
 	gm.goFromMapToStandby();
 
 }
@@ -271,10 +266,84 @@ function standbyButtonPressed()
 function sublayerMapUpdate()
 {
 
-
 	//update stratotlith icon
 	updateStratolithIconPosition();
-	
+
+
+	//update splines
+	updateMapSplines();
+
+}
+
+
+
+//////////////////////////////////////SPLINES
+
+
+
+function initStageSplines( startStage : Stage )
+{
+
+	for( var i : int = 0; i < numSplines; i++ )
+	{
+
+		if( splineList[i] == null )
+			continue;
+
+		if( splineList[i].stageA == startStage || splineList[i].stageB == startStage )
+		{
+
+			splineList[i].initSpline( startStage );
+
+		}
+
+	}
+
+}
+
+
+
+function updateMapSplines()
+{
+
+	for( var i : int = 0; i < numSplines; i++ )
+	{
+
+		if( splineList[i] == null )
+			continue;
+
+
+		if( splineList[i].splineDotList[0] != null )
+		{
+
+			splineList[i].updateSpline();
+
+		}
+
+	}
+
+}
+
+
+
+function clearMapSplines()
+{
+
+	for( var i : int = 0; i < numSplines; i++ )
+	{
+
+		if( splineList[i] == null )
+			continue;
+
+
+		if( splineList[i].splineDotList[0] != null )
+		{
+
+			splineList[i].cleanSpline();
+
+		}
+
+	}
 
 }
 
@@ -373,6 +442,8 @@ function loadStages()
 		stageList[i].foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
 	
 	}
+
+	initStageSplines( currentStage );
     
 }
 

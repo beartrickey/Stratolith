@@ -3,6 +3,87 @@
 var pathPoints = new Transform[4];
 var tension : float = 0.0;
 
+//dots
+var dotOffset : float = 0.0;
+var velocity : float = 0.001;
+var dotSpacing : float;
+var numDots : int = 10;
+var splineDotList = new GameObject[numDots];
+var stageA : Stage;
+var stageB : Stage;
+
+
+function initSpline( startStage : Stage )
+{
+
+    // Determine direction to move dots in (moves from A to B with positive velocity)
+    if( startStage == stageA )
+        velocity = Mathf.Abs( velocity );
+    else
+        velocity = -1.0 * Mathf.Abs( velocity );
+
+    dotSpacing = 1.0 / numDots;
+
+    var dotPrefab : GameObject = SublayerMapDelegate.instance.dotPrefab;
+
+    //make dots and position along spline
+    for( var i : int = 0; i < numDots; i++ )
+    {
+
+        var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
+
+        splineDotList[i] = dot;
+
+        var sprite : tk2dSprite = dot.GetComponent( tk2dSprite );
+
+    }
+
+    updateSpline();
+
+}
+
+
+
+function updateSpline()
+{
+
+    dotOffset += velocity;
+
+    if( Mathf.Abs(dotOffset) > dotSpacing )
+        dotOffset = 0.0;
+
+    for( var i : int = 0; i < numDots; i++ )
+    {
+
+        var t : float = (i * dotSpacing) + dotOffset;
+
+        var position : Vector3 = getLocationAlongSpline(t);
+
+        var rotation : float = getTangentAtPoint(t, position);
+
+        splineDotList[i].transform.position = position;
+
+        splineDotList[i].transform.localEulerAngles.z = rotation;
+
+    }
+
+}
+
+
+
+function cleanSpline()
+{
+
+    for( var i : int = 0; i < numDots; i++ )
+    {
+
+        GameObject.Destroy( splineDotList[i] );
+        splineDotList[i] = null;
+
+    }
+
+}
+
 
 function getLocationAlongSpline( t : float )
 {
@@ -25,11 +106,6 @@ function getLocationAlongSpline( t : float )
     var b2 : float = s * (-tCubed + tSquared) + (2 * tCubed - 3 * tSquared + 1);            // s(-t3 + t2)P2 + (2 t3 - 3 t2 + 1)P2
     var b3 : float = s * (tCubed - 2 * tSquared + t) + (-2 * tCubed + 3 * tSquared);        // s(t3 - 2 t2 + t)P3 + (-2 t3 + 3 t2)P3
     var b4 : float = s * (tCubed - tSquared);                                               // s(t3 - t2)P4
-    
-    // var x : float = (p0.x*b1 + p1.x*b2 + p2.x*b3 + p3.x*b4);
-    // var y : float = (p0.y*b1 + p1.y*b2 + p2.y*b3 + p3.y*b4);
-	
-	// return Vector2( x, y );
 
     return (p0*b1 + p1*b2 + p2*b3 + p3*b4);
 
@@ -37,29 +113,27 @@ function getLocationAlongSpline( t : float )
 
 
 
-function getTangentAtPoint( t : float )
+function getTangentAtPoint( t : float, currentPoint : Vector3 )
 {
 
-    var p0 : Vector3 = pathPoints[0].position;
-    var p1 : Vector3 = pathPoints[1].position;
-    var p2 : Vector3 = pathPoints[2].position;
-    var p3 : Vector3 = pathPoints[3].position;
-
-    var tan0 : float = Mathf.Atan2( p0.x - p1.x, p0.y - p1.y );
-    tan0 *= Mathf.Rad2Deg;
-    tan0 -= 180.0;
-    tan0 = Mathf.Abs( tan0 );
+    // Next point
+    var nextT : float = t + 0.001;
     
-    var tan1 : float = Mathf.Atan2( p2.x - p3.x, p2.y - p3.y );
-    tan1 *= Mathf.Rad2Deg;
-    tan1 -= 180.0;
-    tan1 = Mathf.Abs( tan1 );
+    if(nextT > 1.0)
+        nextT = 1.0;
 
-    var tanDif : float = tan1 - tan0;
+    var nextPoint : Vector2 = getLocationAlongSpline(nextT);
 
-    Debug.Log( "tan0: " + tan0 + ", tan1: " + tan1 + ", tanDif: " + tanDif );
+    // point difference
+    var dif : Vector2 = currentPoint - nextPoint;
 
-    return tan0 + ( tanDif * t );
+    var angle : float = Mathf.Atan2( dif.x, dif.y ) * Mathf.Rad2Deg;
+    angle -= 180.0;
+    angle = Mathf.Abs( angle );
+
+    angle += 90.0;
+
+    return angle;
 
 }
 

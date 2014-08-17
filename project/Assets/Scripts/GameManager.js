@@ -392,8 +392,9 @@ function goFromStandbyToMap()
 function goFromCatalogToGameOver()
 {
 
-	var slgd : SublayerGameDelegate = SublayerGameDelegate.instance;
-	slgd.abortStage();
+	sublayerGameDelegate.abortStage();
+
+	sublayerGameDelegate.gameObject.SetActive( false );
 
 	sublayerCatalogDelegate.gameObject.SetActive( false );
 	
