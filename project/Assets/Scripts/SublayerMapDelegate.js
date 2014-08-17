@@ -326,6 +326,36 @@ function updateMapSplines()
 
 
 
+function saveSplinePointPositions()
+{
+
+	for( var i : int = 0; i < numSplines; i++ )
+	{
+
+		if( splineList[i] == null )
+			continue;
+
+
+		if( splineList[i].splineDotList[0] != null )
+		{
+
+			Debug.Log( 'splineList: ' + i );
+
+			for( var p : int = 0; p < 4; p++ )
+			{
+
+				Debug.Log( splineList[i].pathPoints[p].transform.localPosition );
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
 function clearMapSplines()
 {
 

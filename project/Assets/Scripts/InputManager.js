@@ -235,6 +235,16 @@ function handleKeyboardControls()
 		
 	}
 
+
+
+	//Print spline point data
+	if( Input.GetKey( KeyCode.P ) )
+	{
+	
+		SublayerMapDelegate.instance.saveSplinePointPositions();
+		
+	}
+
 }
 
 

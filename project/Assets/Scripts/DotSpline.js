@@ -4,6 +4,8 @@ var pathPoints = new Transform[4];
 var tension : float = 0.0;
 
 //dots
+var endPadding : float = 0.1;
+var startingT : float = 0.0;
 var dotOffset : float = 0.0;
 var velocity : float = 0.001;
 var dotSpacing : float;
@@ -16,13 +18,22 @@ var stageB : Stage;
 function initSpline( startStage : Stage )
 {
 
+    var totalT : float = 1.0 - (endPadding * 2.0);
+
+    dotSpacing = totalT / numDots;
+
     // Determine direction to move dots in (moves from A to B with positive velocity)
     if( startStage == stageA )
+    {
         velocity = Mathf.Abs( velocity );
+        startingT = endPadding;
+    }
     else
+    {
         velocity = -1.0 * Mathf.Abs( velocity );
+        startingT = endPadding + dotSpacing;
+    }
 
-    dotSpacing = 1.0 / numDots;
 
     var dotPrefab : GameObject = SublayerMapDelegate.instance.dotPrefab;
 
@@ -31,6 +42,8 @@ function initSpline( startStage : Stage )
     {
 
         var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
+
+        dot.transform.localScale.x = 0.75;
 
         splineDotList[i] = dot;
 
@@ -47,6 +60,7 @@ function initSpline( startStage : Stage )
 function updateSpline()
 {
 
+    // Every frame offset dots just a little until they've travelled one dot length. Then reset the offset back to 0.0
     dotOffset += velocity;
 
     if( Mathf.Abs(dotOffset) > dotSpacing )
@@ -55,7 +69,7 @@ function updateSpline()
     for( var i : int = 0; i < numDots; i++ )
     {
 
-        var t : float = (i * dotSpacing) + dotOffset;
+        var t : float = startingT + dotOffset + (i * dotSpacing);
 
         var position : Vector3 = getLocationAlongSpline(t);
 
@@ -118,9 +132,11 @@ function getTangentAtPoint( t : float, currentPoint : Vector3 )
 
     // Next point
     var nextT : float = t + 0.001;
+
+    var endT : float = 1.0 - endPadding;
     
-    if(nextT > 1.0)
-        nextT = 1.0;
+    if(nextT > endT)
+        nextT = endT;
 
     var nextPoint : Vector2 = getLocationAlongSpline(nextT);
 
