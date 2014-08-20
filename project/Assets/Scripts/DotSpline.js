@@ -1,4 +1,5 @@
 ﻿#pragma strict
+@script ExecuteInEditMode()
 
 var pathPoints = new Transform[4];
 var tension : float = 0.0;
@@ -15,8 +16,48 @@ var stageA : Stage;
 var stageB : Stage;
 
 
+function Update()
+{
+
+    if( Application.isPlaying )
+        return;
+
+    initSpline(stageA);
+
+}
+
+
+function initDots()
+{
+
+    var dotPrefab : GameObject = Resources.Load("MapScreenDot");
+
+    //make dots and position along spline
+    for( var i : int = 0; i < numDots; i++ )
+    {
+
+        Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
+
+        var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
+
+        dot.transform.localScale.x = 0.75;
+
+        splineDotList[i] = dot;
+
+        // var sprite : tk2dSprite = dot.GetComponent( tk2dSprite );
+
+    }
+
+}
+
+
 function initSpline( startStage : Stage )
 {
+
+    if( splineDotList[0] == null )
+    {
+        initDots();
+    }
 
     var totalT : float = 1.0 - (endPadding * 2.0);
 
@@ -32,23 +73,6 @@ function initSpline( startStage : Stage )
     {
         velocity = -1.0 * Mathf.Abs( velocity );
         startingT = endPadding + dotSpacing;
-    }
-
-
-    var dotPrefab : GameObject = SublayerMapDelegate.instance.dotPrefab;
-
-    //make dots and position along spline
-    for( var i : int = 0; i < numDots; i++ )
-    {
-
-        var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
-
-        dot.transform.localScale.x = 0.75;
-
-        splineDotList[i] = dot;
-
-        var sprite : tk2dSprite = dot.GetComponent( tk2dSprite );
-
     }
 
     updateSpline();
@@ -111,11 +135,11 @@ function getLocationAlongSpline( t : float )
     var tSquared : float  = t * t;
     var tCubed : float = tSquared * t;
     
-	/*
-	 * Formula: s(-ttt + 2tt - t)P1 + s(-ttt + tt)P2 + (2ttt - 3tt + 1)P2 + s(ttt - 2tt + t)P3 + (-2ttt + 3tt)P3 + s(ttt - tt)P4
-	 */
+    /*
+     * Formula: s(-ttt + 2tt - t)P1 + s(-ttt + tt)P2 + (2ttt - 3tt + 1)P2 + s(ttt - 2tt + t)P3 + (-2ttt + 3tt)P3 + s(ttt - tt)P4
+     */
     var s : float = ( 1 - tension ) * 0.5;
-	
+    
     var b1 : float = s * ((-tCubed + (2 * tSquared)) - t);                                  // s(-t3 + 2 t2 - t)P1
     var b2 : float = s * (-tCubed + tSquared) + (2 * tCubed - 3 * tSquared + 1);            // s(-t3 + t2)P2 + (2 t3 - 3 t2 + 1)P2
     var b3 : float = s * (tCubed - 2 * tSquared + t) + (-2 * tCubed + 3 * tSquared);        // s(t3 - 2 t2 + t)P3 + (-2 t3 + 3 t2)P3
