@@ -160,7 +160,7 @@ function getTangentAtPoint( t : float, currentPoint : Vector3 )
     var endT : float = 1.0 - endPadding;
     
     if(nextT > endT)
-        nextT = endT;
+        nextT = t - 0.001;
 
     var nextPoint : Vector2 = getLocationAlongSpline(nextT);
 
