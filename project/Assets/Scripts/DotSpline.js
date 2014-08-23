@@ -7,6 +7,7 @@ var tension : float = 0.0;
 //dots
 var endPadding : float = 0.1;
 var startingT : float = 0.0;
+var startingLength : float = 20.0;
 var dotOffset : float = 0.0;
 var velocity : float = 0.001;
 var dotSpacing : float;
@@ -35,7 +36,7 @@ function initDots()
 
     
     setTotalLength();
-    numDots = Mathf.Ceil( totalLength * 0.016 );
+    numDots = Mathf.Ceil( totalLength * 0.05 );
 
     //make dots and position along spline
     for( var i : int = 0; i < numDots; i++ )
@@ -67,6 +68,7 @@ function initSpline( startStage : Stage )
     var totalT : float = 1.0 - (endPadding * 2.0);
 
     dotSpacing = totalT / numDots;
+    // dotSpacing = totalLength / numDots;
 
     // Determine direction to move dots in (moves from A to B with positive velocity)
     if( startStage == stageA )
@@ -99,6 +101,8 @@ function updateSpline()
     {
 
         var t : float = startingT + dotOffset + (i * dotSpacing);
+        // var dotPosition : float = startingLength + dotOffset + (i * dotSpacing);
+        // var t : float = dotPosition / totalLength;
 
         var position : Vector3 = getLocationAlongSpline(t);
 
@@ -137,7 +141,11 @@ function setTotalLength()
     var p2 : Vector3 = pathPoints[2].position;
     var p3 : Vector3 = pathPoints[3].position;
 
-    totalLength = Vector3.Distance(p0, p1) + Vector3.Distance(p1, p2) + Vector3.Distance(p2, p3);
+    var distance1 : float = Vector3.Distance(p0, p1) * 0.1;
+    var distance2 : float = Vector3.Distance(p1, p2);
+    var distance3 : float = Vector3.Distance(p2, p3) * 0.1;
+
+    totalLength = distance1 + distance2 + distance3;
 
 }
 
