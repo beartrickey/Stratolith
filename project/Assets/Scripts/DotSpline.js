@@ -14,6 +14,7 @@ var numDots : int = 10;
 var splineDotList = new GameObject[numDots];
 var stageA : Stage;
 var stageB : Stage;
+var totalLength : float = 0.0;
 
 
 function Update()
@@ -31,6 +32,10 @@ function initDots()
 {
 
     var dotPrefab : GameObject = Resources.Load("MapScreenDot");
+
+    
+    setTotalLength();
+    numDots = Mathf.Ceil( totalLength * 0.016 );
 
     //make dots and position along spline
     for( var i : int = 0; i < numDots; i++ )
@@ -71,7 +76,7 @@ function initSpline( startStage : Stage )
     }
     else
     {
-        velocity = -1.0 * Mathf.Abs( velocity );
+        velocity = -1 * Mathf.Abs( velocity );
         startingT = endPadding + dotSpacing;
     }
 
@@ -119,6 +124,20 @@ function cleanSpline()
         splineDotList[i] = null;
 
     }
+
+}
+
+
+
+function setTotalLength()
+{
+
+    var p0 : Vector3 = pathPoints[0].position;
+    var p1 : Vector3 = pathPoints[1].position;
+    var p2 : Vector3 = pathPoints[2].position;
+    var p3 : Vector3 = pathPoints[3].position;
+
+    totalLength = Vector3.Distance(p0, p1) + Vector3.Distance(p1, p2) + Vector3.Distance(p2, p3);
 
 }
 

@@ -11,7 +11,9 @@ public var sl : Sublayer;
 public var stratolithIcon : tk2dSprite;
 public var currentStage : Stage = null;  // stage the stratolith is currently on
 public var destinationStage : Stage = null;  // stage the stratolith is going to
+public var destinationSpline : DotSpline = null;
 public var selectedStage : Stage = null;  // stage selected by the player
+public var stratolithVelocity : float = 0.01;
 
 
 //STAGES
@@ -142,6 +144,8 @@ function beginStratolithRelocation()
 
 	destinationStage = selectedStage;
 
+	setDestinationSpline();
+
 	currentStage = null;
 
 	updateMapLabels();
@@ -153,22 +157,26 @@ function beginStratolithRelocation()
 function updateStratolithIconPosition()
 {
 
-	//bail if no destination
+	// bail if no destination
 	if( destinationStage == null )
 		return;
 
-	stratolithSplineT += 0.001;
+	stratolithSplineT += stratolithVelocity;
 
+	// clamp on either end
 	if( stratolithSplineT > 1.0 )
 		stratolithSplineT = 1.0;
+	if( stratolithSplineT < 0.0 )
+		stratolithSplineT = 0.0;
 
-	var newStratolithPosition : Vector2 = splineList[0].getLocationAlongSpline( stratolithSplineT );
+	var newStratolithPosition : Vector2 = destinationSpline.getLocationAlongSpline( stratolithSplineT );
 
 	stratolithIcon.gameObject.transform.position = Vector3( newStratolithPosition.x, newStratolithPosition.y, stratolithIcon.gameObject.transform.position.z);
 
-	stratolithIcon.gameObject.transform.localEulerAngles.z = splineList[0].getTangentAtPoint(stratolithSplineT, newStratolithPosition);
+	stratolithIcon.gameObject.transform.localEulerAngles.z = destinationSpline.getTangentAtPoint(stratolithSplineT, newStratolithPosition);
 
-	if( stratolithSplineT == 1.0 )
+	// stop when Stratolith gets to either end
+	if( stratolithSplineT == 1.0 || stratolithSplineT == 0.0 )
 	{
 		stratolithArrivedAtNewStage();
 	}
@@ -294,6 +302,40 @@ function initStageSplines( startStage : Stage )
 		{
 
 			splineList[i].initSpline( startStage );
+
+		}
+
+	}
+
+}
+
+
+
+function setDestinationSpline()
+{
+
+	for( var i : int = 0; i < numSplines; i++ )
+	{
+
+		if( splineList[i] == null )
+			continue;
+
+		if( splineList[i].stageA == currentStage && splineList[i].stageB == destinationStage )
+		{
+
+			stratolithVelocity = Mathf.Abs( stratolithVelocity );
+			stratolithSplineT = 0.0;
+			destinationSpline = splineList[i];
+			return;
+
+		}
+		else if( splineList[i].stageA == destinationStage && splineList[i].stageB == currentStage )
+		{
+
+			stratolithVelocity = -1 * Mathf.Abs( stratolithVelocity );
+			stratolithSplineT = 1.0;
+			destinationSpline = splineList[i];
+			return;
 
 		}
 
