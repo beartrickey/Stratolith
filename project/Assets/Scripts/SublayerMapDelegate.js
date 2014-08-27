@@ -111,9 +111,7 @@ function mapActionButtonPressed()
 			clearMapSplines();
 
 		}
-		else if( currentStage != selectedStage &&
-				areStagesConnected( currentStage, selectedStage ) == true &&
-				selectedStage.state != Stage.STAGE_STATE_LOCKED ) //relocate
+		else if( canRelocateBetweenStages( currentStage, selectedStage ) == true )
 		{
 
 			beginStratolithRelocation();
@@ -220,20 +218,17 @@ function updateMapLabels()
 		if( currentStage == selectedStage )
 		{
 			//start game if stratolith currently over stage
-			mapActionLabel.text = "Start Operation";
+			// mapActionLabel.text = "Start Operation";
 		}
-		else if( currentStage != selectedStage &&
-				areStagesConnected( currentStage, selectedStage ) == true &&
-				selectedStage.state != Stage.STAGE_STATE_LOCKED ) //relocate
+		else if( canRelocateBetweenStages( currentStage, selectedStage ) == true ) //relocate
 		{
 			//move to new stage as long as it's not locked
-			mapActionLabel.text = "Relocate";
+			// mapActionLabel.text = "Relocate";
 		}
-		else if( areStagesConnected( currentStage, selectedStage ) == false ||
-				selectedStage.state == Stage.STAGE_STATE_LOCKED ) //show nothing
+		else if( canRelocateBetweenStages( currentStage, selectedStage ) == false ) //show nothing
 		{
 			//don't move to locked stages
-			mapActionLabel.text = "----";
+			// mapActionLabel.text = "----";
 		}
 
 	}
@@ -242,13 +237,13 @@ function updateMapLabels()
 
 		if( selectedStage == destinationStage )
 		{
-			mapActionLabel.text = "- Relocation In Progress -";
+			// mapActionLabel.text = "- Relocation In Progress -";
 		}
 
 	}
 
 
-	mapActionLabel.Commit();
+	// mapActionLabel.Commit();
 
 }
 
@@ -295,10 +290,15 @@ function initStageSplines( startStage : Stage )
 	for( var i : int = 0; i < numSplines; i++ )
 	{
 
+		// Skip null elements
 		if( splineList[i] == null )
 			continue;
 
-		if( splineList[i].stageA == startStage || splineList[i].stageB == startStage )
+
+		if(
+			( splineList[i].stageA == startStage && canRelocateBetweenStages( startStage, splineList[i].stageB ) == true ) ||
+			( splineList[i].stageB == startStage && canRelocateBetweenStages( startStage, splineList[i].stageA ) == true )
+		)
 		{
 
 			splineList[i].initSpline( startStage );
@@ -313,6 +313,8 @@ function initStageSplines( startStage : Stage )
 
 function setDestinationSpline()
 {
+
+	// Figures out which spline to use for moving between currentStage and destinationStage
 
 	for( var i : int = 0; i < numSplines; i++ )
 	{
@@ -359,36 +361,6 @@ function updateMapSplines()
 		{
 
 			splineList[i].updateSpline();
-
-		}
-
-	}
-
-}
-
-
-
-function saveSplinePointPositions()
-{
-
-	for( var i : int = 0; i < numSplines; i++ )
-	{
-
-		if( splineList[i] == null )
-			continue;
-
-
-		if( splineList[i].splineDotList[0] != null )
-		{
-
-			Debug.Log( 'splineList: ' + i );
-
-			for( var p : int = 0; p < 4; p++ )
-			{
-
-				Debug.Log( splineList[i].pathPoints[p].transform.localPosition );
-
-			}
 
 		}
 
@@ -456,6 +428,31 @@ function getStageForId( _id : int )
 
 
 
+function canRelocateBetweenStages( startStage : Stage, endStage : Stage ) : boolean
+{
+
+	// Must be different stages
+	if( startStage == endStage )
+		return false;
+
+
+	// Don't allow relocation to locked stage
+	if( endStage.state == Stage.STAGE_STATE_LOCKED )
+		return false;
+
+
+	// Don't allow relocation between two STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED stages
+	if( startStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED && endStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
+		return false;
+
+
+	// Are stages actually connected?
+	return areStagesConnected( startStage, endStage );
+
+}
+
+
+
 function areStagesConnected( _stageA : Stage, _stageB : Stage ) : boolean
 {
 
@@ -505,13 +502,14 @@ function unlockCurrentStageConnections()
 function loadStages()
 {
 
-    //copy data from stageData to stageList
+    //copy data from stageData to stageList, setup graphics
 	for( var i : int = 0; i < numStages; i++ )
 	{
 	
 		stageList[i].state = PlayerData.instance.stageData[i].state;
 		stageList[i].foundTechItems = PlayerData.instance.stageData[i].foundTechItems;
 		stageList[i].foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
+		stageList[i].updateMapGraphics();
 	
 	}
 

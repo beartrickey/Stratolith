@@ -473,6 +473,8 @@ function goFromGameClearToMap()
 	sublayerGameClearDelegate.gameObject.SetActive( false );
 	
 	sublayerMapDelegate.gameObject.SetActive( true );
+
+	sublayerMapDelegate.loadStages();
 	
 	activeSublayer = sublayerMapDelegate.sl;
 

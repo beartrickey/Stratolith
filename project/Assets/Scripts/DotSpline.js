@@ -46,11 +46,14 @@ function initDots()
 
         var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
 
+        dot.transform.parent = SublayerMapDelegate.instance.gameObject.transform;
         dot.transform.localScale.x = 0.75;
+        dot.transform.localScale.y = 1.25;
 
         splineDotList[i] = dot;
 
-        // var sprite : tk2dSprite = dot.GetComponent( tk2dSprite );
+        var sprite : tk2dSprite = dot.GetComponent( tk2dSprite );
+        sprite.color.a = 0.8;
 
     }
 
