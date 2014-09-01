@@ -244,7 +244,7 @@ function goFromMapToGame()
 	
 	//start blur in
 	sublayerGameDelegate.state = SublayerGameDelegate.GAME_STATE_BLUR_IN;
-	if( Application.platform != RuntimePlatform.OSXEditor )
+	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
 	{
 		
 		sublayerGameDelegate.gameObject.transform.localScale = Vector3( 0.25, 0.25, 1.0 );

@@ -1000,7 +1000,7 @@ function stratolithHitByBullet( _bulletType : int )
 	
 	
 	//show radar static
-	if( Application.platform != RuntimePlatform.OSXEditor )
+	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
 	{
 
 		radarStaticEffect.gameObject.SetActive( true );
@@ -1051,7 +1051,7 @@ function handleRadarStatic()
 {
 
 	//skip effect if in editor
-	if( Application.platform == RuntimePlatform.OSXEditor )
+	if( Application.platform == RuntimePlatform.OSXEditor || Application.platform != RuntimePlatform.IPhonePlayer )
 		return;
 
 
@@ -1156,7 +1156,7 @@ function updateStateMachine()
     		
     		//bluriness
     		//don't worry about blur if in editor
-    		if( Application.platform != RuntimePlatform.OSXEditor )
+    		if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
 			{
 	    		var blurResolution : float = gm.fullScreenBlur.renderer.material.GetFloat( "resolution" );	
 	    		blurResolution *= 0.9;

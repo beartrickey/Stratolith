@@ -38,6 +38,17 @@ public var mapActionLabel : tk2dTextMesh;
 public var stageIdLabel : tk2dTextMesh;
 
 
+//frame
+public var frameNumber : int = 0;
+
+
+//FADE IN EFFECT
+public var numFadeInElements : int = 16;
+public var mapFadeInElementList = new tk2dSprite[numFadeInElements];
+public var fadingInElements : boolean = false;
+public var fadeRate : float = 0.75;
+
+
 
 function onInstantiate()
 {
@@ -269,12 +280,157 @@ function standbyButtonPressed()
 function sublayerMapUpdate()
 {
 
+	//frame
+	frameNumber++;
+
+
 	//update stratotlith icon
 	updateStratolithIconPosition();
 
 
 	//update splines
 	updateMapSplines();
+
+
+	//fade in
+	if( fadingInElements == true )
+	{
+
+		updateFadeInElements();
+
+		if( frameNumber % 2 == 0 )
+			chooseRandomFadeInElement();
+
+	}
+
+}
+
+
+
+//////////////////////////////////////FADE IN EFFECT
+
+
+
+function resetFadeInElements()
+{
+
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+		if( element == null )
+			continue;
+
+		element.color.a = 0.0;
+		element.gameObject.transform.localScale.x = 0.0;
+
+	}
+
+	fadingInElements = true;
+
+}
+
+
+
+function snapAllFadeInElements()
+{
+
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+		if( element == null )
+			continue;
+
+		element.color.a = 1.0;
+		element.gameObject.transform.localScale.x = 1.0;
+
+	}
+
+}
+
+
+
+function updateFadeInElements()
+{
+
+	fadingInElements = false;
+
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+
+		// skip null elements
+		if( element == null )
+			continue;
+
+
+		// skip elements that haven't started yet
+		if( element.color.a == 0.0 )
+		{
+			fadingInElements = true;
+			continue;
+		}
+
+
+		// // clamp
+		// if( element.color.a > 1.0 )
+		// {
+		// 	element.color.a = 1.0;
+		// 	element.gameObject.transform.localScale.x = 1.0;
+		// 	continue;
+		// }
+
+
+		// // snap
+		if( element.color.a >= 0.99 )
+		{
+			element.color.a = 1.0;
+			element.gameObject.transform.localScale.x = 1.0;
+			continue;
+		}
+
+
+		// increment
+		var dif : float = 1.0 - element.color.a;
+		var reducedDif : float = dif * fadeRate;
+		var newScale : float = 1.0 - reducedDif;
+		element.color.a += newScale;
+		element.gameObject.transform.localScale.x += newScale;
+
+
+		// continue fading in
+		if( element.color.a < 1.0 )
+			fadingInElements = true;
+
+	}
+
+	if( fadingInElements == false )
+		snapAllFadeInElements();
+
+}
+
+
+
+function chooseRandomFadeInElement()
+{
+
+	var randIndex : int = Random.Range(0, numFadeInElements);
+
+	var randElement = mapFadeInElementList[randIndex];
+
+	if( randElement == null )
+		return;
+
+	if( randElement.color.a == 0.0 )
+	{
+		randElement.color.a = 0.01;
+		randElement.gameObject.transform.localScale.x = 0.01;
+	}
 
 }
 
@@ -514,6 +670,8 @@ function loadStages()
 	}
 
 	initStageSplines( currentStage );
+
+	resetFadeInElements();
     
 }
 
