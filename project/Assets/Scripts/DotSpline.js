@@ -20,10 +20,10 @@ var totalLength : float = 0.0;
 function Update()
 {
 
-    if( Application.isPlaying )
-        return;
+    // if( Application.isPlaying )
+    //     return;
 
-    initSpline(stageA);
+    // initSpline(stageA);
 
 }
 
@@ -40,8 +40,6 @@ function initDots()
     //make dots and position along spline
     for( var i : int = 0; i < numDots; i++ )
     {
-
-        Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
 
         var dot = GameObject.Instantiate( dotPrefab, Vector3.zero, dotPrefab.transform.rotation );
 
@@ -70,7 +68,6 @@ function initSpline( startStage : Stage )
     var totalT : float = 1.0 - (endPadding * 2.0);
 
     dotSpacing = totalLength / numDots;
-    // dotSpacing = 2.0;
 
     // Determine direction to move dots in (moves from A to B with positive velocity)
     if( startStage == stageA )
