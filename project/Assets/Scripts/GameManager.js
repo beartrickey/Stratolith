@@ -87,20 +87,20 @@ function Start()
 	sublayerMapDelegate.onInstantiate();
 	sublayerMapDelegate.gameObject.SetActive( false );
 
-	sublayerGameDelegate.onInstantiate();
-	sublayerGameDelegate.gameObject.SetActive( false );
+	// sublayerGameDelegate.onInstantiate();
+	// sublayerGameDelegate.gameObject.SetActive( false );
 
-	sublayerPauseDelegate.onInstantiate();
-	sublayerPauseDelegate.gameObject.SetActive( false );
+	// sublayerPauseDelegate.onInstantiate();
+	// sublayerPauseDelegate.gameObject.SetActive( false );
 
-	sublayerCatalogDelegate.onInstantiate();
-	sublayerCatalogDelegate.gameObject.SetActive( false );
+	// sublayerCatalogDelegate.onInstantiate();
+	// sublayerCatalogDelegate.gameObject.SetActive( false );
 
-	sublayerGameOverDelegate.onInstantiate();
-	sublayerGameOverDelegate.gameObject.SetActive( false );
+	// sublayerGameOverDelegate.onInstantiate();
+	// sublayerGameOverDelegate.gameObject.SetActive( false );
 
-	sublayerGameClearDelegate.onInstantiate();
-	sublayerGameClearDelegate.gameObject.SetActive( false );
+	// sublayerGameClearDelegate.onInstantiate();
+	// sublayerGameClearDelegate.gameObject.SetActive( false );
 
 
 	//start at title screen

@@ -28,7 +28,7 @@ public var incomingDroneIconList = new tk2dSprite[3];
 
 //drones
 public var dronePrefab : GameObject;
-public static var numDrones : int = 64;
+public static var numDrones : int = 16;
 public var droneList = new Drone[numDrones];
 public var activeDrone : Drone;
 
@@ -52,7 +52,7 @@ public var selectionLineRight : tk2dSprite;
 
 //bullets
 public var bulletPrefab : GameObject;
-public static var numBullets : int = 64;
+public static var numBullets : int = 16;
 public var bulletList = new Bullet[numBullets];
 
 

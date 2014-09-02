@@ -1,6 +1,6 @@
 ﻿#pragma strict
 
-public var numDots : int = 128;
+public var numDots : int = 64;
 
 public var dotList = new tk2dSprite[numDots];
 
