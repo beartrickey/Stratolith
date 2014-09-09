@@ -44,6 +44,7 @@ public var sublayerPauseDelegate : SublayerPauseDelegate = null;
 public var sublayerCatalogDelegate : SublayerCatalogDelegate = null;
 public var sublayerGameOverDelegate : SublayerGameOverDelegate = null;
 public var sublayerGameClearDelegate : SublayerGameClearDelegate = null;
+public var sublayerLoadingScreenDelegate : SublayerLoadingScreenDelegate = null;
 
 
 public var activeSublayer: Sublayer = null;
@@ -80,27 +81,38 @@ function Start()
 	setScreenDimensions();
 
 
-	//start sublayers
+	//start sublayers	
+	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
+	sublayerTitleDelegate.gm = this;
 	sublayerTitleDelegate.onInstantiate();
 	sublayerTitleDelegate.gameObject.SetActive( true );
 
+
+	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
+	sublayerMapDelegate.gm = this;
 	sublayerMapDelegate.onInstantiate();
 	sublayerMapDelegate.gameObject.SetActive( false );
 
-	sublayerGameDelegate.onInstantiate();
-	sublayerGameDelegate.gameObject.SetActive( false );
 
-	sublayerPauseDelegate.onInstantiate();
-	sublayerPauseDelegate.gameObject.SetActive( false );
+	sublayerLoadingScreenDelegate = instantiateSublayerFromResource("SublayerLoadingScreen").GetComponent( SublayerLoadingScreenDelegate );
+	sublayerLoadingScreenDelegate.gm = this;
+	sublayerLoadingScreenDelegate.onInstantiate();
+	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
-	sublayerCatalogDelegate.onInstantiate();
-	sublayerCatalogDelegate.gameObject.SetActive( false );
+	// sublayerGameDelegate.onInstantiate();
+	// sublayerGameDelegate.gameObject.SetActive( false );
 
-	sublayerGameOverDelegate.onInstantiate();
-	sublayerGameOverDelegate.gameObject.SetActive( false );
+	// sublayerPauseDelegate.onInstantiate();
+	// sublayerPauseDelegate.gameObject.SetActive( false );
 
-	sublayerGameClearDelegate.onInstantiate();
-	sublayerGameClearDelegate.gameObject.SetActive( false );
+	// sublayerCatalogDelegate.onInstantiate();
+	// sublayerCatalogDelegate.gameObject.SetActive( false );
+
+	// sublayerGameOverDelegate.onInstantiate();
+	// sublayerGameOverDelegate.gameObject.SetActive( false );
+
+	// sublayerGameClearDelegate.onInstantiate();
+	// sublayerGameClearDelegate.gameObject.SetActive( false );
 
 
 	//start at title screen
@@ -109,6 +121,17 @@ function Start()
 	//play title music
 	BGM_TITLE.Play();
 	
+}
+
+
+
+function instantiateSublayerFromResource( resourcePath : String ) : GameObject
+{
+
+	var prefab : GameObject = Resources.Load(resourcePath);
+	var gameObject : GameObject = GameObject.Instantiate(prefab, prefab.transform.position, prefab.transform.rotation);
+	return gameObject;
+
 }
 
 

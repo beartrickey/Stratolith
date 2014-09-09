@@ -274,9 +274,12 @@ function mouseEnded()
 	checkForButtonTouchUpInside( ray );
 	
 	//stop draging shield wave
-	SublayerGameDelegate.instance.draggingScopePhase = false;
-	SublayerGameDelegate.instance.draggingScopeWavelength = false;
-	SublayerGameDelegate.instance.activeScope = null;
+	if( SublayerGameDelegate.instance != null )
+	{
+		SublayerGameDelegate.instance.draggingScopePhase = false;
+		SublayerGameDelegate.instance.draggingScopeWavelength = false;
+		SublayerGameDelegate.instance.activeScope = null;
+	}
 	
 }
 
@@ -373,10 +376,13 @@ function checkForButtonTouchDownInside( _ray : Ray, _touchIndex : int )
 	
 	
 	//special case for sublayerGame
-	if( GameManager.instance.activeSublayer == SublayerGameDelegate.instance.sl )
+	if( SublayerGameDelegate.instance != null )
 	{
-		handleMainGameTouches( _ray, _touchIndex, buttonScript );
-		return;
+		if( GameManager.instance.activeSublayer == SublayerGameDelegate.instance.sl )
+		{
+			handleMainGameTouches( _ray, _touchIndex, buttonScript );
+			return;
+		}
 	}
 	
 	
@@ -492,11 +498,13 @@ function checkForButtonRolloverRolloff( _ray : Ray )
 {
 
 	//bail if dragging a knob/dial
-	if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+	if( SublayerGameDelegate.instance != null )
 	{
-		return;
+		if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+		{
+			return;
+		}
 	}
-	
 
 	var buttonScript : ButtonScript = checkForButtonCollision( _ray );
 	
@@ -514,9 +522,12 @@ function checkForButtonTouchUpInside( _ray : Ray )
 {
 
 	//bail if dragging a knob/dial
-	if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+	if( SublayerGameDelegate.instance != null )
 	{
-		return;
+		if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+		{
+			return;
+		}
 	}
 	
 
