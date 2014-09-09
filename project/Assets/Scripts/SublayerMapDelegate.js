@@ -323,7 +323,7 @@ function resetFadeInElements()
 			continue;
 
 		element.color.a = 0.0;
-		element.gameObject.transform.localScale.x = 0.0;
+		element.scale.x = 0.0;
 
 	}
 
@@ -345,7 +345,7 @@ function snapAllFadeInElements()
 			continue;
 
 		element.color.a = 1.0;
-		element.gameObject.transform.localScale.x = 1.0;
+		element.scale.x = 1.0;
 
 	}
 
@@ -390,7 +390,7 @@ function updateFadeInElements()
 		if( element.color.a >= 0.99 )
 		{
 			element.color.a = 1.0;
-			element.gameObject.transform.localScale.x = 1.0;
+			element.scale.x = 1.0;
 			continue;
 		}
 
@@ -400,7 +400,7 @@ function updateFadeInElements()
 		var reducedDif : float = dif * fadeRate;
 		var newScale : float = 1.0 - reducedDif;
 		element.color.a += newScale;
-		element.gameObject.transform.localScale.x += newScale;
+		element.scale.x += newScale;
 
 
 		// continue fading in
@@ -429,7 +429,7 @@ function chooseRandomFadeInElement()
 	if( randElement.color.a == 0.0 )
 	{
 		randElement.color.a = 0.01;
-		randElement.gameObject.transform.localScale.x = 0.01;
+		randElement.scale.x = 0.01;
 	}
 
 }
