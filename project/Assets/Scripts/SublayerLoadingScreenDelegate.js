@@ -2,10 +2,15 @@
 
 
 public static var instance : SublayerLoadingScreenDelegate;
-
+public static var loadingFrames : int = 60; // 1 second
+public var loadingCounter : int = 0;
 
 public var gm : GameManager;
 public var sl : Sublayer;
+
+
+public var loadStartFunction : function() = null;
+public var loadEndFunction : function() = null;
 
 
 function onInstantiate()
@@ -22,9 +27,34 @@ function onInstantiate()
 
 
 
+function onInit( startFunc : function(), endFunc : function() )
+{
+
+	//reset loading counter
+	loadingCounter = 0;
+
+	loadStartFunction = startFunc;
+	loadEndFunction = endFunc;
+
+}
+
+
+
 function sublayerLoadingScreenUpdate()
 {
 	
+	loadingCounter++;
+
+	if( loadingCounter == 1 )
+	{
+		loadStartFunction();
+	}
+
+
+	if( loadingCounter >= loadingFrames )
+	{
+		loadEndFunction();
+	}
 
 }
 

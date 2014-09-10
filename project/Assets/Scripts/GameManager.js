@@ -256,12 +256,46 @@ function goFromTitleToMap()
 function goFromMapToGame()
 {
 
-	sublayerMapDelegate.gameObject.SetActive( false );
+	// Show loading screen
+	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
+	sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, endLoadMapToGame );
+	activeSublayer = sublayerLoadingScreenDelegate.sl;
 	
+}
+
+
+
+function startLoadMapToGame()
+{
+
+	// Destroy non-game layers
+	GameObject.Destroy( sublayerMapDelegate.gameObject );
+	sublayerMapDelegate = null;
+
+	GameObject.Destroy( sublayerTitleDelegate.gameObject );
+	sublayerTitleDelegate = null;
+	
+
+	// Load sublayerGameDelegate
+	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
+	sublayerGameDelegate.gm = this;
+	sublayerGameDelegate.onInstantiate();
+
+}
+
+
+
+function endLoadMapToGame()
+{
+
+	// Remove loading screen
+	GameObject.Destroy( sublayerLoadingScreenDelegate.gameObject );
+	sublayerLoadingScreenDelegate = null;
+
+
+	// Switch to sublayergameDelegate
 	sublayerGameDelegate.gameObject.SetActive( true );
-	
 	activeSublayer = sublayerGameDelegate.sl;
-	
 	sublayerGameDelegate.startGame();
 	
 	
@@ -269,8 +303,6 @@ function goFromMapToGame()
 	sublayerGameDelegate.state = SublayerGameDelegate.GAME_STATE_BLUR_IN;
 	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
 	{
-		
-		sublayerGameDelegate.gameObject.transform.localScale = Vector3( 0.25, 0.25, 1.0 );
 		
 		fullScreenBlur.SetActive( true );
 		
@@ -280,12 +312,8 @@ function goFromMapToGame()
 		
 	}
 
-
-	//audio
-	//BGM_OPS.Stop();
-
 	BGM_TACTICAL.Play();
-	
+
 }
 
 
