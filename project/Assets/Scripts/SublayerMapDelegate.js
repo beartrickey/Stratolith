@@ -14,7 +14,7 @@ public var destinationStage : Stage = null;  // stage the stratolith is going to
 public var destinationSpline : DotSpline = null;
 public var selectedStage : Stage = null;  // stage selected by the player
 public var stratolithVelocity : float = 0.01;
-
+public var collection : tk2dSpriteCollectionData = null;
 
 // STAGE DOT
 public var stageList = new Array();

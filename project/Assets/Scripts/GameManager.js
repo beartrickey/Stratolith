@@ -97,17 +97,17 @@ function Start()
 	setScreenDimensions();
 
 
-	//start sublayers	
-	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
-	sublayerTitleDelegate.gm = this;
-	sublayerTitleDelegate.onInstantiate();
-	sublayerTitleDelegate.gameObject.SetActive( true );
+	// start sublayers	
+	// sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
+	// sublayerTitleDelegate.gm = this;
+	// sublayerTitleDelegate.onInstantiate();
+	// sublayerTitleDelegate.gameObject.SetActive( true );
 
 
 	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
 	sublayerMapDelegate.gm = this;
 	sublayerMapDelegate.onInstantiate();
-	sublayerMapDelegate.gameObject.SetActive( false );
+	sublayerMapDelegate.gameObject.SetActive( true );
 
 
 	sublayerLoadingScreenDelegate = instantiateSublayerFromResource("SublayerLoadingScreen").GetComponent( SublayerLoadingScreenDelegate );
@@ -115,9 +115,21 @@ function Start()
 	sublayerLoadingScreenDelegate.onInstantiate();
 	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
+	activeSublayer = sublayerMapDelegate.sl;
 
-	//start at title screen
-	activeSublayer = sublayerTitleDelegate.sl;
+	// start at title screen
+	// activeSublayer = sublayerTitleDelegate.sl;
+
+
+	// sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
+	// sublayerGameDelegate.gm = this;
+	// sublayerGameDelegate.onInstantiate();
+
+	// // Switch to sublayergameDelegate
+	// sublayerGameDelegate.gameObject.SetActive( true );
+	// activeSublayer = sublayerGameDelegate.sl;
+	// sublayerGameDelegate.startGame();
+	
 
 	//play title music
 	BGM_TITLE.Play();
@@ -269,12 +281,17 @@ function goFromMapToGame()
 function startLoadMapToGame()
 {
 
+	// Destroy sprite collections
+	destroySpriteCollections();
+
 	// Destroy non-game layers
 	GameObject.Destroy( sublayerMapDelegate.gameObject );
 	sublayerMapDelegate = null;
 
-	GameObject.Destroy( sublayerTitleDelegate.gameObject );
-	sublayerTitleDelegate = null;
+	// GameObject.Destroy( sublayerTitleDelegate.gameObject );
+	// sublayerTitleDelegate = null;
+
+	// Application.GarbageCollectUnusedAssets();
 
 }
 
@@ -282,6 +299,9 @@ function startLoadMapToGame()
 
 function midLoadMapToGame()
 {
+
+	Resources.UnloadUnusedAssets();
+	System.GC.Collect();
 
 	// Load sublayerGameDelegate
 	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
@@ -556,7 +576,11 @@ function goFromGameClearToMap()
 function startLoadGameToMap()
 {
 
-	// Destroy non-game layers
+	// Destroy sprite collections
+	destroySpriteCollections();
+
+
+	// Destroy game layers
 	GameObject.Destroy( sublayerGameDelegate.gameObject );
 	sublayerGameDelegate = null;
 
@@ -569,6 +593,9 @@ function startLoadGameToMap()
 
 function midLoadGameToMap()
 {
+
+	Resources.UnloadUnusedAssets();
+	System.GC.Collect();
 
 	// Load sublayerTitleDelegate
 	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
@@ -598,6 +625,39 @@ function endLoadGameToMap()
 	activeSublayer = sublayerMapDelegate.sl;
 
 	BGM_TACTICAL.Play();
+
+}
+
+
+
+function destroySpriteCollections()
+{
+
+	// Destroy sprite collections
+
+	// SublayerGame
+	if( sublayerGameDelegate != null )
+	{
+
+		// Large sprite collection
+    	GameObject.DestroyImmediate( sublayerGameDelegate.panel.gameObject.renderer.material.mainTexture, true );
+
+    	// Small sprite collection
+    	GameObject.DestroyImmediate( sublayerGameDelegate.mainPowerNeedle.gameObject.renderer.material.mainTexture, true );
+
+    }
+
+    // SublayerMap
+    if( sublayerMapDelegate != null )
+	{
+		
+		// Large sprite collection 2
+    	GameObject.DestroyImmediate( sublayerMapDelegate.stratolithIcon.gameObject.renderer.material.mainTexture, true );
+
+    	// Small sprite collection
+    	// GameObject.DestroyImmediate( sublayerMapDelegate.mainPowerNeedle.gameObject.renderer.material.mainTexture, true );
+
+    }
 
 }
 
