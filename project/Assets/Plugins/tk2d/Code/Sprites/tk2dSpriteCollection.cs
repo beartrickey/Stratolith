@@ -62,6 +62,8 @@ public class tk2dSpriteCollectionDefinition
 		BlackZeroAlpha,
 		Extend,
 		TileXY,
+		TileX,
+		TileY,
 	}
 	
 	public enum ColliderType
@@ -71,6 +73,7 @@ public class tk2dSpriteCollectionDefinition
 		BoxTrimmed, 		// box, trimmed to cover visible region
 		BoxCustom, 			// box, with custom values provided by user
 		Polygon, 			// polygon, can be concave
+		Advanced,			// advanced colliders - set up multiple oriented boxes
 	}
 	
 	public enum PolygonColliderCap
@@ -95,13 +98,50 @@ public class tk2dSpriteCollectionDefinition
 		SpriteSheet,
 		Font
 	}
-	
+
+	public enum DiceFilter
+	{
+		Complete,
+		SolidOnly,
+		TransparentOnly,
+	}
+
+	[System.Serializable]
+	public class ColliderData {
+		public enum Type {
+			Box,
+			Circle,
+		}
+
+		public string name = "";
+		public Type type = Type.Box;
+		public Vector2 origin = Vector3.zero;
+		public Vector2 size = Vector3.zero;
+		public float angle = 0;
+
+		public void CopyFrom(ColliderData src) {
+			name = src.name;
+			type = src.type;
+			origin = src.origin;
+			size = src.size;
+			angle = src.angle;
+		}
+
+		public bool CompareTo(ColliderData src) {
+			return (name == src.name && 
+				type == src.type &&
+				origin == src.origin &&
+				size == src.size &&
+				angle == src.angle);
+		}
+	}
+
 	public string name = "";
 	
 	public bool disableTrimming = false;
     public bool additive = false;
     public Vector3 scale = new Vector3(1,1,1);
-    
+
     public Texture2D texture = null;
 	
 	[System.NonSerialized]
@@ -120,7 +160,8 @@ public class tk2dSpriteCollectionDefinition
 	public bool dice = false;
 	public int diceUnitX = 64;
 	public int diceUnitY = 64;
-	
+	public DiceFilter diceFilter = DiceFilter.Complete;
+
 	public Pad pad = Pad.Default;
 	public int extraPadding = 0; // default
 	
@@ -134,6 +175,7 @@ public class tk2dSpriteCollectionDefinition
 	public int regionId;
 	
 	public ColliderType colliderType = ColliderType.UserDefined;
+	public List<ColliderData> colliderData = new List<ColliderData>();
 	public Vector2 boxColliderMin, boxColliderMax;
 	public tk2dSpriteColliderIsland[] polyColliderIslands;
 	public PolygonColliderCap polyColliderCap = PolygonColliderCap.FrontAndBack;
@@ -164,6 +206,7 @@ public class tk2dSpriteCollectionDefinition
 		dice = src.dice;
 		diceUnitX = src.diceUnitX;
 		diceUnitY = src.diceUnitY;
+		diceFilter = src.diceFilter;
 		pad = src.pad;
 		
 		source = src.source;
@@ -189,7 +232,14 @@ public class tk2dSpriteCollectionDefinition
 		colliderSmoothSphereCollisions = src.colliderSmoothSphereCollisions;
 		
 		extraPadding = src.extraPadding;
-		
+
+		colliderData = new List<ColliderData>( src.colliderData.Count );
+		foreach ( ColliderData srcCollider in src.colliderData ) {
+			ColliderData data = new ColliderData();
+			data.CopyFrom(srcCollider);
+			colliderData.Add(data);
+		}
+
 		if (src.polyColliderIslands != null)
 		{
 			polyColliderIslands = new tk2dSpriteColliderIsland[src.polyColliderIslands.Length];
@@ -248,6 +298,7 @@ public class tk2dSpriteCollectionDefinition
 		if (dice != src.dice) return false;
 		if (diceUnitX != src.diceUnitX) return false;
 		if (diceUnitY != src.diceUnitY) return false;
+		if (diceFilter != src.diceFilter) return false;
 		if (pad != src.pad) return false;
 		if (extraPadding != src.extraPadding) return false;
 
@@ -285,6 +336,11 @@ public class tk2dSpriteCollectionDefinition
 			if (polyColliderIslands.Length != src.polyColliderIslands.Length) return false;
 			for (int i = 0; i < polyColliderIslands.Length; ++i)
 				if (!polyColliderIslands[i].CompareTo(src.polyColliderIslands[i])) return false;
+		}
+		
+		if (colliderData.Count != src.colliderData.Count) return false;
+		for (int i = 0; i < colliderData.Count; ++i) {
+			if (!colliderData[i].CompareTo( src.colliderData[i] )) return false;
 		}
 		
 		if (polyColliderCap != src.polyColliderCap) return false;
@@ -407,7 +463,7 @@ public class tk2dSpriteSheetSource
 public class tk2dSpriteCollectionFont
 {
 	public bool active = false;
-	public Object bmFont;
+	public TextAsset bmFont;
 	public Texture2D texture;
     public bool dupeCaps = false; // duplicate lowercase into uc, or vice-versa, depending on which exists
 	public bool flipTextureY = false;
@@ -500,12 +556,13 @@ public class tk2dSpriteCollection : MonoBehaviour
 	public bool managedSpriteCollection = false; // true when generated and managed by system, eg. platform specific data
 	public bool HasPlatformData { get { return platforms.Count > 1; } }
 	public bool loadable = false;
+	public AtlasFormat atlasFormat = AtlasFormat.UnityTexture;
 	
-	public int maxTextureSize = 1024;
+	public int maxTextureSize = 2048;
 	
 	public bool forceTextureSize = false;
-	public int forcedTextureWidth = 1024;
-	public int forcedTextureHeight = 1024;
+	public int forcedTextureWidth = 2048;
+	public int forcedTextureHeight = 2048;
 	
 	public enum TextureCompression
 	{
@@ -514,6 +571,11 @@ public class tk2dSpriteCollection : MonoBehaviour
 		Compressed,
 		Dithered16Bit_Alpha,
 		Dithered16Bit_NoAlpha,
+	}
+
+	public enum AtlasFormat {
+		UnityTexture, // Normal Unity texture
+		Png,
 	}
 
 	public TextureCompression textureCompression = TextureCompression.Uncompressed;
@@ -532,6 +594,7 @@ public class tk2dSpriteCollection : MonoBehaviour
 	public Material[] altMaterials;
 	public Material[] atlasMaterials;
 	public Texture2D[] atlasTextures;
+	public TextAsset[] atlasTextureFiles = new TextAsset[0];
 	
 	[SerializeField] private bool useTk2dCamera = false;
 	[SerializeField] private int targetHeight = 640;
@@ -569,9 +632,12 @@ public class tk2dSpriteCollection : MonoBehaviour
 	public bool mipmapEnabled = false;
 	public int anisoLevel = 1;
 
+	// Starts off with Unity Physics 3D for current platforms
+	public tk2dSpriteDefinition.PhysicsEngine physicsEngine = tk2dSpriteDefinition.PhysicsEngine.Physics3D;
 	public float physicsDepth = 0.1f;
 	
 	public bool disableTrimming = false;
+	public bool disableRotation = false;
 	
 	public NormalGenerationMode normalGenerationMode = NormalGenerationMode.None;
 	

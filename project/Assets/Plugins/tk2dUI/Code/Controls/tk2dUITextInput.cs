@@ -8,6 +8,7 @@ using System.Collections;
 /// <summary>
 /// TextInput control
 /// </summary>
+[ExecuteInEditMode]
 [AddComponentMenu("2D Toolkit/UI/tk2dUITextInput")]
 public class tk2dUITextInput : MonoBehaviour
 {
@@ -67,6 +68,25 @@ public class tk2dUITextInput : MonoBehaviour
     /// </summary>
     public string passwordChar = "*";
 
+	[SerializeField]
+	[HideInInspector]
+	private tk2dUILayout layoutItem = null;
+
+	public tk2dUILayout LayoutItem {
+		get { return layoutItem; }
+		set {
+			if (layoutItem != value) {
+				if (layoutItem != null) {
+					layoutItem.OnReshape -= LayoutReshaped;
+				}
+				layoutItem = value;
+				if (layoutItem != null) {
+					layoutItem.OnReshape += LayoutReshaped;
+				}
+			}
+		}
+	}
+
     private bool isSelected = false;
 
     private bool wasStartedCalled = false;
@@ -81,6 +101,31 @@ public class tk2dUITextInput : MonoBehaviour
     private bool isDisplayTextShown =false;
 
     public System.Action<tk2dUITextInput> OnTextChange;
+
+    public string SendMessageOnTextChangeMethodName = "";
+
+    public GameObject SendMessageTarget
+    {
+        get
+        {
+            if (selectionBtn != null)
+            {
+                return selectionBtn.sendMessageTarget;
+            }
+            else return null;
+        }
+        set
+        {
+            if (selectionBtn != null && selectionBtn.sendMessageTarget != value)
+            {
+                selectionBtn.sendMessageTarget = value;
+            
+                #if UNITY_EDITOR
+                    UnityEditor.EditorUtility.SetDirty(selectionBtn);
+                #endif
+            }
+        }
+    }
 
     public bool IsFocus
     {
@@ -125,7 +170,7 @@ public class tk2dUITextInput : MonoBehaviour
     void Start()
     {
         wasStartedCalled = true;
-        if (tk2dUIManager.Instance != null)
+        if (tk2dUIManager.Instance__NoCreate != null)
         {
             tk2dUIManager.Instance.OnAnyPress += AnyPress;
         }
@@ -136,18 +181,23 @@ public class tk2dUITextInput : MonoBehaviour
     {
         if (wasStartedCalled && !wasOnAnyPressEventAttached)
         {
-            if (tk2dUIManager.Instance != null)
+            if (tk2dUIManager.Instance__NoCreate != null)
             {
                 tk2dUIManager.Instance.OnAnyPress += AnyPress;
             }
         }
+
+		if (layoutItem != null)
+		{
+			layoutItem.OnReshape += LayoutReshaped;
+		}
 
         selectionBtn.OnClick += InputSelected;
     }
 
     void OnDisable()
     {
-        if (tk2dUIManager.Instance != null)
+        if (tk2dUIManager.Instance__NoCreate != null)
         {
             tk2dUIManager.Instance.OnAnyPress -= AnyPress;
             if (listenForKeyboardText)
@@ -161,13 +211,31 @@ public class tk2dUITextInput : MonoBehaviour
 
 
         listenForKeyboardText = false;
+
+		if (layoutItem != null)
+		{
+			layoutItem.OnReshape -= LayoutReshaped;
+		}
     }
 
     public void SetFocus()
     {
-        if (!IsFocus)
-        {
+        SetFocus(true);
+    }
+
+    /// <summary>
+    /// Sets or removes focus from the text input
+    /// Currently you will need to manually need to remove focus and set focus on the new
+    /// textinput if you wish to do this from a textInput callback, eg. auto advance when
+    /// enter is pressed.
+    /// </summary>
+    public void SetFocus(bool focus)
+    {
+        if (!IsFocus && focus) {
             InputSelected();
+        }
+        else if (IsFocus && !focus) {
+            InputDeselected();
         }
     }
 
@@ -235,6 +303,11 @@ public class tk2dUITextInput : MonoBehaviour
         {
             Text = newText;
             if (OnTextChange != null) { OnTextChange(this); }
+
+            if (SendMessageTarget != null && SendMessageOnTextChangeMethodName.Length > 0)
+            {
+                SendMessageTarget.SendMessage( SendMessageOnTextChangeMethodName, this, SendMessageOptions.RequireReceiver );
+            }
         }
     }
 
@@ -382,4 +455,13 @@ public class tk2dUITextInput : MonoBehaviour
             tk2dUIBaseItemControl.ChangeGameObjectActiveState(inputLabel.gameObject, true);
         }
     }
+
+	private void LayoutReshaped(Vector3 dMin, Vector3 dMax)
+	{
+		fieldLength += (dMax.x - dMin.x);
+        // No way to trigger re-format yet
+        string tmpText = this.text;
+        text = "";
+        Text = tmpText;
+	}
 }

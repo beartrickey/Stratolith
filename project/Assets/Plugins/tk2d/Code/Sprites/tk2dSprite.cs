@@ -37,7 +37,7 @@ public class tk2dSprite : tk2dBaseSprite
 			Build();
 		}
 	}
-	
+
 	protected void OnDestroy()
 	{
 		if (mesh)
@@ -95,6 +95,7 @@ public class tk2dSprite : tk2dBaseSprite
 		mesh.colors32 = meshColors;
 		mesh.uv = sprite.uvs;
 		mesh.triangles = sprite.indices;
+		mesh.bounds = AdjustedMeshBounds( GetBounds(), renderLayer );
 		
 		UpdateMaterial();
 		CreateCollider();
@@ -121,7 +122,8 @@ public class tk2dSprite : tk2dBaseSprite
 	/// <summary>
 	/// Create a sprite (and gameObject) displaying the region of the texture specified.
 	/// Use <see cref="tk2dSpriteCollectionData.CreateFromTexture"/> if you need to create a sprite collection
-	/// with multiple sprites.
+	/// with multiple sprites. It is your responsibility to destroy the collection when you
+	/// destroy this sprite game object. You can get to it by using sprite.Collection.
 	/// Convenience alias of tk2dBaseSprite.CreateFromTexture<tk2dSprite>(...)
 	/// </summary>
 	public static GameObject CreateFromTexture(Texture texture, tk2dSpriteCollectionSize size, Rect region, Vector2 anchor)
@@ -167,7 +169,7 @@ public class tk2dSprite : tk2dBaseSprite
 		mesh.normals = meshNormals;
 		mesh.tangents = meshTangents;
 		mesh.uv = sprite.uvs;
-		mesh.bounds = GetBounds();
+		mesh.bounds = AdjustedMeshBounds( GetBounds(), renderLayer );
 	}
 
 	protected void UpdateGeometryImpl()
@@ -193,7 +195,7 @@ public class tk2dSprite : tk2dBaseSprite
 		mesh.tangents = meshTangents;
 		mesh.colors32 = meshColors;
 		mesh.uv = sprite.uvs;
-		mesh.bounds = GetBounds();
+		mesh.bounds = AdjustedMeshBounds( GetBounds(), renderLayer );
         mesh.triangles = sprite.indices;
 	}
 	
@@ -228,5 +230,34 @@ public class tk2dSprite : tk2dBaseSprite
 	{
 		base.ForceBuild();
 		GetComponent<MeshFilter>().mesh = mesh;
+	}
+
+	public override void ReshapeBounds(Vector3 dMin, Vector3 dMax) {
+		float minSizeClampTexelScale = 0.1f; // Can't shrink sprite smaller than this many texels
+		// Irrespective of transform
+		var sprite = CurrentSprite;
+		Vector3 oldAbsScale = new Vector3(Mathf.Abs(_scale.x), Mathf.Abs(_scale.y), Mathf.Abs(_scale.z));
+		Vector3 oldMin = Vector3.Scale(sprite.untrimmedBoundsData[0], _scale) - 0.5f * Vector3.Scale(sprite.untrimmedBoundsData[1], oldAbsScale);
+		Vector3 oldSize = Vector3.Scale(sprite.untrimmedBoundsData[1], oldAbsScale);
+		Vector3 newAbsScale = oldSize + dMax - dMin;
+		newAbsScale.x /= sprite.untrimmedBoundsData[1].x;
+		newAbsScale.y /= sprite.untrimmedBoundsData[1].y;
+		// Clamp the minimum size to avoid having the pivot move when we scale from near-zero
+		if (sprite.untrimmedBoundsData[1].x * newAbsScale.x < sprite.texelSize.x * minSizeClampTexelScale && newAbsScale.x < oldAbsScale.x) {
+			dMin.x = 0;
+			newAbsScale.x = oldAbsScale.x;
+		}
+		if (sprite.untrimmedBoundsData[1].y * newAbsScale.y < sprite.texelSize.y * minSizeClampTexelScale && newAbsScale.y < oldAbsScale.y) {
+			dMin.y = 0;
+			newAbsScale.y = oldAbsScale.y;
+		}
+		// Add our wanted local dMin offset, while negating the positional offset caused by scaling
+		Vector2 scaleFactor = new Vector3(Mathf.Approximately(oldAbsScale.x, 0) ? 0 : (newAbsScale.x / oldAbsScale.x),
+			Mathf.Approximately(oldAbsScale.y, 0) ? 0 : (newAbsScale.y / oldAbsScale.y));
+		Vector3 scaledMin = new Vector3(oldMin.x * scaleFactor.x, oldMin.y * scaleFactor.y);
+		Vector3 offset = dMin + oldMin - scaledMin;
+		offset.z = 0;
+		transform.position = transform.TransformPoint(offset);
+		scale = new Vector3(_scale.x * scaleFactor.x, _scale.y * scaleFactor.y, _scale.z);
 	}
 }

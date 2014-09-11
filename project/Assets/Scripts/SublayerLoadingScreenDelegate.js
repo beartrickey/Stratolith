@@ -10,6 +10,7 @@ public var sl : Sublayer;
 
 
 public var loadStartFunction : function() = null;
+public var loadMidFunction : function() = null;
 public var loadEndFunction : function() = null;
 
 
@@ -27,13 +28,14 @@ function onInstantiate()
 
 
 
-function onInit( startFunc : function(), endFunc : function() )
+function onInit( startFunc : function(), midFunc : function(), endFunc : function() )
 {
 
 	//reset loading counter
 	loadingCounter = 0;
 
 	loadStartFunction = startFunc;
+	loadMidFunction = midFunc;
 	loadEndFunction = endFunc;
 
 }
@@ -48,6 +50,12 @@ function sublayerLoadingScreenUpdate()
 	if( loadingCounter == 2 )
 	{
 		loadStartFunction();
+	}
+
+
+	if( loadingCounter == 60 )
+	{
+		loadMidFunction();
 	}
 
 

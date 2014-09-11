@@ -79,8 +79,6 @@ public var droneSelectionBox : tk2dSprite;
 
 public var destinationIcon : tk2dSprite;
 
-public var destinationLine : DottedLineRenderer;
-
 public var targetIcon : tk2dSprite;
 
 public var targetLine : DottedLineRenderer;
@@ -143,8 +141,6 @@ function onInstantiate()
 	slgd = SublayerGameDelegate.instance;
 	
 	targetLine.onInstantiate();
-	
-	destinationLine.onInstantiate();
 
 }
 
@@ -929,7 +925,7 @@ function updateDroneGraphics()
 		if( destinationIcon.gameObject.activeSelf == true )
 		{
 			destinationIcon.gameObject.SetActive( false );
-			destinationLine.setDotState( false );
+			targetLine.setDotState( false );
 		}
 		
 	}
@@ -1008,7 +1004,7 @@ function setDestinationIcon()
 	//bail if too close (don't draw inverse line)
 	if( dif.magnitude < iconOffset * 2.0 )
 	{
-		destinationLine.setDotState( false );
+		targetLine.setDotState( false );
 		return;
 	}
 	
@@ -1017,7 +1013,7 @@ function setDestinationIcon()
 	var startPos : Vector2 = gameObject.transform.position - dif;
 	var endPos : Vector2 = destination + ( dif * 0.5 );
 	
-	destinationLine.drawLineBetweenPoints( startPos, endPos );
+	targetLine.drawLineBetweenPoints( startPos, endPos );
 	
 }
 
@@ -1181,8 +1177,6 @@ function deactivate()
 	gameObject.SetActive( false );
 	
 	targetLine.setDotState( false );
-	
-	destinationLine.setDotState( false );
 
 }
 

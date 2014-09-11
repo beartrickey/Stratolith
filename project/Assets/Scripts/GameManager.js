@@ -259,7 +259,7 @@ function goFromMapToGame()
 
 	// Show loading screen
 	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
-	sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, endLoadMapToGame );
+	sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, midLoadMapToGame, endLoadMapToGame );
 	activeSublayer = sublayerLoadingScreenDelegate.sl;
 	
 }
@@ -275,7 +275,13 @@ function startLoadMapToGame()
 
 	GameObject.Destroy( sublayerTitleDelegate.gameObject );
 	sublayerTitleDelegate = null;
-	
+
+}
+
+
+
+function midLoadMapToGame()
+{
 
 	// Load sublayerGameDelegate
 	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
@@ -533,7 +539,7 @@ function goFromGameClearToMap()
 
 	// Show loading screen
 	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
-	sublayerLoadingScreenDelegate.onInit( startLoadGameToMap, endLoadGameToMap );
+	sublayerLoadingScreenDelegate.onInit( startLoadGameToMap, midLoadGameToMap, endLoadGameToMap );
 	activeSublayer = sublayerLoadingScreenDelegate.sl;
 
 
@@ -557,6 +563,12 @@ function startLoadGameToMap()
 	GameObject.Destroy( sublayerGameClearDelegate.gameObject );
 	sublayerGameClearDelegate = null;
 
+}
+
+
+
+function midLoadGameToMap()
+{
 
 	// Load sublayerTitleDelegate
 	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );

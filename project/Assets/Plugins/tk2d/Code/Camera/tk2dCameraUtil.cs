@@ -21,23 +21,14 @@ public class tk2dCameraSettings {
 		Center
 	}
 
-	public CameraClearFlags clearFlags = CameraClearFlags.Color;
-	public Color backgroundColor = new Color32( 49, 77, 121, 255 );
-	public LayerMask cullingMask = -1;
 	public ProjectionType projection = ProjectionType.Orthographic;
-	public TransparencySortMode transparencySortMode = TransparencySortMode.Orthographic;
 	public float orthographicSize = 10.0f;
-	public float orthographicPixelsPerMeter = 20;
+	public float orthographicPixelsPerMeter = 100;
 	public OrthographicOrigin orthographicOrigin = OrthographicOrigin.Center;
 	public OrthographicType orthographicType = OrthographicType.PixelsPerMeter;
+	public TransparencySortMode transparencySortMode = TransparencySortMode.Default;
 	public float fieldOfView = 60.0f;
-	public float nearClipPlane = 0.3f;
-	public float farClipPlane = 50.0f;
 	public Rect rect = new Rect( 0, 0, 1, 1 );
-	public float depth = 0;
-	public RenderingPath renderingPath = RenderingPath.UsePlayerSettings;
-	public RenderTexture targetTexture = null;
-	public bool hdr = false;
 }
 
 [System.Serializable]
@@ -51,9 +42,17 @@ public class tk2dCameraResolutionOverride {
 	/// </summary>
 	public string name;
 
+	/// <summary>
+	/// Match by type
+	/// </summary>
 	public enum MatchByType {
+		/// <summary> match by resolution </summary>
 		Resolution,
+
+		/// <summary> match by aspect ratio </summary>
 		AspectRatio,
+
+		/// <summary> match everything </summary>
 		Wildcard
 	};
 
@@ -90,16 +89,39 @@ public class tk2dCameraResolutionOverride {
 	/// </summary>
 	public Vector2 offsetPixels = new Vector2(0, 0);
 	
+	/// <summary>
+	/// Auto Scale mode
+	/// </summary>
 	public enum AutoScaleMode
 	{
-		None, // explicitly use the scale parameter
-		FitWidth, // fits the width to the current resolution
-		FitHeight, // fits the height to the current resolution
-		FitVisible, // best fit (either width or height)
-		StretchToFit, // stretch to fit, could be non-uniform and/or very ugly
-		ClosestMultipleOfTwo, // fits to the closest power of two
-		PixelPerfect, // keeps this pixel perfect always
+		/// <summary> explicitly use the scale parameter </summary>
+		None, 
+		
+		/// <summary> fits the width to the current resolution </summary>
+		FitWidth, 
+		
+		/// <summary> fits the height to the current resolution </summary>
+		FitHeight, 
+		
+		/// <summary> best fit (either width or height) </summary>
+		FitVisible, 
+		
+		/// <summary> stretch to fit, could be non-uniform and/or very ugly </summary>
+		StretchToFit, 
+		
+		/// <summary> fits to the closest power of two </summary>
+		ClosestMultipleOfTwo, 
+		
+		/// <summary> keeps this pixel perfect always </summary>
+		PixelPerfect, 
+		
+		/// <summary> crop to fit </summary>
+		Fill,
 	};
+
+	/// <summary>
+	/// How scaling is performed
+	/// </summary>
 	public AutoScaleMode autoScaleMode = AutoScaleMode.None;
 	
 	public enum FitMode
