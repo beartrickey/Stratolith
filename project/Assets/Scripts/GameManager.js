@@ -36,6 +36,12 @@ public var aspectRatio : float = 0.0;
 public var fullScreenBlur : GameObject;
 
 
+// Stage Data
+public var currentStage : Stage;
+public var numStages : int = 32;
+public var stageList = new Stage[numStages];
+
+
 //sub layers:
 public var sublayerTitleDelegate : SublayerTitleDelegate = null;
 public var sublayerMapDelegate : SublayerMapDelegate = null;
@@ -71,10 +77,20 @@ function Start()
 	
 	//limit frame rate to 60 hertz
 	Application.targetFrameRate = 60.0;
+
+
+	// Grab Stages From Scene
+	var gos : GameObject[];
+    gos = GameObject.FindGameObjectsWithTag("Stage");
+    for( var i : int = 0; i < gos.length; i++ )
+    {
+    	stageList[i] = gos[i].GetComponent( Stage );
+    }
 	
 	
 	//load user data
 	PlayerData.instance.loadData();
+	currentStage = getStageForId( PlayerData.instance.currentStageId );
 	
 	
 	//figure out screen dimensions
@@ -98,21 +114,6 @@ function Start()
 	sublayerLoadingScreenDelegate.gm = this;
 	sublayerLoadingScreenDelegate.onInstantiate();
 	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
-
-	// sublayerGameDelegate.onInstantiate();
-	// sublayerGameDelegate.gameObject.SetActive( false );
-
-	// sublayerPauseDelegate.onInstantiate();
-	// sublayerPauseDelegate.gameObject.SetActive( false );
-
-	// sublayerCatalogDelegate.onInstantiate();
-	// sublayerCatalogDelegate.gameObject.SetActive( false );
-
-	// sublayerGameOverDelegate.onInstantiate();
-	// sublayerGameOverDelegate.gameObject.SetActive( false );
-
-	// sublayerGameClearDelegate.onInstantiate();
-	// sublayerGameClearDelegate.gameObject.SetActive( false );
 
 
 	//start at title screen
@@ -281,6 +282,12 @@ function startLoadMapToGame()
 	sublayerGameDelegate.gm = this;
 	sublayerGameDelegate.onInstantiate();
 
+
+	// Load sublayerGameClearDelegate
+	sublayerGameClearDelegate = instantiateSublayerFromResource("SublayerGameClear").GetComponent( SublayerGameClearDelegate );
+	sublayerGameClearDelegate.gm = this;
+	sublayerGameClearDelegate.onInstantiate();
+
 }
 
 
@@ -289,8 +296,7 @@ function endLoadMapToGame()
 {
 
 	// Remove loading screen
-	GameObject.Destroy( sublayerLoadingScreenDelegate.gameObject );
-	sublayerLoadingScreenDelegate = null;
+	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
 
 	// Switch to sublayergameDelegate
@@ -454,7 +460,7 @@ function goFromCatalogToGameOver()
 	activeSublayer = sublayerGameOverDelegate.sl;
 
 	// reload previous map data (what it was before stage attempt)
-	sublayerMapDelegate.loadStages();
+	loadStages();
 
 }
 
@@ -484,13 +490,14 @@ function goFromGameOverToMap()
 
 	sublayerGameOverDelegate.gameObject.SetActive( false );
 	
-	sublayerMapDelegate.gameObject.SetActive( true );
-	
-	activeSublayer = sublayerMapDelegate.sl;
-
 
 	// reload previous map data (what it was before stage attempt)
-	sublayerMapDelegate.loadStages();
+	loadStages();
+
+	// Re-instantiate and init map
+	// sublayerMapDelegate.loadStages();
+	sublayerMapDelegate.gameObject.SetActive( true );
+	activeSublayer = sublayerMapDelegate.sl;
 
 	//audio
 	BGM_TACTICAL.Stop();
@@ -521,13 +528,13 @@ function goFromGameToGameClear()
 function goFromGameClearToMap()
 {
 
-	sublayerGameClearDelegate.gameObject.SetActive( false );
-	
-	sublayerMapDelegate.gameObject.SetActive( true );
+	loadStages();
 
-	sublayerMapDelegate.loadStages();
-	
-	activeSublayer = sublayerMapDelegate.sl;
+
+	// Show loading screen
+	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
+	sublayerLoadingScreenDelegate.onInit( startLoadGameToMap, endLoadGameToMap );
+	activeSublayer = sublayerLoadingScreenDelegate.sl;
 
 
 	//audio
@@ -535,6 +542,180 @@ function goFromGameClearToMap()
 
 	BGM_OPS.Play();
 
+}
+
+
+
+
+function startLoadGameToMap()
+{
+
+	// Destroy non-game layers
+	GameObject.Destroy( sublayerGameDelegate.gameObject );
+	sublayerGameDelegate = null;
+
+	GameObject.Destroy( sublayerGameClearDelegate.gameObject );
+	sublayerGameClearDelegate = null;
+
+
+	// Load sublayerTitleDelegate
+	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
+	sublayerTitleDelegate.gm = this;
+	sublayerTitleDelegate.onInstantiate();
+	sublayerTitleDelegate.gameObject.SetActive( false );
+	
+
+	// Load sublayerMapDelegate
+	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
+	sublayerMapDelegate.gm = this;
+	sublayerMapDelegate.onInstantiate();
+
+}
+
+
+
+function endLoadGameToMap()
+{
+
+	// Remove loading screen
+	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
+
+
+	// Switch to sublayergameDelegate
+	sublayerMapDelegate.gameObject.SetActive( true );
+	activeSublayer = sublayerMapDelegate.sl;
+
+	BGM_TACTICAL.Play();
+
+}
+
+
+
+//////////////////////////////////////STAGE MANAGEMENT
+
+
+
+function onStageClear()
+{
+
+	currentStage.state = Stage.STAGE_STATE_CLEARED;
+
+	unlockCurrentStageConnections();
+
+}
+
+
+
+function getStageForId( _id : int )
+{
+
+	for(  var i : int = 0; i < numStages; i++ )
+	{
+
+		if( stageList[i] == null )
+			continue;
+
+		if( stageList[i].stageId == _id )
+			return stageList[i];
+
+	}
+
+	return null;
+
+}
+
+
+
+function canRelocateBetweenStages( startStage : Stage, endStage : Stage ) : boolean
+{
+
+	// Must be different stages
+	if( startStage == endStage )
+		return false;
+
+
+	// Don't allow relocation to locked stage
+	if( endStage.state == Stage.STAGE_STATE_LOCKED )
+		return false;
+
+
+	// Don't allow relocation between two STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED stages
+	if( startStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED && endStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
+		return false;
+
+
+	// Are stages actually connected?
+	return areStagesConnected( startStage, endStage );
+
+}
+
+
+
+function areStagesConnected( _stageA : Stage, _stageB : Stage ) : boolean
+{
+
+	for(  var i : int = 0; i < 4; i++ )
+	{
+
+		if( _stageA.connectedStageIds[i] == _stageB.stageId )
+			return true;
+
+	}
+
+	return false;
+
+}
+
+
+
+function unlockCurrentStageConnections()
+{
+
+	//unlocks any locked connected stages
+	//unlocked and cleared stages don't change state
+
+	for( var i : int = 0; i < 4; i++ )
+	{
+
+		var connectedStage = getStageForId( currentStage.connectedStageIds[i] );
+
+
+		//skip null stages
+		if( connectedStage == null )
+			continue;
+
+		if( connectedStage.state == Stage.STAGE_STATE_LOCKED )
+			connectedStage.state = Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED;
+
+	}
+
+}
+
+
+
+//////////////////////////////////////STAGE DATA
+
+
+
+function loadStages()
+{
+
+    //copy data from stageData to stageList, setup graphics
+	for( var i : int = 0; i < numStages; i++ )
+	{
+
+		if( PlayerData.instance.stageData[i] == null )
+			continue;
+	
+		var stageId : int = PlayerData.instance.stageData[i].stageId;
+
+		var stage : Stage = getStageForId( stageId );
+		stage.state = PlayerData.instance.stageData[i].state;
+		stage.foundTechItems = PlayerData.instance.stageData[i].foundTechItems;
+		stage.foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
+	
+	}
+    
 }
 
 

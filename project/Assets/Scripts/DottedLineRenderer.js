@@ -17,6 +17,7 @@ function onInstantiate()
 	
 		//make dots
 		var dotGameObject : GameObject = GameObject.Instantiate( dotPrefab, Vector3( 0.0, 0.0, -50.0 ), dotPrefab.transform.rotation );
+		dotGameObject.transform.parent = SublayerGameDelegate.instance.gameObject.transform;
 		var dot : tk2dSprite = dotGameObject.GetComponent( tk2dSprite );
 		dot.color = Color( 1.0, 1.0, 1.0, 0.2 );
 		dotGameObject.SetActive( false );

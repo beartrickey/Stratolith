@@ -282,6 +282,7 @@ function onInstantiate()
 	{
 		
 		var droneGameObject : GameObject = GameObject.Instantiate( dronePrefab, Vector3( 0.0, 0.0, -50.0 ), dronePrefab.transform.rotation );
+		droneGameObject.transform.parent = gameObject.transform;
 		var drone : Drone = droneGameObject.GetComponent( Drone );
 		droneList[d] = drone;
 		
@@ -302,6 +303,7 @@ function onInstantiate()
 	{
 		
 		var bulletGameObject : GameObject = GameObject.Instantiate( bulletPrefab, Vector3( 0.0, 0.0, -50.0 ), bulletPrefab.transform.rotation );
+		bulletGameObject.transform.parent = gameObject.transform;
 		var bullet : Bullet = bulletGameObject.GetComponent( Bullet );
 		bulletList[b] = bullet;
 		
@@ -396,7 +398,7 @@ function startGame()
 
 	GameManager.instance.SFX_NEW_RADAR_ENTITY.Play();
 
-	currentStage = SublayerMapDelegate.instance.currentStage;
+	currentStage = gm.currentStage;
 	
 	resetVarsForNewStage();
 
@@ -423,7 +425,7 @@ function stageSuccessfullyCleared()
 {
 
 	// update map
-	SublayerMapDelegate.instance.onStageClear();
+	gm.onStageClear();
 
 
 	// save data

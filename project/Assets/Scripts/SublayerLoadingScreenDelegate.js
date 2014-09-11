@@ -2,7 +2,7 @@
 
 
 public static var instance : SublayerLoadingScreenDelegate;
-public static var loadingFrames : int = 60; // 1 second
+public static var loadingFrames : int = 180; // 3 seconds
 public var loadingCounter : int = 0;
 
 public var gm : GameManager;
@@ -45,7 +45,7 @@ function sublayerLoadingScreenUpdate()
 	
 	loadingCounter++;
 
-	if( loadingCounter == 1 )
+	if( loadingCounter == 2 )
 	{
 		loadStartFunction();
 	}

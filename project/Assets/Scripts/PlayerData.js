@@ -29,6 +29,8 @@ class DockedDroneData
 class StageData
 {
 
+	var stageId : int = 0;
+
 	var state : int = 0;
 
 	var foundTechItems : int = 0;
@@ -100,7 +102,7 @@ function saveData()
 
 	PlayerPrefs.SetInt( "dockLevel", dockLevel );
 
-	PlayerPrefs.SetInt( "currentStageId", SublayerMapDelegate.instance.currentStage.stageId );
+	PlayerPrefs.SetInt( "currentStageId", GameManager.instance.currentStage.stageId );
 
 
 	//docked drone data
@@ -130,12 +132,15 @@ function saveData()
 
 
 	//stage data
-	for( var i = 0; i < SublayerMapDelegate.instance.numStages; i++ )
+	for( var i = 0; i < GameManager.instance.numStages; i++ )
 	{
+		if( GameManager.instance.stageList[i] == null )
+			continue;
 	
-		stageData[i].state = SublayerMapDelegate.instance.stageList[i].state;
-		stageData[i].foundTechItems = SublayerMapDelegate.instance.stageList[i].foundTechItems;
-		stageData[i].foundBlackBoxItems = SublayerMapDelegate.instance.stageList[i].foundBlackBoxItems;
+		stageData[i].stageId = GameManager.instance.stageList[i].stageId;
+		stageData[i].state = GameManager.instance.stageList[i].state;
+		stageData[i].foundTechItems = GameManager.instance.stageList[i].foundTechItems;
+		stageData[i].foundBlackBoxItems = GameManager.instance.stageList[i].foundBlackBoxItems;
 	
 	}
 
