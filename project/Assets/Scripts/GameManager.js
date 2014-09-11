@@ -36,6 +36,11 @@ public var aspectRatio : float = 0.0;
 public var fullScreenBlur : GameObject;
 
 
+// Unity Level
+public var onUnityLevelLoadDone : function() = null;
+public var currentUnityLevel : int = 0;
+
+
 // Stage Data
 public var currentStage : Stage;
 public var numStages : int = 32;
@@ -98,27 +103,21 @@ function Start()
 
 
 	// start sublayers	
-	// sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
-	// sublayerTitleDelegate.gm = this;
-	// sublayerTitleDelegate.onInstantiate();
-	// sublayerTitleDelegate.gameObject.SetActive( true );
+	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
+	sublayerTitleDelegate.gm = this;
+	sublayerTitleDelegate.onInstantiate();
+	sublayerTitleDelegate.gameObject.SetActive( true );
 
 
-	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
-	sublayerMapDelegate.gm = this;
-	sublayerMapDelegate.onInstantiate();
-	sublayerMapDelegate.gameObject.SetActive( true );
+	// sublayerLoadingScreenDelegate = instantiateSublayerFromResource("SublayerLoadingScreen").GetComponent( SublayerLoadingScreenDelegate );
+	// sublayerLoadingScreenDelegate.gm = this;
+	// sublayerLoadingScreenDelegate.onInstantiate();
+	// sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
-
-	sublayerLoadingScreenDelegate = instantiateSublayerFromResource("SublayerLoadingScreen").GetComponent( SublayerLoadingScreenDelegate );
-	sublayerLoadingScreenDelegate.gm = this;
-	sublayerLoadingScreenDelegate.onInstantiate();
-	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
-
-	activeSublayer = sublayerMapDelegate.sl;
+	// activeSublayer = sublayerMapDelegate.sl;
 
 	// start at title screen
-	// activeSublayer = sublayerTitleDelegate.sl;
+	activeSublayer = sublayerTitleDelegate.sl;
 
 
 	// sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
@@ -239,6 +238,20 @@ function Update ()
 //////////////////////////////////////////////////TRANSITIONS
 
 
+function OnLevelWasLoaded( level : int )
+{
+
+	if( onUnityLevelLoadDone != null )
+	{
+
+		onUnityLevelLoadDone();
+		onUnityLevelLoadDone = null;
+
+	}
+
+}
+
+
 
 //TITLE
 
@@ -247,15 +260,24 @@ function Update ()
 function goFromTitleToMap()
 {
 
-	sublayerTitleDelegate.gameObject.SetActive( false );
-	
+	onUnityLevelLoadDone = goFromTitleToMapDone;
+	Application.LoadLevel("Blank");
+
+}
+
+
+
+function goFromTitleToMapDone()
+{
+
+	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
+	sublayerMapDelegate.gm = this;
+	sublayerMapDelegate.onInstantiate();
 	sublayerMapDelegate.gameObject.SetActive( true );
-	
 	activeSublayer = sublayerMapDelegate.sl;
 
-	//audio
+	// //audio
 	BGM_TITLE.Stop();
-
 	BGM_OPS.Play();
 
 }
@@ -270,67 +292,35 @@ function goFromMapToGame()
 {
 
 	// Show loading screen
-	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
-	sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, midLoadMapToGame, endLoadMapToGame );
-	activeSublayer = sublayerLoadingScreenDelegate.sl;
+	// sublayerLoadingScreenDelegate.gameObject.SetActive( true );
+	// sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, midLoadMapToGame, endLoadMapToGame );
+	// activeSublayer = sublayerLoadingScreenDelegate.sl;
+	onUnityLevelLoadDone = goFromMapToGameDone;
+	Application.LoadLevel("Blank");
 	
 }
 
 
 
-function startLoadMapToGame()
+function goFromMapToGameDone()
 {
-
-	// Destroy sprite collections
-	destroySpriteCollections();
-
-	// Destroy non-game layers
-	GameObject.Destroy( sublayerMapDelegate.gameObject );
-	sublayerMapDelegate = null;
-
-	// GameObject.Destroy( sublayerTitleDelegate.gameObject );
-	// sublayerTitleDelegate = null;
-
-	// Application.GarbageCollectUnusedAssets();
-
-}
-
-
-
-function midLoadMapToGame()
-{
-
-	Resources.UnloadUnusedAssets();
-	System.GC.Collect();
 
 	// Load sublayerGameDelegate
 	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
 	sublayerGameDelegate.gm = this;
 	sublayerGameDelegate.onInstantiate();
+	sublayerGameDelegate.gameObject.SetActive( true );
+	activeSublayer = sublayerGameDelegate.sl;
+	sublayerGameDelegate.startGame();
 
 
 	// Load sublayerGameClearDelegate
 	sublayerGameClearDelegate = instantiateSublayerFromResource("SublayerGameClear").GetComponent( SublayerGameClearDelegate );
 	sublayerGameClearDelegate.gm = this;
 	sublayerGameClearDelegate.onInstantiate();
-
-}
-
+	sublayerGameClearDelegate.gameObject.SetActive( false );
 
 
-function endLoadMapToGame()
-{
-
-	// Remove loading screen
-	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
-
-
-	// Switch to sublayergameDelegate
-	sublayerGameDelegate.gameObject.SetActive( true );
-	activeSublayer = sublayerGameDelegate.sl;
-	sublayerGameDelegate.startGame();
-	
-	
 	//start blur in
 	sublayerGameDelegate.state = SublayerGameDelegate.GAME_STATE_BLUR_IN;
 	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
@@ -576,10 +566,6 @@ function goFromGameClearToMap()
 function startLoadGameToMap()
 {
 
-	// Destroy sprite collections
-	destroySpriteCollections();
-
-
 	// Destroy game layers
 	GameObject.Destroy( sublayerGameDelegate.gameObject );
 	sublayerGameDelegate = null;
@@ -625,39 +611,6 @@ function endLoadGameToMap()
 	activeSublayer = sublayerMapDelegate.sl;
 
 	BGM_TACTICAL.Play();
-
-}
-
-
-
-function destroySpriteCollections()
-{
-
-	// Destroy sprite collections
-
-	// SublayerGame
-	if( sublayerGameDelegate != null )
-	{
-
-		// Large sprite collection
-    	GameObject.DestroyImmediate( sublayerGameDelegate.panel.gameObject.renderer.material.mainTexture, true );
-
-    	// Small sprite collection
-    	GameObject.DestroyImmediate( sublayerGameDelegate.mainPowerNeedle.gameObject.renderer.material.mainTexture, true );
-
-    }
-
-    // SublayerMap
-    if( sublayerMapDelegate != null )
-	{
-		
-		// Large sprite collection 2
-    	GameObject.DestroyImmediate( sublayerMapDelegate.stratolithIcon.gameObject.renderer.material.mainTexture, true );
-
-    	// Small sprite collection
-    	// GameObject.DestroyImmediate( sublayerMapDelegate.mainPowerNeedle.gameObject.renderer.material.mainTexture, true );
-
-    }
 
 }
 
