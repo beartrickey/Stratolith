@@ -9,7 +9,6 @@ public var sl : Sublayer;
 
 //Stratolith
 public var stratolithIcon : tk2dSprite;
-public var currentStage : Stage = null;  // stage the stratolith is currently on
 public var destinationStage : Stage = null;  // stage the stratolith is going to
 public var destinationSpline : DotSpline = null;
 public var selectedStage : Stage = null;  // stage selected by the player
@@ -17,8 +16,8 @@ public var stratolithVelocity : float = 0.01;
 public var collection : tk2dSpriteCollectionData = null;
 
 // STAGE DOT
-public var stageList = new Array();
-public var stageDotPrefab : GameObject = null;
+// public var stageList = new Array();
+// public var stageDotPrefab : GameObject = null;
 
 
 //PATHS
@@ -61,6 +60,10 @@ function onInstantiate()
 	sl.updateDelegate = sublayerMapUpdate;
 
 
+	// Load saved data about stages
+	gm.loadStages();
+
+
 	//start at stage 00
 	selectedStage = gm.currentStage;
 
@@ -76,22 +79,50 @@ function onInstantiate()
 	mapActionButton.onTouchDownInsideDelegate = mapActionButtonPressed;
 	
 	
-	// Create Stage Dots and Buttons
-	// for( var s : int = 0; s < gm.numStages; s++ )
-	// {
+	// Create Stage Buttons
+	var stageButtonPrefab : GameObject = Resources.Load("MapStageButton");
+	for( var s : int = 0; s < gm.numStages; s++ )
+	{
 
-		// if( stageList[s] == null )
-		// 	continue;
+		var stage : Stage = gm.stageList[s];
+
+		if( stage == null )
+			continue;
+
+		// GameObject instantiation and positioning
+		var stageButtonGameObject = GameObject.Instantiate( stageButtonPrefab, Vector3.zero, stageButtonPrefab.transform.rotation );
+        stageButtonGameObject.transform.parent = SublayerMapDelegate.instance.gameObject.transform;
+        stageButtonGameObject.transform.position = stage.gameObject.transform.position;
 	
-		// var stageButton : ButtonScript = stageList[s].gameObject.GetComponent( ButtonScript );
-		// sl.addButton( stageButton );
-		// stageButton.onTouchDownInsideDelegate = stageButtonPressed;
-		// stageButton.buttonTag = stageList[s].stageId;
+
+		// Setup button
+		var stageButton : ButtonScript = stageButtonGameObject.GetComponent( ButtonScript );
+		sl.addButton( stageButton );
+		stageButton.onTouchDownInsideDelegate = stageButtonPressed;
+		stageButton.buttonTag = stage.stageId;
+
+
+		// Setup sprite
+		var sprite : tk2dSprite = stageButtonGameObject.GetComponent( tk2dSprite );
+		gameObject.SetActive( true );
+
+		if( stage.state == Stage.STAGE_STATE_CLEARED )
+		{
+			sprite.SetSprite( "Map-ConflictLocation-Played" );
+		}
+		else if( stage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
+		{
+			sprite.SetSprite( "Map-ConflictLocation-Unplayed" );	
+		}
+		else
+		{
+			gameObject.SetActive( false );
+		}
 	
-	// }
+	}
 
 
-	//splines
+	// Splines
 	var gos : GameObject[];
 	gos = GameObject.FindGameObjectsWithTag("MapSpline");
     for( var i : int = 0; i < gos.length; i++ )
@@ -104,6 +135,10 @@ function onInstantiate()
 
 	sl.addButton( standbyButton );
 	standbyButton.onTouchDownInsideDelegate = standbyButtonPressed;
+
+
+	// Fade in effect
+	resetFadeInElements();
 	
 }
 
@@ -161,7 +196,7 @@ function beginStratolithRelocation()
 
 	setDestinationSpline();
 
-	currentStage = null;
+	gm.currentStage = null;
 
 	updateMapLabels();
 
@@ -202,7 +237,6 @@ function updateStratolithIconPosition()
 
 function stratolithArrivedAtNewStage()
 {
-	Debug.Log('stratolithArrivedAtNewStage');
 
 	//clear all splines
 	clearMapSplines();
@@ -445,8 +479,9 @@ function initStageSplines( startStage : Stage )
 
 		// Skip null elements
 		if( splineList[i] == null )
+		{
 			continue;
-
+		}
 
 		if(
 			( splineList[i].stageA == startStage && gm.canRelocateBetweenStages( startStage, splineList[i].stageB ) == true ) ||
@@ -484,7 +519,7 @@ function setDestinationSpline()
 			return;
 
 		}
-		else if( splineList[i].stageA == destinationStage && splineList[i].stageB == currentStage )
+		else if( splineList[i].stageA == destinationStage && splineList[i].stageB == gm.currentStage )
 		{
 
 			stratolithVelocity = -1 * Mathf.Abs( stratolithVelocity );
@@ -543,7 +578,6 @@ function clearMapSplines()
 	}
 
 }
-
 
 
 

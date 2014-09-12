@@ -38,12 +38,11 @@ public var fullScreenBlur : GameObject;
 
 // Unity Level
 public var onUnityLevelLoadDone : function() = null;
-public var currentUnityLevel : int = 0;
 
 
 // Stage Data
 public var currentStage : Stage;
-public var numStages : int = 32;
+public var numStages : int = 31;
 public var stageList = new Stage[numStages];
 
 
@@ -107,28 +106,8 @@ function Start()
 	sublayerTitleDelegate.gm = this;
 	sublayerTitleDelegate.onInstantiate();
 	sublayerTitleDelegate.gameObject.SetActive( true );
-
-
-	// sublayerLoadingScreenDelegate = instantiateSublayerFromResource("SublayerLoadingScreen").GetComponent( SublayerLoadingScreenDelegate );
-	// sublayerLoadingScreenDelegate.gm = this;
-	// sublayerLoadingScreenDelegate.onInstantiate();
-	// sublayerLoadingScreenDelegate.gameObject.SetActive( false );
-
-	// activeSublayer = sublayerMapDelegate.sl;
-
-	// start at title screen
 	activeSublayer = sublayerTitleDelegate.sl;
 
-
-	// sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
-	// sublayerGameDelegate.gm = this;
-	// sublayerGameDelegate.onInstantiate();
-
-	// // Switch to sublayergameDelegate
-	// sublayerGameDelegate.gameObject.SetActive( true );
-	// activeSublayer = sublayerGameDelegate.sl;
-	// sublayerGameDelegate.startGame();
-	
 
 	//play title music
 	BGM_TITLE.Play();
@@ -281,7 +260,6 @@ function goFromTitleToMapDone()
 	BGM_OPS.Play();
 
 }
-
 
 
 
@@ -544,72 +522,34 @@ function goFromGameToGameClear()
 function goFromGameClearToMap()
 {
 
-	loadStages();
-
-
-	// Show loading screen
-	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
-	sublayerLoadingScreenDelegate.onInit( startLoadGameToMap, midLoadGameToMap, endLoadGameToMap );
-	activeSublayer = sublayerLoadingScreenDelegate.sl;
-
-
-	//audio
-	BGM_TACTICAL.Stop();
-
-	BGM_OPS.Play();
-
-}
-
-
-
-
-function startLoadGameToMap()
-{
-
-	// Destroy game layers
+	// Remove sprite collections
+	// GameObject.Destroy( sublayerGameDelegate.panel.Collection );
+	// GameObject.Destroy( sublayerGameDelegate.redAlarm.Collection );
+	// GameObject.Destroy( sublayerGameDelegate.mainPowerNeedle.Collection );
 	GameObject.Destroy( sublayerGameDelegate.gameObject );
-	sublayerGameDelegate = null;
-
 	GameObject.Destroy( sublayerGameClearDelegate.gameObject );
+	sublayerGameDelegate = null;
 	sublayerGameClearDelegate = null;
 
+	loadStages();
+
+	onUnityLevelLoadDone = goFromGameClearToMapDone;
+	Application.LoadLevel("Blank");
+
 }
 
 
 
-function midLoadGameToMap()
+function goFromGameClearToMapDone()
 {
 
-	Resources.UnloadUnusedAssets();
-	System.GC.Collect();
-
-	// Load sublayerTitleDelegate
-	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
-	sublayerTitleDelegate.gm = this;
-	sublayerTitleDelegate.onInstantiate();
-	sublayerTitleDelegate.gameObject.SetActive( false );
-	
-
-	// Load sublayerMapDelegate
 	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
 	sublayerMapDelegate.gm = this;
 	sublayerMapDelegate.onInstantiate();
-
-}
-
-
-
-function endLoadGameToMap()
-{
-
-	// Remove loading screen
-	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
-
-
-	// Switch to sublayergameDelegate
 	sublayerMapDelegate.gameObject.SetActive( true );
 	activeSublayer = sublayerMapDelegate.sl;
 
+	// //audio
 	BGM_TACTICAL.Play();
 
 }
@@ -623,9 +563,12 @@ function endLoadGameToMap()
 function onStageClear()
 {
 
+	Debug.Log( 'currentStage.state = ' + currentStage.state );
 	currentStage.state = Stage.STAGE_STATE_CLEARED;
+	Debug.Log( 'currentStage.state = ' + currentStage.state );
 
 	unlockCurrentStageConnections();
+	Debug.Log( 'currentStage.state = ' + currentStage.state );
 
 }
 
@@ -641,7 +584,10 @@ function getStageForId( _id : int )
 			continue;
 
 		if( stageList[i].stageId == _id )
+		{
+			Debug.Log( "found stage: " + _id );
 			return stageList[i];
+		}
 
 	}
 
@@ -658,12 +604,12 @@ function canRelocateBetweenStages( startStage : Stage, endStage : Stage ) : bool
 	if( startStage == endStage )
 		return false;
 
-
+	
 	// Don't allow relocation to locked stage
 	if( endStage.state == Stage.STAGE_STATE_LOCKED )
 		return false;
 
-
+	
 	// Don't allow relocation between two STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED stages
 	if( startStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED && endStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
 		return false;
@@ -738,6 +684,8 @@ function loadStages()
 		stage.state = PlayerData.instance.stageData[i].state;
 		stage.foundTechItems = PlayerData.instance.stageData[i].foundTechItems;
 		stage.foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
+
+		Debug.Log("set stage " + stageId + "to state: " + PlayerData.instance.stageData[i].state);
 	
 	}
     

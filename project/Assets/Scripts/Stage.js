@@ -119,29 +119,6 @@ function updateStage()
 
 
 
-function updateMapGraphics()
-{
-
-	var sprite : tk2dSprite = gameObject.GetComponent( tk2dSprite );
-	gameObject.SetActive( true );
-
-	if( state == STAGE_STATE_CLEARED )
-	{
-		sprite.SetSprite( "Map-ConflictLocation-Played" );
-	}
-	else if( state == STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
-	{
-		sprite.SetSprite( "Map-ConflictLocation-Unplayed" );	
-	}
-	else
-	{
-		gameObject.SetActive( false );
-	}
-
-}
-
-
-
 
 
 

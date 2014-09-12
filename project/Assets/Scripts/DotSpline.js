@@ -118,6 +118,7 @@ function updateSpline()
         var rotation : float = getTangentAtPoint(t, position);
 
         splineDotList[i].transform.position = position;
+        splineDotList[i].transform.position.z = -300.0;
 
         splineDotList[i].transform.localEulerAngles.z = rotation;
 

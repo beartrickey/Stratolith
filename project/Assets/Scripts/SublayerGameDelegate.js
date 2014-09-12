@@ -86,8 +86,6 @@ public var state : int = GAME_STATE_BLUR_IN;
 
 public var machineStateCounter : int = 0;
 
-public var currentStage : Stage;
-
 
 //scopes
 public static var resultWaveThreshold : float = 1875.0;
@@ -383,7 +381,7 @@ function resetVarsForNewStage()
 	messageLabel.text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 	messageLabel.Commit();
 
-	currentStage.foundHealthItems = 0;
+	gm.currentStage.foundHealthItems = 0;
 
 }
 
@@ -397,14 +395,12 @@ function startGame()
 {
 
 	GameManager.instance.SFX_NEW_RADAR_ENTITY.Play();
-
-	currentStage = gm.currentStage;
 	
 	resetVarsForNewStage();
 
 	addSavedDronesToDockSlots();
 	
-	currentStage.initStage();
+	gm.currentStage.initStage();
 
 }
 
@@ -557,7 +553,7 @@ function sublayerGameUpdate()
 	
 	
 	//game clear condition
-	if( currentStage.remainingHostileDrones <= 0 )
+	if( gm.currentStage.remainingHostileDrones <= 0 )
 	{
 	
 		stageSuccessfullyCleared();
@@ -778,7 +774,7 @@ function updateRadarGraphics()
 	for( d = 0; d < Stage.numDronePaths; d++ )
 	{	
 		
-		var path : DronePath = currentStage.dronePathList[d];
+		var path : DronePath = gm.currentStage.dronePathList[d];
 		
 		
 		//skip if path is null
@@ -1190,9 +1186,9 @@ function updateStateMachine()
     		
     		
     		//update stage
-			if( currentStage != null )
+			if( gm.currentStage != null )
 			{
-				currentStage.updateStage();
+				gm.currentStage.updateStage();
 			}			
 	
     		break;
@@ -2013,9 +2009,9 @@ function rScanDroneReturned()
 
 	//what did we find?
 
-	var remainingTechItems : int = currentStage.techItems - currentStage.foundTechItems;
-	var remainingBlackBoxItems : int = currentStage.blackBoxItems - currentStage.foundBlackBoxItems;
-	var remainingHealthItems : int = currentStage.healthItems - currentStage.foundHealthItems;
+	var remainingTechItems : int = gm.currentStage.techItems - gm.currentStage.foundTechItems;
+	var remainingBlackBoxItems : int = gm.currentStage.blackBoxItems - gm.currentStage.foundBlackBoxItems;
+	var remainingHealthItems : int = gm.currentStage.healthItems - gm.currentStage.foundHealthItems;
 
 	var techItemThreshold : int = remainingTechItems;
 	var blackBoxItemThreshold : int = techItemThreshold + remainingBlackBoxItems;
@@ -2029,17 +2025,17 @@ function rScanDroneReturned()
 	if( r < techItemThreshold ) // tech upgrade
 	{
 		itemMessage = "ARTIFACT RECOVERED";
-		currentStage.foundTechItems += 1;
+		gm.currentStage.foundTechItems += 1;
 	}
 	else if( r < blackBoxItemThreshold )
 	{
 		itemMessage = "FLIGHT RECORDER\nRECOVERED";
-		currentStage.foundBlackBoxItems += 1;
+		gm.currentStage.foundBlackBoxItems += 1;
 	}
 	else if( r < healthItemThreshold ) // repair module
 	{
 		itemMessage = "REPAIR MODULE FOUND\nPOWER AT: " + mainPower + "%";
-		currentStage.foundHealthItems += 1;
+		gm.currentStage.foundHealthItems += 1;
 	}
 	else
 	{

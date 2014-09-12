@@ -29,7 +29,7 @@ class DockedDroneData
 class StageData
 {
 
-	var stageId : int = 0;
+	var stageId : int = -1;
 
 	var state : int = 0;
 
@@ -56,7 +56,7 @@ function loadData()
 	Debug.Log("loading data");
 	
 	
-	scopeLevel = 3;//PlayerPrefs.GetInt( "scopeLevel", 1 );
+	scopeLevel = PlayerPrefs.GetInt( "scopeLevel", 1 );
 
 	dockLevel = PlayerPrefs.GetInt( "dockLevel", 1 );
 

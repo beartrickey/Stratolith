@@ -454,7 +454,7 @@ function deactivateIfOutsideRadar()
 
 		//decrement hostile drone count if hostile drone killed
 		if( hacked == false )
-			SublayerGameDelegate.instance.currentStage.remainingHostileDrones -= 1;
+			GameManager.instance.currentStage.remainingHostileDrones -= 1;
 
 
 		//deactivate
@@ -747,7 +747,7 @@ function startDroneDeath()
 	if( hacked == false )
 	{
 	
-		SublayerGameDelegate.instance.currentStage.remainingHostileDrones -= 1;
+		GameManager.instance.currentStage.remainingHostileDrones -= 1;
 		
 	}
 	
@@ -1193,7 +1193,7 @@ function droneSuccessfullyHacked()
 	
 	GameManager.instance.SFX_DRONE_HACKED.Play();
 	
-	SublayerGameDelegate.instance.currentStage.remainingHostileDrones -= 1;
+	GameManager.instance.currentStage.remainingHostileDrones -= 1;
 
 }
 
