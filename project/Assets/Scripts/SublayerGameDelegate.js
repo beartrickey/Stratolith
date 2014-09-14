@@ -100,6 +100,9 @@ public var draggingScopeWavelength : boolean = false;
 
 //labels
 
+// Conflict
+public var hostileDronesRemainingLabel : tk2dTextMesh = null;
+
 //commands
 public var scopeOneLabels : GameObject = null;
 public var scopeTwoLabels : GameObject = null;
@@ -550,6 +553,11 @@ function sublayerGameUpdate()
 		stageLost();
 	
 	}
+
+
+	// conflict labels
+	hostileDronesRemainingLabel.text = gm.currentStage.remainingHostileDrones.ToString("D2");;
+	hostileDronesRemainingLabel.Commit();
 	
 	
 	//game clear condition
