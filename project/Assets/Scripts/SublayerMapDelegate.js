@@ -7,17 +7,25 @@ public var gm : GameManager;
 public var sl : Sublayer;
 
 
+// MAP STATE
+public static var MAP_STATE_INTRO_1 = 0;  // Radar elements scale into existence
+public static var MAP_STATE_INTRO_2 = 1;  // Stage button graphics fade in
+public static var MAP_STATE_IDLE = 2;  // Player can freely interface with the map
+
+public var mapState : int = MAP_STATE_INTRO_1;
+
+
 //Stratolith
 public var stratolithIcon : tk2dSprite;
 public var destinationStage : Stage = null;  // stage the stratolith is going to
 public var destinationSpline : DotSpline = null;
 public var selectedStage : Stage = null;  // stage selected by the player
 public var stratolithVelocity : float = 0.01;
-public var collection : tk2dSpriteCollectionData = null;
 
-// STAGE DOT
-// public var stageList = new Array();
-// public var stageDotPrefab : GameObject = null;
+
+// STAGE BUTTONS
+public var selectionIcon : tk2dSprite;
+public var stageButtonSprites : tk2dSprite[];
 
 
 //PATHS
@@ -41,7 +49,8 @@ public var stageIdLabel : tk2dTextMesh;
 public var frameNumber : int = 0;
 
 
-//FADE IN EFFECT
+//INTRO EFFECT
+public var introCounter : int = 0;
 public var numFadeInElements : int = 16;
 public var mapFadeInElementList = new tk2dSprite[numFadeInElements];
 public var fadingInElements : boolean = false;
@@ -71,16 +80,30 @@ function onInstantiate()
 	//update labels/graphics for current stage
 	updateMapLabels();
 
+
+	// Stratolith icon
 	stratolithIcon.gameObject.transform.position = gm.currentStage.gameObject.transform.position;
+	stratolithIcon.gameObject.SetActive( false );
+
+
+	// Selection icon
+	selectionIcon.gameObject.transform.position = gm.currentStage.gameObject.transform.position;
+	selectionIcon.gameObject.SetActive( false );
 	
 	
-	//start button
+	// Start button
 	sl.addButton( mapActionButton );
 	mapActionButton.onTouchDownInsideDelegate = mapActionButtonPressed;
+
+
+	// Standby button
+	sl.addButton( standbyButton );
+	standbyButton.onTouchDownInsideDelegate = standbyButtonPressed;
 	
 	
 	// Create Stage Buttons
 	var stageButtonPrefab : GameObject = Resources.Load("MapStageButton");
+	var tempSpriteArray = new Array();
 	for( var s : int = 0; s < gm.numStages; s++ )
 	{
 
@@ -104,6 +127,8 @@ function onInstantiate()
 
 		// Setup sprite
 		var sprite : tk2dSprite = stageButtonGameObject.GetComponent( tk2dSprite );
+		tempSpriteArray.Push( sprite );
+		sprite.color.a = 0.0;
 		gameObject.SetActive( true );
 
 		if( stage.state == Stage.STAGE_STATE_CLEARED )
@@ -120,6 +145,7 @@ function onInstantiate()
 		}
 	
 	}
+	stageButtonSprites = tempSpriteArray.ToBuiltin(tk2dSprite) as tk2dSprite[];
 
 
 	// Splines
@@ -130,16 +156,165 @@ function onInstantiate()
     	splineList[i] = gos[i].GetComponent( DotSpline );
     }
 
-    initStageSplines( gm.currentStage );
-
-
-	sl.addButton( standbyButton );
-	standbyButton.onTouchDownInsideDelegate = standbyButtonPressed;
-
 
 	// Fade in effect
 	resetFadeInElements();
 	
+}
+
+
+
+//////////////////////////////////////////INTRO
+
+
+
+function resetFadeInElements()
+{
+
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+		if( element == null )
+			continue;
+
+		element.color.a = 0.0;
+		element.scale.x = 0.0;
+
+	}
+
+	fadingInElements = true;
+
+}
+
+
+
+function fadeEnd()
+{
+
+	// Update state
+	mapState = MAP_STATE_INTRO_2;
+
+	// Snap all elements to correct size
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+		if( element == null )
+			continue;
+
+		element.color.a = 1.0;
+		element.scale.x = 1.0;
+
+	}
+
+}
+
+
+
+function fadeInStageButtons()
+{
+
+	for( var i : int = 0; i < stageButtonSprites.length; i++ )
+	{
+
+		var sprite : tk2dSprite = stageButtonSprites[i];
+		sprite.color.a += 0.025;
+
+	}
+
+	if( stageButtonSprites[0].color.a >= 1.0 )
+	{
+
+		mapState = MAP_STATE_IDLE;
+
+		// Init splines
+		initStageSplines( gm.currentStage );
+
+		// Show stratolith icon
+		stratolithIcon.gameObject.SetActive( true );
+
+		// Show selection icon
+		selectionIcon.gameObject.SetActive( true );
+
+	}
+
+}
+
+
+
+function updateFadeInElements()
+{
+
+	fadingInElements = false;
+
+	for( var i : int = 0; i < numFadeInElements; i++ )
+	{
+
+		var element = mapFadeInElementList[i];
+
+
+		// skip null elements
+		if( element == null )
+			continue;
+
+
+		// skip elements that haven't started yet
+		if( element.color.a == 0.0 )
+		{
+			fadingInElements = true;
+			continue;
+		}
+
+
+		// snap
+		if( element.color.a >= 0.99 )
+		{
+			element.color.a = 1.0;
+			element.scale.x = 1.0;
+			continue;
+		}
+
+
+		// increment
+		var dif : float = 1.0 - element.color.a;
+		var reducedDif : float = dif * fadeRate;
+		var newScale : float = 1.0 - reducedDif;
+		element.color.a += newScale;
+		element.scale.x += newScale;
+
+
+		// continue fading in
+		if( element.color.a < 1.0 )
+			fadingInElements = true;
+
+	}
+
+	if( fadingInElements == false )
+		fadeEnd();
+
+}
+
+
+
+function chooseRandomFadeInElement()
+{
+
+	var randIndex : int = Random.Range(0, numFadeInElements);
+
+	var randElement = mapFadeInElementList[randIndex];
+
+	if( randElement == null )
+		return;
+
+	if( randElement.color.a == 0.0 )
+	{
+		randElement.color.a = 0.01;
+		randElement.scale.x = 0.01;
+	}
+
 }
 
 
@@ -182,6 +357,8 @@ function stageButtonPressed( _button : ButtonScript )
 	var stageId : int = _button.buttonTag;
 
 	selectedStage = gm.getStageForId( stageId );
+
+	selectionIcon.gameObject.transform.position = selectedStage.gameObject.transform.position;
 
 	updateMapLabels();
 
@@ -333,7 +510,7 @@ function sublayerMapUpdate()
 
 
 	//fade in
-	if( fadingInElements == true )
+	if( mapState == MAP_STATE_INTRO_1 )
 	{
 
 		updateFadeInElements();
@@ -342,125 +519,11 @@ function sublayerMapUpdate()
 			chooseRandomFadeInElement();
 
 	}
-
-}
-
-
-
-//////////////////////////////////////FADE IN EFFECT
-
-
-
-function resetFadeInElements()
-{
-
-	for( var i : int = 0; i < numFadeInElements; i++ )
+	else if( mapState == MAP_STATE_INTRO_2 )
 	{
 
-		var element = mapFadeInElementList[i];
+		fadeInStageButtons();
 
-		if( element == null )
-			continue;
-
-		element.color.a = 0.0;
-		element.scale.x = 0.0;
-
-	}
-
-	fadingInElements = true;
-
-}
-
-
-
-function snapAllFadeInElements()
-{
-
-	for( var i : int = 0; i < numFadeInElements; i++ )
-	{
-
-		var element = mapFadeInElementList[i];
-
-		if( element == null )
-			continue;
-
-		element.color.a = 1.0;
-		element.scale.x = 1.0;
-
-	}
-
-}
-
-
-
-function updateFadeInElements()
-{
-
-	fadingInElements = false;
-
-	for( var i : int = 0; i < numFadeInElements; i++ )
-	{
-
-		var element = mapFadeInElementList[i];
-
-
-		// skip null elements
-		if( element == null )
-			continue;
-
-
-		// skip elements that haven't started yet
-		if( element.color.a == 0.0 )
-		{
-			fadingInElements = true;
-			continue;
-		}
-
-
-		// snap
-		if( element.color.a >= 0.99 )
-		{
-			element.color.a = 1.0;
-			element.scale.x = 1.0;
-			continue;
-		}
-
-
-		// increment
-		var dif : float = 1.0 - element.color.a;
-		var reducedDif : float = dif * fadeRate;
-		var newScale : float = 1.0 - reducedDif;
-		element.color.a += newScale;
-		element.scale.x += newScale;
-
-
-		// continue fading in
-		if( element.color.a < 1.0 )
-			fadingInElements = true;
-
-	}
-
-	if( fadingInElements == false )
-		snapAllFadeInElements();
-
-}
-
-
-
-function chooseRandomFadeInElement()
-{
-
-	var randIndex : int = Random.Range(0, numFadeInElements);
-
-	var randElement = mapFadeInElementList[randIndex];
-
-	if( randElement == null )
-		return;
-
-	if( randElement.color.a == 0.0 )
-	{
-		randElement.color.a = 0.01;
-		randElement.scale.x = 0.01;
 	}
 
 }
