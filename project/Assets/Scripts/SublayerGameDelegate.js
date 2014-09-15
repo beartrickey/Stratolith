@@ -1883,6 +1883,10 @@ function getNumberOfDocksUsed() : int
 function rScanButtonPressed()
 {
 
+	//HACK: Pause for Alex TGS build
+	gm.goFromGameToPause();
+	return;
+
 	//bail if already recovering item
 	if( rScanDrone != null )
 		return;

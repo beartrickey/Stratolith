@@ -44,7 +44,11 @@ class StageData
 function Start()
 {
 
+	// PlayerData should start before GameManager (set in Unity Script Execution Order List)
+
 	instance = this;
+
+	Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
 
 }
 

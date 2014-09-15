@@ -37,6 +37,7 @@ public var splineList = new DotSpline[numSplines];
 
 //BUTTONS
 public var mapActionButton : ButtonScript;
+public var mapActionButtonSprite : tk2dSprite;
 public var standbyButton : ButtonScript;
 
 
@@ -51,7 +52,7 @@ public var frameNumber : int = 0;
 
 //INTRO EFFECT
 public var introCounter : int = 0;
-public var numFadeInElements : int = 16;
+public var numFadeInElements : int = 32;
 public var mapFadeInElementList = new tk2dSprite[numFadeInElements];
 public var fadingInElements : boolean = false;
 public var fadeRate : float = 0.75;
@@ -70,6 +71,7 @@ function onInstantiate()
 
 
 	// Load saved data about stages
+	Debug.Log('Loading stages');
 	gm.loadStages();
 
 
@@ -102,6 +104,7 @@ function onInstantiate()
 	
 	
 	// Create Stage Buttons
+	Debug.Log('Create Stage Buttons');
 	var stageButtonPrefab : GameObject = Resources.Load("MapStageButton");
 	var tempSpriteArray = new Array();
 	for( var s : int = 0; s < gm.numStages; s++ )
@@ -129,7 +132,7 @@ function onInstantiate()
 		var sprite : tk2dSprite = stageButtonGameObject.GetComponent( tk2dSprite );
 		tempSpriteArray.Push( sprite );
 		sprite.color.a = 0.0;
-		gameObject.SetActive( true );
+		stageButtonGameObject.SetActive( true );
 
 		if( stage.state == Stage.STAGE_STATE_CLEARED )
 		{
@@ -137,11 +140,11 @@ function onInstantiate()
 		}
 		else if( stage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
 		{
-			sprite.SetSprite( "Map-ConflictLocation-Unplayed" );	
+			sprite.SetSprite( "Map-ConflictLocation-Unplayed" );
 		}
 		else
 		{
-			gameObject.SetActive( false );
+			stageButtonGameObject.SetActive( false );
 		}
 	
 	}
@@ -149,6 +152,7 @@ function onInstantiate()
 
 
 	// Splines
+	Debug.Log('Create map splines');
 	var gos : GameObject[];
 	gos = GameObject.FindGameObjectsWithTag("MapSpline");
     for( var i : int = 0; i < gos.length; i++ )
@@ -170,6 +174,8 @@ function onInstantiate()
 
 function resetFadeInElements()
 {
+
+	Debug.Log("resetFadeInElements");
 
 	for( var i : int = 0; i < numFadeInElements; i++ )
 	{
@@ -216,6 +222,8 @@ function fadeEnd()
 
 function fadeInStageButtons()
 {
+
+	Debug.Log("fadeInStageButtons");
 
 	for( var i : int = 0; i < stageButtonSprites.length; i++ )
 	{
@@ -358,8 +366,24 @@ function stageButtonPressed( _button : ButtonScript )
 
 	selectedStage = gm.getStageForId( stageId );
 
+
+	// Position and color the selection icon
 	selectionIcon.gameObject.transform.position = selectedStage.gameObject.transform.position;
 
+	if( selectedStage.state == Stage.STAGE_STATE_CLEARED )
+		selectionIcon.SetSprite( "Map-Selection-Played" );
+	else
+		selectionIcon.SetSprite( "Map-Selection-Unplayed" );
+
+
+	// Change the operation button based on stage distance
+	if( gm.canRelocateBetweenStages( gm.currentStage, selectedStage ) == true || gm.currentStage == selectedStage )
+		mapActionButtonSprite.SetSprite( "Interface-Map-CommenceOpButtonOFF-LEDon" );
+	else
+		mapActionButtonSprite.SetSprite( "Interface-Map-CommenceOpButtonOFF-LEDoff" );
+
+
+	// Update Labels
 	updateMapLabels();
 
 }
@@ -422,10 +446,25 @@ function stratolithArrivedAtNewStage()
 
 	destinationStage = null;
 
-	updateMapLabels();
 
-	//turn on map splines for new stage
-	initStageSplines( gm.currentStage );
+	// Change behavior based on new stage state
+	if( gm.currentStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
+	{
+		
+		// Start stage immediately
+		gm.goFromMapToGame();
+
+	}
+	else
+	{
+		// Don't start stage
+
+		updateMapLabels();
+
+		//turn on map splines for new stage
+		initStageSplines( gm.currentStage );
+
+	}
 
 }
 
@@ -515,8 +554,8 @@ function sublayerMapUpdate()
 
 		updateFadeInElements();
 
-		if( frameNumber % 2 == 0 )
-			chooseRandomFadeInElement();
+		// if( frameNumber % 2 == 0 )
+		chooseRandomFadeInElement();
 
 	}
 	else if( mapState == MAP_STATE_INTRO_2 )

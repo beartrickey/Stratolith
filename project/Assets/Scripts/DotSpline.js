@@ -17,15 +17,15 @@ var stageB : Stage;
 var totalLength : float = 0.0;
 
 
-function Update()
-{
+// function Update()
+// {
 
-    // if( Application.isPlaying )
-    //     return;
+//     if( Application.isPlaying )
+//         return;
 
-    // initSpline(stageA);
+//     initSpline(stageA);
 
-}
+// }
 
 
 function initDots()

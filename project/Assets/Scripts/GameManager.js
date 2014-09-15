@@ -109,6 +109,10 @@ function Start()
 	activeSublayer = sublayerTitleDelegate.sl;
 
 
+	// init sublayer pause
+	sublayerPauseDelegate.onInstantiate();
+
+
 	//play title music
 	BGM_TITLE.Play();
 	
@@ -194,7 +198,7 @@ function setScreenDimensions()
 
 
 
-function Update ()
+function Update()
 {
 
 	//active layer update
@@ -255,9 +259,13 @@ function goFromTitleToMapDone()
 	sublayerMapDelegate.gameObject.SetActive( true );
 	activeSublayer = sublayerMapDelegate.sl;
 
-	// //audio
+	Debug.Log("sublayerMap Initialized");
+
+	// Audio
 	BGM_TITLE.Stop();
 	BGM_OPS.Play();
+
+	Debug.Log("playing ops bgm");
 
 }
 
@@ -563,12 +571,9 @@ function goFromGameClearToMapDone()
 function onStageClear()
 {
 
-	Debug.Log( 'currentStage.state = ' + currentStage.state );
 	currentStage.state = Stage.STAGE_STATE_CLEARED;
-	Debug.Log( 'currentStage.state = ' + currentStage.state );
 
 	unlockCurrentStageConnections();
-	Debug.Log( 'currentStage.state = ' + currentStage.state );
 
 }
 
