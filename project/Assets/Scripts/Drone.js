@@ -4,8 +4,8 @@
 public static var droneModelNumberList = new Array( "6611", "8808", "1111", "5555", "7373", "2121", "0101" );
 public static var droneAttackRangeList = new Array( 300.0, 560.0, 75.0, 200.0, 200.0, 560.0, 0.0 );
 public static var droneBulletDamageList = new Array( 2.0, 5.0, 20.0, 1.0, 1.0, 1.0, 0.0 );
-public static var droneHealthList = new Array( 3.0, 5.0, 20.0, 2.0, 2.0, 5.0, 10.0 );
-public static var droneReloadFramesList = new Array( 180, 360, 0, 180, 180.0, 360.0, 0.0 );
+public static var droneHealthList = new Array( 3.0, 5.0, 20.0, 2.0, 50.0, 5.0, 10.0 );
+public static var droneReloadFramesList = new Array( 180, 360, 0, 180, 180.0, 260.0, 0.0 );
 public static var droneMaxSpeedList = new Array( 0.15, 0.15, 0.0375, 0.15, 0.15, 0.15, 0.2 );
 public static var droneNullifiableList = new Array( true, true, false, true, false, false, true );
 public static var droneBlueprintSpriteId = new Array( 82, 85, 84, -1, 86, 83, -1 );

@@ -38,6 +38,8 @@ public var fullScreenBlur : GameObject;
 
 // Unity Level
 public var onUnityLevelLoadDone : function() = null;
+public var minimumLoadingFrames : int = 120;  // 2 Seconds
+public var loadingCounter : int = minimumLoadingFrames;
 
 
 // Stage Data
@@ -213,6 +215,27 @@ function Update()
 		}
 
 	}
+
+	if( loadingCounter > 0 )
+	{
+		loadingCounter--;
+
+		if( loadingCounter <= 0 )
+		{
+
+			if( onUnityLevelLoadDone != null )
+			{
+
+				onUnityLevelLoadDone();
+
+				onUnityLevelLoadDone = null;
+
+				sublayerLoadingScreenDelegate.gameObject.SetActive( false );
+
+			}
+
+		}
+	}
 	
 }
 
@@ -224,13 +247,23 @@ function Update()
 function OnLevelWasLoaded( level : int )
 {
 
-	if( onUnityLevelLoadDone != null )
-	{
+	// Make sure to wait at least N frames so we don't just blink the loading screen on and off
+	// onUnityLevelLoadDone is performed when the loadingCounter runs down to 0 in the update loop
+	loadingCounter = minimumLoadingFrames;
 
-		onUnityLevelLoadDone();
-		onUnityLevelLoadDone = null;
+}
 
-	}
+
+
+function startLoadingScreen( onLoadFunc : function() )
+{
+
+	// Show loading screen
+	sublayerLoadingScreenDelegate.gameObject.SetActive( true );
+
+	onUnityLevelLoadDone = onLoadFunc;
+
+	Application.LoadLevel("Blank");
 
 }
 
@@ -243,8 +276,8 @@ function OnLevelWasLoaded( level : int )
 function goFromTitleToMap()
 {
 
-	onUnityLevelLoadDone = goFromTitleToMapDone;
-	Application.LoadLevel("Blank");
+	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
+	startLoadingScreen( goFromTitleToMapDone );
 
 }
 
@@ -277,19 +310,15 @@ function goFromTitleToMapDone()
 function goFromMapToGame()
 {
 
-	// Show loading screen
-	// sublayerLoadingScreenDelegate.gameObject.SetActive( true );
-	// sublayerLoadingScreenDelegate.onInit( startLoadMapToGame, midLoadMapToGame, endLoadMapToGame );
-	// activeSublayer = sublayerLoadingScreenDelegate.sl;
-	onUnityLevelLoadDone = goFromMapToGameDone;
-	Application.LoadLevel("Blank");
+	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading-pretactical" );
+	startLoadingScreen( goFromMapToGameDone );
 	
 }
 
-
-
 function goFromMapToGameDone()
 {
+
+	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
 	// Load sublayerGameDelegate
 	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
@@ -300,11 +329,25 @@ function goFromMapToGameDone()
 	sublayerGameDelegate.startGame();
 
 
+	// Load sublayerCatalogDelegate
+	sublayerCatalogDelegate = instantiateSublayerFromResource("SublayerCatalog").GetComponent( SublayerCatalogDelegate );
+	sublayerCatalogDelegate.gm = this;
+	sublayerCatalogDelegate.onInstantiate();
+	sublayerCatalogDelegate.gameObject.SetActive( false );
+
+
 	// Load sublayerGameClearDelegate
 	sublayerGameClearDelegate = instantiateSublayerFromResource("SublayerGameClear").GetComponent( SublayerGameClearDelegate );
 	sublayerGameClearDelegate.gm = this;
 	sublayerGameClearDelegate.onInstantiate();
 	sublayerGameClearDelegate.gameObject.SetActive( false );
+
+
+	// Load sublayerGameOverDelegate
+	sublayerGameOverDelegate = instantiateSublayerFromResource("SublayerGameOver").GetComponent( SublayerGameOverDelegate );
+	sublayerGameOverDelegate.gm = this;
+	sublayerGameOverDelegate.onInstantiate();
+	sublayerGameOverDelegate.gameObject.SetActive( false );
 
 
 	//start blur in
@@ -453,16 +496,27 @@ function goFromCatalogToGameOver()
 
 	sublayerGameDelegate.abortStage();
 
-	sublayerGameDelegate.gameObject.SetActive( false );
+	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
+	startLoadingScreen( goFromCatalogToMapDone );
 
-	sublayerCatalogDelegate.gameObject.SetActive( false );
-	
-	sublayerGameOverDelegate.gameObject.SetActive( true );
-	
-	activeSublayer = sublayerGameOverDelegate.sl;
+}
 
-	// reload previous map data (what it was before stage attempt)
-	loadStages();
+
+
+function goFromCatalogToMapDone()
+{
+
+	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
+	sublayerMapDelegate.gm = this;
+	sublayerMapDelegate.onInstantiate();
+	sublayerMapDelegate.gameObject.SetActive( true );
+	activeSublayer = sublayerMapDelegate.sl;
+
+	Debug.Log("sublayerMap Initialized");
+
+	// Audio
+	BGM_TITLE.Stop();
+	BGM_OPS.Play();
 
 }
 
@@ -490,20 +544,25 @@ function goFromGameToGameOver()
 function goFromGameOverToMap()
 {
 
-	sublayerGameOverDelegate.gameObject.SetActive( false );
-	
+	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
+	startLoadingScreen( goFromGameOverToMapDone );
 
-	// reload previous map data (what it was before stage attempt)
-	loadStages();
+}
 
-	// Re-instantiate and init map
-	// sublayerMapDelegate.loadStages();
+
+function goFromGameOverToMapDone()
+{
+
+	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
+	sublayerMapDelegate.gm = this;
+	sublayerMapDelegate.onInstantiate();
 	sublayerMapDelegate.gameObject.SetActive( true );
 	activeSublayer = sublayerMapDelegate.sl;
 
-	//audio
-	BGM_TACTICAL.Stop();
+	Debug.Log("sublayerMap Initialized");
 
+	// Audio
+	BGM_TITLE.Stop();
 	BGM_OPS.Play();
 
 }
@@ -530,19 +589,8 @@ function goFromGameToGameClear()
 function goFromGameClearToMap()
 {
 
-	// Remove sprite collections
-	// GameObject.Destroy( sublayerGameDelegate.panel.Collection );
-	// GameObject.Destroy( sublayerGameDelegate.redAlarm.Collection );
-	// GameObject.Destroy( sublayerGameDelegate.mainPowerNeedle.Collection );
-	GameObject.Destroy( sublayerGameDelegate.gameObject );
-	GameObject.Destroy( sublayerGameClearDelegate.gameObject );
-	sublayerGameDelegate = null;
-	sublayerGameClearDelegate = null;
-
-	loadStages();
-
-	onUnityLevelLoadDone = goFromGameClearToMapDone;
-	Application.LoadLevel("Blank");
+	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
+	startLoadingScreen( goFromGameClearToMapDone );
 
 }
 
