@@ -95,7 +95,8 @@ function onInstantiate()
 	
 	// Start button
 	sl.addButton( mapActionButton );
-	mapActionButton.onTouchDownInsideDelegate = mapActionButtonPressed;
+	mapActionButton.setupButtonGraphics( "Interface-Map-CommenceOpButtonOFF-LEDon", "Interface-Map-CommenceOpButtonON-LEDon" );
+		mapActionButton.onTouchUpInsideDelegate = mapActionButtonPressed;
 
 
 	// Standby button
@@ -378,9 +379,9 @@ function stageButtonPressed( _button : ButtonScript )
 
 	// Change the operation button based on stage distance
 	if( gm.canRelocateBetweenStages( gm.currentStage, selectedStage ) == true || gm.currentStage == selectedStage )
-		mapActionButtonSprite.SetSprite( "Interface-Map-CommenceOpButtonOFF-LEDon" );
+		mapActionButton.setupButtonGraphics( "Interface-Map-CommenceOpButtonOFF-LEDon", "Interface-Map-CommenceOpButtonON-LEDon" );
 	else
-		mapActionButtonSprite.SetSprite( "Interface-Map-CommenceOpButtonOFF-LEDoff" );
+		mapActionButton.setupButtonGraphics( "Interface-Map-CommenceOpButtonOFF-LEDoff", "Interface-Map-CommenceOpButtonON-LEDoff" );
 
 
 	// Update Labels
@@ -450,7 +451,7 @@ function stratolithArrivedAtNewStage()
 	// Change behavior based on new stage state
 	if( gm.currentStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
 	{
-		
+
 		// Start stage immediately
 		gm.goFromMapToGame();
 

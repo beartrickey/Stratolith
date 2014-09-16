@@ -363,6 +363,7 @@ function goFromMapToGameDone()
 		
 	}
 
+	BGM_OPS.Stop();
 	BGM_TACTICAL.Play();
 
 }
@@ -483,8 +484,6 @@ function goFromStandbyToMap()
 
 
 	//audio
-	BGM_TACTICAL.Stop();
-
 	BGM_OPS.Play();
 
 }
@@ -515,7 +514,7 @@ function goFromCatalogToMapDone()
 	Debug.Log("sublayerMap Initialized");
 
 	// Audio
-	BGM_TITLE.Stop();
+	BGM_TACTICAL.Stop();
 	BGM_OPS.Play();
 
 }
@@ -562,7 +561,7 @@ function goFromGameOverToMapDone()
 	Debug.Log("sublayerMap Initialized");
 
 	// Audio
-	BGM_TITLE.Stop();
+	BGM_TACTICAL.Stop();
 	BGM_OPS.Play();
 
 }
@@ -606,7 +605,8 @@ function goFromGameClearToMapDone()
 	activeSublayer = sublayerMapDelegate.sl;
 
 	// //audio
-	BGM_TACTICAL.Play();
+	BGM_TACTICAL.Stop();
+	BGM_OPS.Play();
 
 }
 
