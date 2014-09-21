@@ -147,6 +147,23 @@ function resetScope()
 		defenseWaveData.waveType = 1;
 		defenseWaveData.waveLengthKnob = Random.Range( 0.6, 1.0 );
 	}
+	else if( drone.droneType == Drone.DRONE_MODEL_RAND )
+	{
+
+		if( drone.nullifiable == true )
+		{
+			defenseWaveData.waveType = 0;
+		}
+		else
+		{
+			cannotNullifyLabel.gameObject.SetActive( true );
+		
+			defenseWave.gameObject.SetActive( false );
+			hackWave.gameObject.SetActive( false );
+			resultWave.gameObject.SetActive( false );
+		}
+		
+	}
 	else if( Drone.droneNullifiableList[drone.droneType] == false )
 	{
 		cannotNullifyLabel.gameObject.SetActive( true );

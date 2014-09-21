@@ -23,6 +23,7 @@ public var health : float = 100.0;
 
 public var hacked : boolean = false;
 
+public var nullifiable : boolean = false;
 
 
 //movement
@@ -71,6 +72,8 @@ public var slgd : SublayerGameDelegate;
 
 public var numScopesHacked : int = 0;
 
+public var bulletDamage : float = 0.0;
+
 
 ////graphics
 public var boxCollider : BoxCollider;
@@ -108,6 +111,7 @@ public static var DRONE_MODEL_1111 : int = 2; //non-null tokkou strike
 public static var DRONE_MODEL_5555 : int = 3; //null close range
 public static var DRONE_MODEL_7373 : int = 4; //non-null med range strike
 public static var DRONE_MODEL_2121 : int = 5; //non-null long range strike
+public static var DRONE_MODEL_RAND : int = 99;
 
 
 
@@ -146,6 +150,89 @@ function onInstantiate()
 
 
 
+function initRandomDrone( _hackable : boolean, _damage : float, _speed : float, _health : float, _range : float, _path : DronePath )
+{
+
+	// Set Values
+	attackRange = _range;
+	modelString = "????";
+	health = _health;
+	reloadCounterMax = 200;
+	maxSpeed = _speed;
+	bulletDamage = _damage;
+	nullifiable = _hackable;
+	droneType = DRONE_MODEL_RAND;
+
+
+	// Set Path
+	dronePath = _path;
+
+	currentPoint = 1;
+
+	state = DRONE_STATE_FOLLOWING_PATH;
+
+	hacked = false;
+
+	attackTarget = slgd.shieldScannerCenter.gameObject;
+	
+	
+	// Set position
+	position = dronePath.getPositionForIndex(0);
+	
+	
+	// Set target
+	destination = dronePath.getPositionForIndex(1);
+	
+	
+	// Adjust for new target
+	adjustForNewTargetPoint();
+	
+	
+	// Set proper direction
+	var dif : Vector2 = position - destination;
+	var angleFromDroneToTargetInRads : float = Mathf.Atan2( dif.x, dif.y );
+	var angleFromDroneToTargetInDegrees : float = angleFromDroneToTargetInRads * Mathf.Rad2Deg;
+	angleFromDroneToTargetInDegrees -= 180.0;
+	angleFromDroneToTargetInDegrees = Mathf.Abs( angleFromDroneToTargetInDegrees );
+	
+	icon.gameObject.transform.localEulerAngles.z = angleFromDroneToTargetInDegrees;
+	direction = icon.gameObject.transform.localEulerAngles.z;
+	
+	baseInitialize();
+
+}
+
+
+
+function baseInitialize()
+{
+
+	updateLabelText();
+	
+	counter = 0;
+	
+	reloadCounter = 0;
+	
+	jitterCounter = 0;
+
+	isActive = true;
+
+	
+	//reset graphics
+	gameObject.SetActive( true );
+	droneInfoLabel.gameObject.SetActive( true );
+	
+	gameObject.transform.localScale.x = 1.0;
+	gameObject.transform.localScale.y = 1.0;
+	
+	updateDroneGraphics();
+	
+	setDroneColor();
+
+}
+
+
+
 function initializeDrone( _dronePath : DronePath )
 {
 
@@ -161,27 +248,7 @@ function initializeDrone( _dronePath : DronePath )
 	
 	setValuesForDroneType();
 	
-	updateLabelText();
-	
-	counter = 0;
-	
-	reloadCounter = 0;
-	
-	jitterCounter = 0;
-	
 	attackTarget = slgd.shieldScannerCenter.gameObject;
-
-	isActive = true;
-	
-	gameObject.SetActive( true );
-	
-	
-	//reset graphics
-	droneInfoLabel.gameObject.SetActive( true );
-	
-	
-	gameObject.transform.localScale.x = 1.0;
-	gameObject.transform.localScale.y = 1.0;
 	
 	
 	//set position
@@ -206,9 +273,7 @@ function initializeDrone( _dronePath : DronePath )
 	icon.gameObject.transform.localEulerAngles.z = angleFromDroneToTargetInDegrees;
 	direction = icon.gameObject.transform.localEulerAngles.z;
 	
-	updateDroneGraphics();
-	
-	setDroneColor();
+	baseInitialize();
 
 }
 
@@ -226,35 +291,15 @@ function initializeDockedDrone( _droneType )
 	hacked = true;
 	
 	setValuesForDroneType();
-	
-	updateLabelText();
-	
-	counter = 0;
-	
-	reloadCounter = 0;
-	
-	jitterCounter = 0;
 
 	attackTarget = null;
 
-	isActive = true;
-	
-	gameObject.SetActive( true );
-	
-	
-	//reset graphics
-	droneInfoLabel.gameObject.SetActive( true );
-	
-	gameObject.transform.localScale.x = 1.0;
-	gameObject.transform.localScale.y = 1.0;
-	
 	
 	//set position
 	position = slgd.shieldScannerCenter.gameObject.transform.position;
 	
-	updateDroneGraphics();
 	
-	setDroneColor();
+	baseInitialize();
 
 }
 
@@ -737,11 +782,10 @@ function startDroneDeath()
 	
 	targetLine.setDotState( false );
 
-	var droneDeathMessage : String = droneModelNumberList[droneType] + " DRONE DESTROYED";
+	var droneDeathMessage : String = modelString + " DRONE DESTROYED";
 	SublayerGameDelegate.instance.addMessage( droneDeathMessage );
 	
 	//GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
-	
 	
 	//decrement hostile drone count if hostile drone killed
 	if( hacked == false )
@@ -1139,27 +1183,27 @@ function fireOnTarget( _target : GameObject )
 function hostileSelfDestruct()
 {
 
-	if( attackTarget == slgd.shieldScannerCenter.gameObject )
-	{
+	// if( attackTarget == slgd.shieldScannerCenter.gameObject )
+	// {
 	
-		slgd.stratolithHitByBullet( droneType );
+	// 	slgd.stratolithHitByBullet( droneType );
 		
-	}
-	else
-	{
+	// }
+	// else
+	// {
 	
-		var drone : Drone = attackTarget.GetComponent( Drone );
+	// 	var drone : Drone = attackTarget.GetComponent( Drone );
 			
-		if( drone != null )
-		{
+	// 	if( drone != null )
+	// 	{
 		
-			drone.hitByBullet( droneType );
+	// 		drone.hitByBullet( droneType );
 			
-		}
+	// 	}
 		
-	}
+	// }
 	
-	damageDrone( 100.0 );
+	// damageDrone( 100.0 );
 	
 }
 
@@ -1209,10 +1253,10 @@ function updateLabelText()
 
 
 
-function hitByBullet( _bulletType : int )
+function hitByBullet( _bullet : Bullet )
 {
 
-	var damage : float = droneBulletDamageList[_bulletType];
+	var damage : float = _bullet.damage;
 	
 	damageDrone( damage );
 	

@@ -47,6 +47,8 @@ public var currentStage : Stage;
 public var numStages : int = 31;
 public var stageList = new Stage[numStages];
 
+public var pathTemplateList = new PathTemplate[16];
+
 
 //sub layers:
 public var sublayerTitleDelegate : SublayerTitleDelegate = null;

@@ -18,6 +18,8 @@ public var circleIcon : tk2dSprite;
 
 public var sightIcon : tk2dSprite;
 
+public var damage : float = 0.0;
+
 
 function onInstantiate()
 {
@@ -42,6 +44,8 @@ function onInit( _source : Drone, _target : GameObject )
 	target = _target;
 	
 	bulletType = _source.droneType;
+
+	damage = _source.bulletDamage;
 	
 	
 	//color
@@ -96,7 +100,7 @@ function updateBullet()
 			//bullet hit stratolith
 			if( target == slgd.shieldScannerCenter.gameObject )
 			{
-				slgd.stratolithHitByBullet( bulletType );
+				slgd.stratolithHitByBullet( this );
 			}
 			else //bullet hit other drone
 			{
@@ -105,7 +109,7 @@ function updateBullet()
 				
 				if( drone != null )
 				{
-					drone.hitByBullet( bulletType );
+					drone.hitByBullet( this );
 				}
 			
 			}

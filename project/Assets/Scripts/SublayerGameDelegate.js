@@ -993,12 +993,12 @@ function getFreeBullet() : Bullet
 
 
 
-function stratolithHitByBullet( _bulletType : int )
+function stratolithHitByBullet( _bullet : Bullet )
 {
 
 	vibrationCounter = Random.Range( 20, 40 );
 	
-	var damage : float = Drone.droneBulletDamageList[ _bulletType ];
+	var damage : float = _bullet.damage;
 	
 	mainPower -= damage;
 	
@@ -1884,8 +1884,8 @@ function rScanButtonPressed()
 {
 
 	//HACK: Pause for Alex TGS build
-	gm.goFromGameToPause();
-	return;
+	// gm.goFromGameToPause();
+	// return;
 
 	//bail if already recovering item
 	if( rScanDrone != null )
