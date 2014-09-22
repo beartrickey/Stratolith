@@ -23,7 +23,7 @@ public var panel : tk2dSprite = null;
 public var shieldScannerCenter : Transform;
 public static var scannerWidth : float = 540.0;
 
-public var incomingDroneIconList = new tk2dSprite[3];
+public var incomingDroneIconList = new IncomingDroneIcon[3];
 
 
 //drones
@@ -82,6 +82,8 @@ public var vibrationCounterMax : int = 0;
 //stage flow vars
 public static var GAME_STATE_BLUR_IN : int = 0;
 public static var GAME_STATE_STAGE : int = 1;
+public static var GAME_STATE_END_SUCCESS_DELAY : int = 2;
+public static var GAME_STATE_END_FAILURE_DELAY : int = 3;
 public var state : int = GAME_STATE_BLUR_IN;
 
 public var machineStateCounter : int = 0;
@@ -169,15 +171,8 @@ public var messageLinePrintCounterMax : int = 30; //half second
 public var messageLinePrintCounter : int = 0;
 
 
-
 //ux
 public var standbyButton : ButtonScript;
-
-
-//paths
-public var PATH_TEMPLATE_STRIKE : PathTemplate;
-
-
 
 
 
@@ -561,10 +556,11 @@ function sublayerGameUpdate()
 	
 	
 	//game clear condition
-	if( gm.currentStage.remainingHostileDrones <= 0 )
+	if( state == GAME_STATE_STAGE && gm.currentStage.remainingHostileDrones <= 0 )
 	{
 	
-		stageSuccessfullyCleared();
+		state = GAME_STATE_END_SUCCESS_DELAY;
+		machineStateCounter = 300;
 		
 	}
 		
@@ -785,49 +781,59 @@ function updateRadarGraphics()
 		var path : DronePath = gm.currentStage.dronePathList[d];
 		
 		
-		//skip if path is null
+		// skip if path is null
 		if( path == null )
 			continue;
 		
 		
-		//skip if already appeared
+		// skip if already appeared
 		if( path.delayCounter <= -1 )
 			continue;
 		
 		
-		//loop through icons
+		// Find free icon and set it
 		for( i = 0; i < 3; i++ )
 		{
 		
-			var icon : tk2dSprite = incomingDroneIconList[i];
+			var icon : IncomingDroneIcon = incomingDroneIconList[i];
 			
 			
-			//skip if already active
-			if( icon.gameObject.activeSelf == true )
-				continue;
+			// skip if already active
+			if( icon.gameObject.activeSelf == false )
+			{
+
+				// Init and display icon at edge of radar where drone will appear
+				icon.dronePath = path;
+				icon.gameObject.SetActive( true );
+			
+				var angleInRads : float = ( path.pathRotation - 270.0 ) * Mathf.Deg2Rad;
+				var xcomp : float = -Mathf.Sin( angleInRads );
+				var ycomp : float = Mathf.Cos( angleInRads );
 				
-			
-			//display icon at edge of radar where drone will appear
-			icon.gameObject.SetActive( true );
-			
-			var angleInRads : float = ( path.pathRotation - 270.0 ) * Mathf.Deg2Rad;
-			var xcomp : float = -Mathf.Sin( angleInRads );
-			var ycomp : float = Mathf.Cos( angleInRads );
-			
-			var direction : Vector2 = Vector2( xcomp, ycomp );
-			var position : Vector2 = direction * ( scannerWidth - 20.0 );
-			
-			position += shieldScannerCenter.transform.position;
-			
-			icon.gameObject.transform.position = position;
-			icon.gameObject.transform.eulerAngles.z = path.pathRotation + 90.0 ;
-			
-			break;
+				var direction : Vector2 = Vector2( xcomp, ycomp );
+				var position : Vector2 = direction * ( scannerWidth - 20.0 );
+				
+				position += shieldScannerCenter.transform.position;
+				
+				icon.gameObject.transform.position = position;
+				icon.gameObject.transform.eulerAngles.z = path.pathRotation + 90.0 ;
+
+				// Position label to the inside of the radar
+				var labelOffset : Vector2 = (shieldScannerCenter.transform.position - position).normalized * 50.0;
+				icon.distanceLabel.gameObject.transform.position = position + labelOffset;
+				icon.distanceLabel.gameObject.transform.eulerAngles.z = 0.0;
+
+				// Update distance counter
+				icon.distanceLabel.text = path.delayCounter.ToString("D2") + "u";
+				icon.distanceLabel.Commit();
+				
+				break;
+
+			}
 		
 		}
 	
 	}
-	
 
 }
 
@@ -1187,6 +1193,17 @@ function updateStateMachine()
     		
     		}
     		
+    		break;
+
+    	case GAME_STATE_END_SUCCESS_DELAY:
+
+    		machineStateCounter--;
+
+    		if( machineStateCounter <= 0 )
+    		{
+    			stageSuccessfullyCleared();
+    		}
+
     		break;
     
     
