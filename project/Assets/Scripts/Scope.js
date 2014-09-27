@@ -25,11 +25,14 @@ public var cannotNullifyLabel : tk2dSprite;
 
 public var drone : Drone;
 
-public var isHacked: boolean;
-
 public var blinkCounter : int = 0;
 
 public var locked : boolean = true;
+
+public static var SCOPE_STATE_UNHACKED : int = 0;
+public static var SCOPE_STATE_HACK_SEQUENCE : int = 1;
+public static var SCOPE_STATE_HACKED : int = 2;
+public var state = SCOPE_STATE_UNHACKED;
 
 //public var cover : GameObject;
 
@@ -46,48 +49,162 @@ function initScope()
 
 function updateScope()
 {
+
+	if( state == SCOPE_STATE_HACK_SEQUENCE )
+	{
+		handleSuccessfulHackSequence();
+	}
 	
 }
 
 
 
-function updateResultWave()
+function startSuccessfulHackSequence()
 {
 
-	areaUnderCurve = 0.0;
+	state = SCOPE_STATE_HACK_SEQUENCE;
+	
+	
+	//turn off active light
+	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
 
-	//calculate points to be used for result wave
-	for( var i = 0; i < Wave.numPoints; i++ )
+	
+	//snap phase
+	hackWaveData.phaseKnob = defenseWaveData.phaseKnob + 0.5;
+	
+	
+	//wrap phase if needed
+	if( hackWaveData.phaseKnob > 1.0 )
 	{
-		
-		var startingY : float = 0.0;//SublayerGameDelegate.instance.oscilloscopeCenter.position.y;
+	
+		hackWaveData.phaseKnob = hackWaveData.phaseKnob - 1.0;
+	
+	}
 	
 	
-		//shield wave y value
-		var e : Vector3 = defenseWaveData.wavePoints[i];
-		
-		var s : Vector3 = Vector3( e.x, startingY, e.z );//if not being hacked, then assume a flat line
-		
-		if( hackWaveData != null )
-		{
-			s = hackWaveData.wavePoints[i];
-		}
-		
-		
-		waveDifList[i] = (e.y - startingY) + (s.y - startingY);
+	//snap wavelength
+	hackWaveData.waveLengthKnob = defenseWaveData.waveLengthKnob;
 	
 	
-		//add area to total ship damage
-		areaUnderCurve += Mathf.Abs( waveDifList[i] );
+	//set both waves to white
+	var hackedWaveColor : Color = Color( 1.0, 1.0, 1.0, 0.7 );
 	
+	hackWave.gameObject.renderer.material.SetColor( "_Color", hackedWaveColor );
+	hackWave.gameObject.renderer.material.SetColor( "_SpecColor", hackedWaveColor );
+	hackWave.gameObject.renderer.material.SetColor( "_Emission", hackedWaveColor );
+	
+	defenseWave.gameObject.renderer.material.SetColor( "_Color", hackedWaveColor );
+	defenseWave.gameObject.renderer.material.SetColor( "_SpecColor", hackedWaveColor );
+	defenseWave.gameObject.renderer.material.SetColor( "_Emission", hackedWaveColor );
+	
+	
+	//recalculate at end
+	hackWaveData.calculateWave();
+	defenseWaveData.calculateWave();
+
+	defenseWave.updateWave( defenseWaveData );
+	hackWave.updateWave( hackWaveData );
+	
+	resultWave.gameObject.SetActive( false );
+
+	if( drone != null )
+	{
+		drone.numScopesHacked++;
 	}
 
 }
 
 
 
-function resetScope()
+function handleSuccessfulHackSequence()
 {
+
+	blinkCounter--;
+
+	if( blinkCounter < 0 )
+	{
+		setToHacked();
+	}
+	else
+	{
+
+		// Toggle graphic visibility every N frames
+		if( blinkCounter % 10 == 0 )
+		{
+
+			if( defenseWave.gameObject.activeSelf == true )
+			{
+
+				defenseWave.gameObject.SetActive( false );
+				hackWave.gameObject.SetActive( false );
+				resultWave.gameObject.SetActive( false );
+
+			}
+			else
+			{
+
+				defenseWave.gameObject.SetActive( true );
+				hackWave.gameObject.SetActive( true );
+				resultWave.gameObject.SetActive( true );
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+function setToHacked()
+{
+
+	state = SCOPE_STATE_HACKED;
+
+
+	// Make wave related graphics disappear
+	defenseWave.gameObject.SetActive( false );
+	hackWave.gameObject.SetActive( false );
+	resultWave.gameObject.SetActive( false );
+
+
+	// Make command related graphics appear
+	drone.resetCommandButtonGraphics();
+
+}
+
+
+
+function resetModButtonGraphics()
+{
+
+	for( var m : int = 0; m < 4; m++ )
+	{
+	
+		if( hackWaveData.waveType == m )
+		{
+			modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+		}
+		else
+		{
+			modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
+		}
+	
+	}
+
+}
+
+/////////////////////////////////////////////////////////////
+// WAVE MANIPULATION
+/////////////////////////////////////////////////////////////
+
+
+
+function resetWaves()
+{
+
+	state = SCOPE_STATE_UNHACKED;
 
 	var hackWaveColor : Color = Color( 1.0, 1.0, 1.0, 0.7 );
 
@@ -100,8 +217,6 @@ function resetScope()
 	defenseWave.gameObject.renderer.material.SetColor( "_Color", defenseWaveColor );
 	defenseWave.gameObject.renderer.material.SetColor( "_SpecColor", defenseWaveColor );
 	defenseWave.gameObject.renderer.material.SetColor( "_Emission", defenseWaveColor );
-	
-	isHacked = false;
 	
 	
 	//turn on active light
@@ -190,75 +305,34 @@ function resetScope()
 
 
 
-function scopeSuccessfullyHacked()
+function updateResultWave()
 {
 
-	isHacked = true;
+	areaUnderCurve = 0.0;
 
-	if( drone != null )
-		drone.numScopesHacked++;
-	
-	
-	//turn off active light
-	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
-
-	
-	//snap phase
-	hackWaveData.phaseKnob = defenseWaveData.phaseKnob + 0.5;
-	
-	
-	//wrap phase if needed
-	if( hackWaveData.phaseKnob > 1.0 )
+	//calculate points to be used for result wave
+	for( var i = 0; i < Wave.numPoints; i++ )
 	{
-	
-		hackWaveData.phaseKnob = hackWaveData.phaseKnob - 1.0;
-	
-	}
+		
+		var startingY : float = 0.0;//SublayerGameDelegate.instance.oscilloscopeCenter.position.y;
 	
 	
-	//snap wavelength
-	hackWaveData.waveLengthKnob = defenseWaveData.waveLengthKnob;
-	
-	
-	//set both waves to white
-	var hackedWaveColor : Color = Color( 1.0, 1.0, 1.0, 0.7 );
-	
-	hackWave.gameObject.renderer.material.SetColor( "_Color", hackedWaveColor );
-	hackWave.gameObject.renderer.material.SetColor( "_SpecColor", hackedWaveColor );
-	hackWave.gameObject.renderer.material.SetColor( "_Emission", hackedWaveColor );
-	
-	defenseWave.gameObject.renderer.material.SetColor( "_Color", hackedWaveColor );
-	defenseWave.gameObject.renderer.material.SetColor( "_SpecColor", hackedWaveColor );
-	defenseWave.gameObject.renderer.material.SetColor( "_Emission", hackedWaveColor );
-	
-	
-	//recalculate at end
-	hackWaveData.calculateWave();
-	defenseWaveData.calculateWave();
-
-	defenseWave.updateWave( defenseWaveData );
-	hackWave.updateWave( hackWaveData );
-	
-	resultWave.gameObject.SetActive( false );
-
-}
-
-
-
-function resetModButtonGraphics()
-{
-
-	for( var m : int = 0; m < 4; m++ )
-	{
-	
-		if( hackWaveData.waveType == m )
+		//shield wave y value
+		var e : Vector3 = defenseWaveData.wavePoints[i];
+		
+		var s : Vector3 = Vector3( e.x, startingY, e.z );//if not being hacked, then assume a flat line
+		
+		if( hackWaveData != null )
 		{
-			modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			s = hackWaveData.wavePoints[i];
 		}
-		else
-		{
-			modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
-		}
+		
+		
+		waveDifList[i] = (e.y - startingY) + (s.y - startingY);
+	
+	
+		//add area to total ship damage
+		areaUnderCurve += Mathf.Abs( waveDifList[i] );
 	
 	}
 

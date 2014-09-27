@@ -104,10 +104,10 @@ function updateStage()
 				if( i % 2 == 0 )
 					hackable = true;
 
-				var damage : float = Math.Floor(Random.Range(2.0, 6.0));
-				var speed : float = Random.Range(0.15, 0.0375);
-				var health : float = Math.Floor(Random.Range(1.0, 20.0));
-				var range : float = Math.Floor(Random.Range(100.0, 500.0));
+				var damage : float = Random.Range(0, 10);
+				var speed : float = Random.Range(1, 10);
+				var range : float = Random.Range(0, 10);
+				var health : float = Random.Range(1, 10);
 
 				dronePath.drone.initRandomDrone( hackable, damage, speed, health, range, dronePath );
 
@@ -169,10 +169,14 @@ function generateStage()
 	// nullifiable = _hackable;
 
 	// num drones
-	var numDrones : int = Random.Range(4, 8);
+	var numDrones : int = Random.Range(5, 9);
 
 	// Drone Path Prefab
 	var dronePathPrefab : GameObject = Resources.Load("DronePath");
+	
+	// Delay between drone appearances
+	var delayGap : int = 1500;
+	var conflictTime : int = 0;
 
 	for( var i : int = 0; i < numDrones; i++ )
 	{
@@ -180,13 +184,17 @@ function generateStage()
 		// Path
 		var dpgo : GameObject = GameObject.Instantiate( dronePathPrefab, Vector3.zero, dronePathPrefab.transform.rotation );
 		dronePathList[i] = dpgo.GetComponent( DronePath );
-		dronePathList[i].delayTime = i * 600;
+		dronePathList[i].delayTime = conflictTime;
 		dronePathList[i].pathTemplate = GameManager.instance.pathTemplateList[Random.Range(0, 8)];
 		dronePathList[i].pathRotation = Random.Range(0.0, 360.0);
 
 		// Drone
 		dronePathList[i].droneType = Drone.DRONE_MODEL_RAND;
 		dronePathList[i].message = "HELLZ YEAH!";
+
+		// Timing between drone appearances gets shorter
+		conflictTime += delayGap;
+		delayGap *= 0.75;
 
 	}
 

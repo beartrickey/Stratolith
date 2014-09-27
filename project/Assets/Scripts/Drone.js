@@ -21,7 +21,8 @@ public var droneType : int = 0;
 
 public var health : float = 100.0;
 
-public var hacked : boolean = false;
+// List of flags for each scopes hack state
+public var hackedScopeList = new boolean[3];
 
 public var nullifiable : boolean = false;
 
@@ -69,8 +70,6 @@ public var attackNullDroneNextReload : boolean = false;
 
 
 public var slgd : SublayerGameDelegate;
-
-public var numScopesHacked : int = 0;
 
 public var bulletDamage : float = 0.0;
 
@@ -150,16 +149,28 @@ function onInstantiate()
 
 
 
-function initRandomDrone( _hackable : boolean, _damage : float, _speed : float, _health : float, _range : float, _path : DronePath )
+function initRandomDrone( _hackable : boolean, _damage : int, _speed : int, _health : int, _range : int, _path : DronePath )
 {
 
-	// Set Values
-	attackRange = _range;
-	modelString = "????";
-	health = _health;
+	// public static var droneAttackRangeList = new Array( 300.0, 560.0, 75.0, 200.0, 200.0, 560.0, 0.0 );
+	// public static var droneBulletDamageList = new Array( 2.0, 5.0, 20.0, 1.0, 1.0, 1.0, 0.0 );
+	// public static var droneHealthList = new Array( 3.0, 5.0, 20.0, 2.0, 50.0, 5.0, 10.0 );
+	// public static var droneReloadFramesList = new Array( 180, 360, 0, 180, 180.0, 260.0, 0.0 );
+	// public static var droneMaxSpeedList = new Array( 0.15, 0.15, 0.0375, 0.15, 0.15, 0.15, 0.2 );
+
+	// var speed : float = Random.Range(0.15, 0.0375);
+	// var health : float = Math.Floor(Random.Range(1.0, 20.0));
+	// var range : float = Math.Floor(Random.Range(100.0, 500.0));
+
+	bulletDamage = 0.0 + ((20.0 - 0.0) * (_damage / 10.0));
+	// reloadCounterMax = 0.0 + ((20.0 - 0.0) * (_damage / 10.0));
 	reloadCounterMax = 200;
-	maxSpeed = _speed;
-	bulletDamage = _damage;
+	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (_speed / 10.0));
+	health = Math.Floor(1.0 + ((20.0 - 1.0) * (_health / 10.0)));
+	attackRange = 100.0 + ((500.0 - 100.0) * (_range / 10.0));
+
+	// Set Values
+	modelString = _damage.ToString("D1") + _speed.ToString("D1") + _health.ToString("D1") + _range.ToString("D1");
 	nullifiable = _hackable;
 	droneType = DRONE_MODEL_RAND;
 
@@ -625,7 +636,9 @@ function droneCollision()
 		
 		if( distance < collisionRange )
 		{
-			damageDrone( 1.0 );
+			// Damage both drones
+			damageDrone( 10.0 );
+			drone.damageDrone( 10.0 );
 		}
 		
 	}
@@ -1376,22 +1389,6 @@ function setDroneColor()
 
 
 
-function makeDefenseWaves()
-{
-
-	numScopesHacked = 0;
-
-	for( var s : int = 0; s < 3; s++ )
-	{
-		
-		scopeList[s].resetScope();
-	
-	}
-
-}
-
-
-
 function resetCommandButtonGraphics()
 {
 
@@ -1416,54 +1413,56 @@ function resetCommandButtonGraphics()
 	
 	
 	//COMMAND BUTTON GRAPHICS
-	if( slgd.activeDroneWaitingForAttackTarget == true ) //Waiting for ATTK
+	if( scopeList[0].state == Scope.SCOPE_STATE_HACKED )
 	{
-		scopeList[0].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectTarg" );
+		if( slgd.activeDroneWaitingForAttackTarget == true ) //Waiting for ATTK
+		{
+			scopeList[0].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectTarg" );
+		}
+		else if( slgd.activeDroneWaitingForDestination == true ) //Waiting for MOVE
+		{
+			scopeList[0].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
+		}
+		else if( state == DRONE_STATE_ATTK ) //ATTK
+		{
+			scopeList[0].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( state == DRONE_STATE_MOVE ) //MOVE
+		{
+			scopeList[0].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( state == DRONE_STATE_CHRG ) //CHRG
+		{
+			scopeList[0].modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( state == DRONE_STATE_DOCK ) //DOCK
+		{
+			scopeList[0].modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispDOCK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
 	}
-	else if( slgd.activeDroneWaitingForDestination == true ) //Waiting for MOVE
-	{
-		scopeList[0].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
-	}
-	else if( state == DRONE_STATE_ATTK ) //ATTK
-	{
-		scopeList[0].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
-	}
-	else if( state == DRONE_STATE_MOVE ) //MOVE
-	{
-		scopeList[0].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
-	}
-	else if( state == DRONE_STATE_CHRG ) //CHRG
-	{
-		scopeList[0].modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
-	}
-	else if( state == DRONE_STATE_DOCK ) //DOCK
-	{
-		scopeList[0].modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-		slgd.activeCommandLabel.gameObject.SetActive( true );
-		slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispDOCK" );
-		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
-	}
-	
 	
 	
 	
 	//POWER DIVERSION
-	if( PlayerData.instance.scopeLevel > 1 )
+	if( scopeList[1].state == Scope.SCOPE_STATE_HACKED )
 	{
 		slgd.powerDiversionLabel.gameObject.SetActive( true );
 		slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispOFF" );
@@ -1476,24 +1475,25 @@ function resetCommandButtonGraphics()
 		
 		if( dronePowerState == DRONE_POWER_VELO )
 		{
-			scopeList[2].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			scopeList[1].modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispVELO" );
 		}
 		else if( dronePowerState == DRONE_POWER_WEAP )
 		{
-			scopeList[2].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			scopeList[1].modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispWEAP" );
 		}
 		else if( dronePowerState == DRONE_POWER_SHLD )
 		{
-			scopeList[2].modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			scopeList[1].modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
 		}
 		else if( dronePowerState == DRONE_POWER_FUNC )
 		{
-			scopeList[2].modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			scopeList[1].modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispFUNC" );
 		}
+
 	}
 	
 }

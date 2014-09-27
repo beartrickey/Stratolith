@@ -62,6 +62,9 @@ function loadData()
 	
 	scopeLevel = PlayerPrefs.GetInt( "scopeLevel", 1 );
 
+	// HACK
+	scopeLevel = 2;
+
 	dockLevel = PlayerPrefs.GetInt( "dockLevel", 1 );
 
 	currentStageId = PlayerPrefs.GetInt( "currentStageId", 0 );

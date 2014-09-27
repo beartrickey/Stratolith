@@ -510,7 +510,7 @@ function sublayerGameUpdate()
 	//complete r-scan if top scope is hacked
 	if( 
 		rScanModeActive == true &&
-		scopeList[0].isHacked == true
+		scopeList[0].state == Scope.SCOPE_STATE_HACKED
 	)
 	{
 		rScanSuccess();
@@ -805,18 +805,20 @@ function updateRadarGraphics()
 				// Init and display icon at edge of radar where drone will appear
 				icon.dronePath = path;
 				icon.gameObject.SetActive( true );
-			
-				var angleInRads : float = ( path.pathRotation - 270.0 ) * Mathf.Deg2Rad;
-				var xcomp : float = -Mathf.Sin( angleInRads );
-				var ycomp : float = Mathf.Cos( angleInRads );
-				
-				var direction : Vector2 = Vector2( xcomp, ycomp );
-				var position : Vector2 = direction * ( scannerWidth - 20.0 );
-				
+
+				var iconDistanceFromCenter : float = scannerWidth - 20.0;
+				var firstPointPosition : Vector2 = path.getPositionForIndex(0);
+				var direction : Vector2 = (firstPointPosition - shieldScannerCenter.transform.position).normalized;
+				var position : Vector2 = direction * iconDistanceFromCenter;
 				position += shieldScannerCenter.transform.position;
-				
 				icon.gameObject.transform.position = position;
-				icon.gameObject.transform.eulerAngles.z = path.pathRotation + 90.0 ;
+
+				// Rotate icon
+				var iconAngleInRads : float = Mathf.Atan2( direction.x, direction.y );
+				var iconAngleInDegrees : float = iconAngleInRads * Mathf.Rad2Deg;
+				iconAngleInDegrees -= 180.0;
+				iconAngleInDegrees = Mathf.Abs( iconAngleInDegrees );
+				icon.gameObject.transform.eulerAngles.z = iconAngleInDegrees + 180.0;
 
 				// Position label to the inside of the radar
 				var labelOffset : Vector2 = (shieldScannerCenter.transform.position - position).normalized * 50.0;
@@ -824,7 +826,7 @@ function updateRadarGraphics()
 				icon.distanceLabel.gameObject.transform.eulerAngles.z = 0.0;
 
 				// Update distance counter
-				icon.distanceLabel.text = path.delayCounter.ToString("D2") + "u";
+				icon.distanceLabel.text = path.delayCounter.ToString("D2") + " MU";
 				icon.distanceLabel.Commit();
 				
 				break;
@@ -927,18 +929,9 @@ function handleScopeDragging()
 	activeScope.knob.setKnobRotation();
 	
 	
-	//bail if scope already hacked
-	if( activeScope.isHacked == true )
-		return;
-		
-	
-	//bail if no drone selected
-	//if( activeScope.drone == null )
-	//	return;
-	
-	
-	//update hacking wave
-	onHackWaveChanged();
+	// update waves for unhacked scopes
+	if( activeScope.state == Scope.SCOPE_STATE_UNHACKED )
+		onHackWaveChanged();
 
 }
 
@@ -960,7 +953,7 @@ function onHackWaveChanged()
 	//snap and change color
 	if( activeScope.areaUnderCurve < resultWaveThreshold )
 	{
-		activeScope.scopeSuccessfullyHacked();
+		activeScope.startSuccessfulHackSequence();
 	}
 
 }
@@ -1254,34 +1247,24 @@ function selectDrone( _button : ButtonScript )
 
 	connectActiveDroneToScopes();
 	
-	//display command buttons
-	if( activeDrone.hacked == true )
-	{
+	//display depends on scope state
 	
 		//show command window
-		hideScopeButtons();
-		activeDrone.resetCommandButtonGraphics();
-		
+		// hideScopeButtons();
+		// activeDrone.resetCommandButtonGraphics();
 		
 		//stop nullification audio
-		GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
-		
-	}
-	else
-	{	
+		// GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
 	
-		//make defense waves for drone
-		activeDrone.makeDefenseWaves();
+		// //make defense waves for drone
+		// activeDrone.makeDefenseWaves();
 		
 	
-		//show scopes
-		hideCommandLabels();
+		// //show scopes
+		// hideCommandLabels();
 		
-		
-		//play nullification audio
-		GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Play();
-		
-	}
+		// //play nullification audio
+		// GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Play();
 	
 	
 	//turn selection lines on
@@ -1301,7 +1284,17 @@ function selectDrone( _button : ButtonScript )
 	
 	//change blueprint
 	activeDroneBlueprint.gameObject.SetActive( true );
-	var spriteId : int = Drone.droneBlueprintSpriteId[ activeDrone.droneType ];
+	var spriteId : int = -1;
+
+	if( activeDrone.droneType == Drone.DRONE_MODEL_RAND )
+	{
+		// Do nothing
+	}
+	else
+	{
+		spriteId = Drone.droneBlueprintSpriteId[ activeDrone.droneType ];	
+	}
+	
 	
 	if( spriteId != -1 )
 		activeDroneBlueprint.SetSprite( spriteId );
@@ -1320,8 +1313,18 @@ function connectActiveDroneToScopes()
 	for( var i : int = 0; i < 3; i++ )
 	{
 
+		// Attach and set hacked flag
 		activeDrone.scopeList[i] = scopeList[i];
 		scopeList[i].drone = activeDrone;
+
+		if( activeDrone.hackedScopeList[i] == true )
+		{
+			scopeList[i].setToHacked();
+		}
+		else
+		{
+			scopeList[i].resetWaves();
+		}
 
 	}
 	
@@ -1421,7 +1424,8 @@ function droneSuccessfullyHacked()
 
 
 	//message
-	var droneHackMessage : String = Drone.droneModelNumberList[activeDrone.droneType] + " DRONE NULLIFIED";
+
+	var droneHackMessage : String = activeDrone.modelString + " DRONE NULLIFIED";
 	addMessage( droneHackMessage );
 	
 	
@@ -1563,15 +1567,17 @@ function modButtonPressed( _button : ButtonScript )
 	{
 
 		//drone hacked (buttons are drone commands)
-		if( activeDrone.hacked == true )
+		if( activeScope.state == Scope.SCOPE_STATE_HACKED )
 		{
 		
 			droneCommandButtonPressed( scopeIndex, buttonIndex );
 		
 		}
-		else if( activeDrone.hacked == false && activeScope.isHacked == false )
+		else if( activeScope.state == Scope.SCOPE_STATE_UNHACKED )
 		{
+
 			waveModulationButtonPressed( buttonIndex );
+
 		}
 
 	}
@@ -1623,19 +1629,19 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 		moveButtonPressed();
 	}
 	
-	if( _scopeIndex == 0 && _buttonIndex == 2 ) //clld
+	if( _scopeIndex == 0 && _buttonIndex == 2 ) //slvg
 	{
 		
 	}
 
-	if( _scopeIndex == 0 && _buttonIndex == 3 ) //chrg
+	if( _scopeIndex == 0 && _buttonIndex == 3 ) //dock
 	{
 		dockButtonPressed();
 	}
 	
 	
 	//power diversion buttons
-	if( _scopeIndex == 2 )
+	if( _scopeIndex == 1 )
 	{
 	
 		if( activeDrone.dronePowerState == _buttonIndex )
@@ -1926,7 +1932,7 @@ function rScanButtonPressed()
 		
 		deselectDrone();
 		
-		scopeList[0].resetScope();
+		scopeList[0].resetWaves();
 		
 
 		//randomize item position
