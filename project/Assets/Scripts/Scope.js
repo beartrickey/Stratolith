@@ -219,6 +219,13 @@ function setForHackedState()
 			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
 			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
 		}
+		else if( slgd.activeDroneWaitingForSalvageTarget == true ) //Waiting for SLVG
+		{
+			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
+		}
 		else if( drone.state == Drone.DRONE_STATE_ATTK ) //ATTK
 		{
 			modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
@@ -233,12 +240,12 @@ function setForHackedState()
 			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
 			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
 		}
-		else if( drone.state == Drone.DRONE_STATE_CHRG ) //SLVG
+		else if( drone.state == Drone.DRONE_STATE_SLVG ) //SLVG
 		{
-			// modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			// slgd.activeCommandLabel.gameObject.SetActive( true );
-			// slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
-			// slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
 		}
 		else if( drone.state == Drone.DRONE_STATE_DOCK ) //DOCK
 		{

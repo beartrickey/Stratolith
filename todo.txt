@@ -1,37 +1,29 @@
--Tactical
-
-	-R-Scan
-		-Give random/determined item upon success
-		-Make r-scan lines converge
-		-Add r-scan success sequence
-			-dude picks up item
 
 
-	-Stage Design
-		-Make stages 1-29
-		-Add new paths
-			-Drones fly past Stratolith and leave radar
-				-handle deactivation of drones
+* Stage generation
+	-Difficulty
+		-Evenly match nullifiable and unnullifiable drone stats
+		-All drone stats add up to same number
+			-Make algorithm to achieve this
 
-	-Display stats on radar (remaining drones, etc)
+	-Unify drone types and paths
+		-Don't have close range drones circle around radar (they'll never be able to attack the stratolith)
 
-
-	-Allow for three scope states
-		-Reposition scopes
-		-Make sure labels/graphics move accordingly
+	-Stretch time out a bit more to allow for r-scanning, salvaging, and drone maintenance
 
 
-	-Allow for three docks
+* R-Scan
+	-Items stay on radar for N frames before hostile drone picks them up
+
+	-Items are saved if drone survives conflict or docks
+
+	-Items can be used for anything - World Map Unlock, Tech Unlock, Data Unlock, Drone Creation?
 
 
-	-Result screens
-		-game clear
-		-game fail
+* Stage End
+	-Show found items
+	
+	-Pick drone to keep in dock(s)
 
 
--Tech screen
-
--Map screen	
-
-
-
+* Loading screen has moving clouds

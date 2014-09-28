@@ -135,6 +135,7 @@ public var activeDroneBlueprint : tk2dSprite;
 //drone command buttons
 public var activeDroneWaitingForDestination : boolean = false;
 public var activeDroneWaitingForAttackTarget : boolean = false;
+public var activeDroneWaitingForSalvageTarget : boolean = false;
 
 
 //docking
@@ -142,14 +143,10 @@ public var dockSlotList = new DockSlot[3];
 
 
 //rscan
-public var rScanDrone : Drone = null;
-public var rScanLineContainer : GameObject = null;
+public var rScanCircle : tk2dSprite = null;
 public var rScanItemLocator : tk2dSprite;
 public var rScanButton : ButtonScript;
 public var rScanModeActive : boolean;
-public var numRScanLines : int = 32;
-public var rScanLinePrefab : GameObject = null;
-public var rScanLineList = new RScanLine[numRScanLines];
 
 public var rScanItemRotation : float = 0.0;
 public var rScanItemLength : float = 400.0;
@@ -196,23 +193,13 @@ function onInstantiate()
 	activeDronePowerLabel.Commit();
 	
 	
-	//r-scan feature
-	for( var r : int = 0; r < numRScanLines; r++ )
-	{
-	
-		var rScanLineGameObject : GameObject = GameObject.Instantiate( rScanLinePrefab, Vector3.zero, rScanLinePrefab.transform.rotation );
-	
-		rScanLineGameObject.transform.parent = rScanLineContainer.transform;
-
-		rScanLineList[r] = rScanLineGameObject.GetComponent( RScanLine );
-		
-		rScanLineList[r].onInstantiate();
-	
-	}
-	
-	
+	// R-Scan button
 	sl.addButton( rScanButton );
 	rScanButton.onTouchDownInsideDelegate = rScanButtonPressed;
+
+
+	// Item Locator button
+	sl.addButton( rScanItemLocator.gameObject.GetComponent( ButtonScript ) );
 	
 	
 	//standby button
@@ -354,14 +341,6 @@ function clearScene()
 	messageLineStack = new Array();
 	messageLabel.text = "";
 	messageLabel.Commit();
-
-
-	//clear rscan graphics
-	if( rScanDrone != null )
-	{
-		rScanDrone.deactivate();
-		rScanDrone = null;
-	}
 
 }
 
@@ -1239,6 +1218,8 @@ function selectDrone( _button : ButtonScript )
 	activeDroneWaitingForDestination = false;
 	
 	activeDroneWaitingForAttackTarget = false;
+
+	activeDroneWaitingForSalvageTarget = false;
 	
 	activeDrone = drone;
 
@@ -1353,6 +1334,8 @@ function deselectDrone()
 	activeDroneWaitingForDestination = false;
 	
 	activeDroneWaitingForAttackTarget = false;
+
+	activeDroneWaitingForSalvageTarget = false;
 	
 	// activeDrone.turnOffAllCommandButtonGraphics();
 
@@ -1610,7 +1593,7 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 		}
 		else if( _buttonIndex == 2 ) //slvg
 		{
-			
+			slvgButtonPressed();
 		}
 		else if( _buttonIndex == 3 ) //dock
 		{
@@ -1706,6 +1689,7 @@ function turnOffCommandRequest()
 	commandRequestLabel.gameObject.SetActive( false );
 	activeDroneWaitingForDestination = false;
 	activeDroneWaitingForAttackTarget = false;
+	activeDroneWaitingForSalvageTarget = false;
 
 }
 
@@ -1751,6 +1735,7 @@ function moveButtonPressed()
 	
 		activeDroneWaitingForAttackTarget = false;
 		activeDroneWaitingForDestination = true;
+		activeDroneWaitingForSalvageTarget = false;
 		scopeList[0].setForHackedState();
 		
 		GameManager.instance.SFX_MOVE.Play();
@@ -1781,6 +1766,32 @@ function dockButtonPressed()
 		
 	}
 
+}
+
+
+
+function slvgButtonPressed()
+{
+	
+	if( activeDroneWaitingForSalvageTarget == true ) //cancel SLVG command
+	{
+	
+		turnOffCommandRequest();
+		activeDrone.startIdle();
+		
+	}
+	else
+	{
+	
+		activeDroneWaitingForAttackTarget = false;
+		activeDroneWaitingForDestination = false;
+		activeDroneWaitingForSalvageTarget = true;
+		scopeList[0].setForHackedState();
+		
+		GameManager.instance.SFX_CLLD.Play();
+		
+	}
+	
 }
 
 
@@ -1885,7 +1896,9 @@ function getNumberOfDocksUsed() : int
 
 
 
-/////////////////////////////////////////////////////////R SCAN BUTTON
+///////////////////////////////////////////////////////////////////////////
+// R SCAN BUTTON
+///////////////////////////////////////////////////////////////////////////
 
 
 
@@ -1895,10 +1908,6 @@ function rScanButtonPressed()
 	//HACK: Pause for Alex TGS build
 	// gm.goFromGameToPause();
 	// return;
-
-	//bail if already recovering item
-	if( rScanDrone != null )
-		return;
 
 
 	if( rScanModeActive == true )
@@ -1912,31 +1921,24 @@ function rScanButtonPressed()
 	
 		rScanModeActive = true;
 		
-		setRScanLineState( true );
-
-		resetRScanLines();
-		
 		deselectDrone();
 		
 		scopeList[0].resetWaves();
+
+
+		// activate circle
+		rScanCircle.gameObject.SetActive( true );
+		rScanCircle.color.a = 0.25;
 		
 
 		//randomize item position
 		rScanItemRotation = Random.Range( 0.0, 6.28 );
 		rScanItemLength = Random.Range( 200.0, (scannerWidth - 50.0) );
-
-		Debug.Log( 'rScanItemRotation: ' + rScanItemRotation );
+		// Debug.Log( 'rScanItemRotation: ' + rScanItemRotation );
 
 
 		//set locator position
-		
 		rScanItemLocator.gameObject.transform.position = getRScanItemPosition();
-
-
-		//set container rotation
-		var offsetAngle : float = rScanItemRotation - 9.42;
-		var angleInDegrees : float = Mathf.Rad2Deg * offsetAngle;
-		rScanLineContainer.transform.eulerAngles.z = Mathf.Abs( angleInDegrees );
 
 	}
 
@@ -1957,44 +1959,26 @@ function getRScanItemPosition() : Vector3
 function updateRScan()
 {
 
-	//how close are we to finding the wreckage?
-	//scopeList[0].areaUnderCurve;
-	
-	
-	//
-	for( var r : int = 0; r < numRScanLines; r++ )
+	// Rate
+	var maxAreaUnderGraph : float = 25000.0;
+	var minAreaUnderGraph : float = resultWaveThreshold + 250.0;
+	var totalPossibleArea : float = maxAreaUnderGraph - minAreaUnderGraph;
+	var scaledCloseness : float = 1.0 - ((scopeList[0].areaUnderCurve - minAreaUnderGraph) / totalPossibleArea);
+
+	var baseRate : float = 1.01;
+	var rate : float = baseRate + (scaledCloseness * 0.075);
+
+
+	// Increase cirlce size
+	rScanCircle.gameObject.transform.localScale.x *= rate;
+	rScanCircle.gameObject.transform.localScale.y *= rate;
+
+
+	// Reset back to center
+	if( rScanCircle.gameObject.transform.localScale.x > 11.0 )
 	{
-	
-		rScanLineList[r].updateRScanLine();
-	
-	}
-
-}
-
-
-
-function resetRScanLines()
-{
-	
-	for( var r : int = 0; r < numRScanLines; r++ )
-	{
-	
-		rScanLineList[r].resetLineVars();
-	
-	}
-
-}
-
-
-
-function setRScanLineState( _active : boolean )
-{
-	
-	for( var r : int = 0; r < numRScanLines; r++ )
-	{
-	
-		rScanLineList[r].gameObject.SetActive( _active );
-	
+		rScanCircle.gameObject.transform.localScale.x = 1.0;
+		rScanCircle.gameObject.transform.localScale.y = 1.0;
 	}
 
 }
@@ -2008,65 +1992,21 @@ function rScanSuccess()
 
 	rScanItemLocator.gameObject.SetActive( true );
 
-	rScanDrone = getFreeDrone();
-	rScanDrone.initializeDockedDrone( 2 );
-	rScanDrone.maxSpeed = 0.3;
-	rScanDrone.state = Drone.DRONE_STATE_RSCAN_START;
-	rScanDrone.destination = getRScanItemPosition();
-
 
 	//update messag
-	var rScanSuccessMessage : String = "R-SCAN COMPLETE:\nLAUNCHING SALVAGE\nDRONE ";
+	var rScanSuccessMessage : String = "R-SCAN COMPLETE:\nSEND SALVAGE DRONE ";
 	addMessage( rScanSuccessMessage );
 
 }
 
 
 
-function rScanDroneReturned()
+function onDroneCollectItem( _drone : Drone )
 {
 
-	rScanDrone = null;
-
-	//what did we find?
-
-	var remainingTechItems : int = gm.currentStage.techItems - gm.currentStage.foundTechItems;
-	var remainingBlackBoxItems : int = gm.currentStage.blackBoxItems - gm.currentStage.foundBlackBoxItems;
-	var remainingHealthItems : int = gm.currentStage.healthItems - gm.currentStage.foundHealthItems;
-
-	var techItemThreshold : int = remainingTechItems;
-	var blackBoxItemThreshold : int = techItemThreshold + remainingBlackBoxItems;
-	var healthItemThreshold : int = blackBoxItemThreshold + remainingHealthItems;
-	var junkItemTheshold : int = healthItemThreshold * 2;
-
-
-	var r : int = Random.Range( 0, junkItemTheshold );
-	var itemMessage : String = "";
-
-	if( r < techItemThreshold ) // tech upgrade
-	{
-		itemMessage = "ARTIFACT RECOVERED";
-		gm.currentStage.foundTechItems += 1;
-	}
-	else if( r < blackBoxItemThreshold )
-	{
-		itemMessage = "FLIGHT RECORDER\nRECOVERED";
-		gm.currentStage.foundBlackBoxItems += 1;
-	}
-	else if( r < healthItemThreshold ) // repair module
-	{
-		itemMessage = "REPAIR MODULE FOUND\nPOWER AT: " + mainPower + "%";
-		gm.currentStage.foundHealthItems += 1;
-	}
-	else
-	{
-		itemMessage = "NO ITEMS FOUND";
-	}
-
-
-	//update messag
-	var rScanSuccessMessage : String = "SALVAGE DRONE\nDOCKED:\n" + itemMessage;
-	addMessage( rScanSuccessMessage );
+	_drone.hasItem = true;
+	_drone.itemGraphic.gameObject.SetActive( true );
+	rScanItemLocator.gameObject.SetActive( false );
 
 }
 
@@ -2075,10 +2015,10 @@ function rScanDroneReturned()
 function turnOffRScan()
 {
 
-	rScanModeActive = false;//toggle off state
-	
-	setRScanLineState( false );//turn off scan lines
-	
+	rScanModeActive = false;  // Toggle off state
+
+	rScanCircle.gameObject.SetActive( false );  // Toggle off circle
+
 	turnOffScopes();
 
 }

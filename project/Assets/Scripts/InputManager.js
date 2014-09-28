@@ -402,6 +402,7 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 	//deselect drone when no pending command and touched inside radar
 	if( slgd.activeDroneWaitingForDestination == false &&
 		slgd.activeDroneWaitingForAttackTarget == false &&
+		slgd.activeDroneWaitingForSalvageTarget == false &&
 		wasTouchInsideRadarCircle( _ray ) == true &&
 		_buttonScript == null )
 	{
@@ -427,6 +428,34 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 		
 	}
 
+
+	// Case when active drone waiting to select SLVG target
+	if( slgd.activeDroneWaitingForSalvageTarget == true )
+	{
+	
+		//bail if no button has been pressed this point
+		if( _buttonScript == null )
+		{
+			return;
+		}
+
+		//select item as salvage target
+		var itemLocator : RScanItemLocator = _buttonScript.gameObject.GetComponent( RScanItemLocator );
+
+		if( itemLocator != null )
+		{
+
+			//target selected item
+			slgd.turnOffCommandRequest();
+			slgd.activeDrone.startSlvg( itemLocator.gameObject.transform.position );
+			GameManager.instance.SFX_CHOOSE_TARGET.Play();	
+
+			return;
+
+		}
+
+	}
+
 	
 	//case when active drone waiting for ATTK
 	if( slgd.activeDroneWaitingForAttackTarget == true )
@@ -445,7 +474,6 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 		
 		if( drone != null )
 		{
-		
 		
 			//skip if not a hostile drone
 			if( drone.hackedScopeList[0] == true )

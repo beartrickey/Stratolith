@@ -108,6 +108,11 @@ public var modelString : String;
 public var droneDockingCounter : int = 0;
 
 
+// Item collection
+public var hasItem : boolean = false;
+public var itemGraphic : tk2dSprite = null;
+
+
 
 ////MODELS
 public static var DRONE_MODEL_6611 : int = 0; //null close range strike
@@ -125,16 +130,13 @@ public static var DRONE_STATE_IDLE : int = 0;
 public static var DRONE_STATE_MOVE : int = 1;
 public static var DRONE_STATE_ATTK : int = 2;
 public static var DRONE_STATE_DOCK : int = 3;
-public static var DRONE_STATE_CHRG : int = 4;
+public static var DRONE_STATE_SLVG : int = 4;
 public static var DRONE_STATE_PREPARING_TO_DOCK : int = 5;
 public static var DRONE_STATE_DOCKED : int = 6;
 public static var DRONE_STATE_PREPARING_TO_LAUNCH : int = 7;
 public static var DRONE_STATE_DYING : int = 8;
 public static var DRONE_STATE_CHARGED_TO_DEATH : int = 9;
 public static var DRONE_STATE_FOLLOWING_PATH : int = 10;
-public static var DRONE_STATE_RSCAN_START : int = 11;
-public static var DRONE_STATE_RSCAN_WAIT_AT_ITEM : int = 12;
-public static var DRONE_STATE_RSCAN_RETURN : int = 13;
 
 public var state : int = DRONE_STATE_IDLE;
 
@@ -234,6 +236,7 @@ function baseInitialize()
 	//reset graphics
 	gameObject.SetActive( true );
 	droneInfoLabel.gameObject.SetActive( true );
+	itemGraphic.gameObject.SetActive( false );
 	
 	gameObject.transform.localScale.x = 1.0;
 	gameObject.transform.localScale.y = 1.0;
@@ -353,63 +356,14 @@ function updateDrone()
 function handleNavigation()
 {
 
-	if( state == DRONE_STATE_RSCAN_START )
-	{		
-		
-		//change points if close enough to target
-		var stopThreshold : float = 100.0;
-		
-		var distanceFromTarget : float = turnTowardTargetPosition();
-		
-		if( distanceFromTarget < stopThreshold )
-		{
-			startIdle();
-			slgd.rScanItemLocator.gameObject.SetActive( false );
-			state = DRONE_STATE_RSCAN_WAIT_AT_ITEM;
-			counter = 300;
-		}
-		
-	}
-
-
-	if( state == DRONE_STATE_RSCAN_WAIT_AT_ITEM )
-	{
-		
-		counter--;
-		
-		if( counter <= 0 )
-		{
-			state = DRONE_STATE_RSCAN_RETURN;
-			destination = slgd.shieldScannerCenter.position;
-		}
-		
-	}
-
-
-	if( state == DRONE_STATE_RSCAN_RETURN )
-	{		
-		
-		//change points if close enough to target
-		stopThreshold = 100.0;
-		
-		distanceFromTarget = turnTowardTargetPosition();
-		
-		if( distanceFromTarget < stopThreshold )
-		{
-			slgd.rScanDroneReturned();
-			deactivate();
-		}
-		
-	}
-
 
 	if( state == DRONE_STATE_FOLLOWING_PATH )
 	{		
 		
 		//change points if close enough to target
-		stopThreshold = 10.0;
+		var stopThreshold = 10.0;
 		
-		distanceFromTarget = turnTowardTargetPosition();
+		var distanceFromTarget = turnTowardTargetPosition();
 		
 		if( distanceFromTarget < stopThreshold )
 		{
@@ -469,6 +423,25 @@ function handleNavigation()
 			startIdle();
 			
 			attemptEnteringStratolith();
+			
+		}
+	
+	}
+
+
+	if( state == DRONE_STATE_SLVG )
+	{
+	
+		//stop if close enough to target
+		stopThreshold = 100.0;
+		
+		distanceFromTarget = turnTowardTargetPosition();
+		
+		if( distanceFromTarget < stopThreshold )
+		{
+		
+			startIdle();
+			slgd.onDroneCollectItem( this );
 			
 		}
 	
@@ -743,6 +716,19 @@ function startMove( _touchCoordinates : Vector2 )
 
 
 
+function startSlvg( _touchCoordinates : Vector2 )
+{
+
+	state = DRONE_STATE_SLVG;
+
+	destination = _touchCoordinates;
+	
+	attackTarget = null;
+
+}
+
+
+
 function startDock( )
 {
 	
@@ -778,13 +764,6 @@ function startIdle()
 	
 	destination = position;
 	
-}
-
-
-
-function startPowerDiversionWeap()
-{
-
 }
 
 
@@ -866,7 +845,8 @@ function updatePosition()
 	var distance : float = pointDif.magnitude;
 	
 	
-	//set threshold for accel/decel
+	// Set distance threshold for accel/decel
+	// (when drone is closer than this threshold, it will stop)
 	var accelThreshold : float = 0.0;
 	
 	if( state == DRONE_STATE_FOLLOWING_PATH )
@@ -889,9 +869,9 @@ function updatePosition()
 	{
 		accelThreshold = 110.0;
 	}
-	else if( state == DRONE_STATE_CHRG )
+	else if( state == DRONE_STATE_SLVG )
 	{
-		accelThreshold = 40.0;
+		accelThreshold = 110.0;
 	}
 	else if( state == DRONE_STATE_PREPARING_TO_DOCK ||
 			 state == DRONE_STATE_DOCKED ||
@@ -974,46 +954,38 @@ function updateDroneGraphics()
 	droneInfoLabel.gameObject.transform.position.y = icon.transform.position.y;
 	
 	
-	//destination icon
-	if( state == DRONE_STATE_MOVE )
+	// Destination icon
+	if( state == DRONE_STATE_MOVE || state == DRONE_STATE_SLVG )
 	{
-	
 		setDestinationIcon();
-			
 	}
 	else
 	{
-		
 		if( destinationIcon.gameObject.activeSelf == true )
 		{
 			destinationIcon.gameObject.SetActive( false );
 			targetLine.setDotState( false );
 		}
-		
 	}
 	
 	
 	
-	//target icon
+	// Target icon
 	if( state == DRONE_STATE_ATTK )
 	{
-	
 		setTargetIcon();
-		
 	}
 	else
 	{
-	
 		if( targetIcon.gameObject.activeSelf == true )
 		{
 			targetIcon.gameObject.SetActive( false );
 			targetLine.setDotState( false );
-		}
-		
+		}	
 	}
 	
 	
-	//set selection lines if selected
+	// Set selection lines if selected
 	if( slgd.activeDrone == this )
 	{
 	
