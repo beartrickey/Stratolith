@@ -26,8 +26,11 @@ public var cannotNullifyLabel : tk2dSprite;
 public var drone : Drone;
 
 public var blinkCounter : int = 0;
+public var blinkRate : int = 0;
 
 public var locked : boolean = true;
+
+public var index : int = -1;
 
 public static var SCOPE_STATE_UNHACKED : int = 0;
 public static var SCOPE_STATE_HACK_SEQUENCE : int = 1;
@@ -63,7 +66,8 @@ function startSuccessfulHackSequence()
 {
 
 	state = SCOPE_STATE_HACK_SEQUENCE;
-	
+	blinkCounter = 60;
+
 	
 	//turn off active light
 	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
@@ -107,9 +111,17 @@ function startSuccessfulHackSequence()
 	
 	resultWave.gameObject.SetActive( false );
 
-	if( drone != null )
+
+	// Update drone
+	drone.hackedScopeList[index] = true;
+
+	// Do more if this is the main control scope
+	if( index == 0 )
 	{
-		drone.numScopesHacked++;
+		drone.startIdle();
+		GameManager.instance.SFX_DRONE_HACKED.Play();
+		GameManager.instance.currentStage.remainingHostileDrones -= 1;
+		drone.setDroneColor();
 	}
 
 }
@@ -121,43 +133,40 @@ function handleSuccessfulHackSequence()
 
 	blinkCounter--;
 
-	if( blinkCounter < 0 )
-	{
-		setToHacked();
-	}
-	else
+	if( blinkCounter % 5 )
 	{
 
 		// Toggle graphic visibility every N frames
-		if( blinkCounter % 10 == 0 )
+
+		if( defenseWave.gameObject.activeSelf == true )
 		{
 
-			if( defenseWave.gameObject.activeSelf == true )
-			{
+			defenseWave.gameObject.SetActive( false );
+			hackWave.gameObject.SetActive( false );
+			resultWave.gameObject.SetActive( false );
 
-				defenseWave.gameObject.SetActive( false );
-				hackWave.gameObject.SetActive( false );
-				resultWave.gameObject.SetActive( false );
+		}
+		else
+		{
 
-			}
-			else
-			{
-
-				defenseWave.gameObject.SetActive( true );
-				hackWave.gameObject.SetActive( true );
-				resultWave.gameObject.SetActive( true );
-
-			}
+			defenseWave.gameObject.SetActive( true );
+			hackWave.gameObject.SetActive( true );
+			resultWave.gameObject.SetActive( true );
 
 		}
 
+	}
+
+	if( blinkCounter < 0 )
+	{
+		setForHackedState();
 	}
 
 }
 
 
 
-function setToHacked()
+function setForHackedState()
 {
 
 	state = SCOPE_STATE_HACKED;
@@ -167,10 +176,114 @@ function setToHacked()
 	defenseWave.gameObject.SetActive( false );
 	hackWave.gameObject.SetActive( false );
 	resultWave.gameObject.SetActive( false );
+	setWaveTypeIconVisibility( false );
 
 
 	// Make command related graphics appear
-	drone.resetCommandButtonGraphics();
+	var slgd : SublayerGameDelegate = SublayerGameDelegate.instance;
+
+	// Reset mod buttons and light
+	for( var m : int = 0; m < 4; m++ )
+	{
+
+		modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
+		activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
+	
+	}
+
+
+	// Main Control
+	if( index == 0 )
+	{
+
+		slgd.activeCommandLabel.gameObject.SetActive( false );
+		slgd.commandRequestLabel.gameObject.SetActive( true );
+		slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispNeutral" );
+		
+		slgd.moveCommandLabel.gameObject.SetActive( true );
+		slgd.dockCommandLabel.gameObject.SetActive( true );
+		slgd.attkCommandLabel.gameObject.SetActive( true );
+		slgd.chrgCommandLabel.gameObject.SetActive( true );
+
+		if( slgd.activeDroneWaitingForAttackTarget == true ) //Waiting for ATTK
+		{
+			modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectTarg" );
+		}
+		else if( slgd.activeDroneWaitingForDestination == true ) //Waiting for MOVE
+		{
+			modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
+		}
+		else if( drone.state == Drone.DRONE_STATE_ATTK ) //ATTK
+		{
+			modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispATTK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( drone.state == Drone.DRONE_STATE_MOVE ) //MOVE
+		{
+			modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispMOVE" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( drone.state == Drone.DRONE_STATE_CHRG ) //SLVG
+		{
+			// modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			// slgd.activeCommandLabel.gameObject.SetActive( true );
+			// slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
+			// slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+		else if( drone.state == Drone.DRONE_STATE_DOCK ) //DOCK
+		{
+			modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.activeCommandLabel.gameObject.SetActive( true );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispDOCK" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
+		}
+	}
+
+
+	//POWER DIVERSION
+	if( index == 1 )
+	{
+		slgd.powerDiversionLabel.gameObject.SetActive( true );
+		slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispOFF" );
+		
+		slgd.veloPowerLabel.gameObject.SetActive( true );
+		slgd.weapPowerLabel.gameObject.SetActive( true );
+		slgd.shldPowerLabel.gameObject.SetActive( true );
+		slgd.funcPowerLabel.gameObject.SetActive( true );
+		
+		
+		if( drone.dronePowerState == Drone.DRONE_POWER_VELO )
+		{
+			modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispVELO" );
+		}
+		else if( drone.dronePowerState == Drone.DRONE_POWER_WEAP )
+		{
+			modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispWEAP" );
+		}
+		else if( drone.dronePowerState == Drone.DRONE_POWER_SHLD )
+		{
+			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
+		}
+		else if( drone.dronePowerState == Drone.DRONE_POWER_FUNC )
+		{
+			modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispFUNC" );
+		}
+
+	}
 
 }
 
@@ -241,10 +354,7 @@ function resetWaves()
 	
 	
 	//reset wave icons
-	for( var i : int = 0; i < 4; i++ )
-	{
-		waveTypeIconList[i].gameObject.SetActive( true );
-	}
+	setWaveTypeIconVisibility( true );
 	
 	
 	//if drone is null, we are in r-scan mode
@@ -334,6 +444,17 @@ function updateResultWave()
 		//add area to total ship damage
 		areaUnderCurve += Mathf.Abs( waveDifList[i] );
 	
+	}
+
+}
+
+
+
+function setWaveTypeIconVisibility( visibility : boolean )
+{
+	for( var i : int = 0; i < 4; i++ )
+	{
+		waveTypeIconList[i].gameObject.SetActive( visibility );
 	}
 
 }

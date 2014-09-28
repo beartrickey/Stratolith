@@ -49,7 +49,7 @@ function onInit( _source : Drone, _target : GameObject )
 	
 	
 	//color
-	if( _source.hacked == true )
+	if( _source.hackedScopeList[0] == true )
 	{
 		circleIcon.SetSprite( "Radar-WeaponNull" );
 		sightIcon.SetSprite( "Radar-WeaponNullSight" );

@@ -240,6 +240,7 @@ function onInstantiate()
 	{
 	
 		scopeList[s].initScope();
+		scopeList[s].index = s;
 		
 		var knob : ButtonScript = scopeList[s].knob;
 		sl.addButton( knob );
@@ -268,7 +269,7 @@ function onInstantiate()
 		
 	}
 	
-	hideScopeButtons();
+	turnOffScopes();
 	
 	setScopesForScopeLevel();
 	
@@ -496,17 +497,6 @@ function sublayerGameUpdate()
 	}
 	
 	
-	//unlock drone if all scopes are hacked
-	if(
-		activeDrone != null &&
-		activeDrone.numScopesHacked >= PlayerData.instance.scopeLevel &&
-		activeDrone.hacked == false
-	)
-	{
-		droneSuccessfullyHacked();
-	}
-	
-	
 	//complete r-scan if top scope is hacked
 	if( 
 		rScanModeActive == true &&
@@ -519,6 +509,13 @@ function sublayerGameUpdate()
 	
 	//update radar scanner at different rate than logic
 	updateRadarGraphics();
+
+
+	// Scopes
+	for( var s : int = 0; s < 3; s++ )
+	{
+		scopeList[s].updateScope();
+	}
 	
 	
 	//vibration from damage
@@ -1245,27 +1242,10 @@ function selectDrone( _button : ButtonScript )
 	
 	activeDrone = drone;
 
+	// reset scope states (will turn back on later based on drone hack state)
+	turnOffScopes();
+
 	connectActiveDroneToScopes();
-	
-	//display depends on scope state
-	
-		//show command window
-		// hideScopeButtons();
-		// activeDrone.resetCommandButtonGraphics();
-		
-		//stop nullification audio
-		// GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
-	
-		// //make defense waves for drone
-		// activeDrone.makeDefenseWaves();
-		
-	
-		// //show scopes
-		// hideCommandLabels();
-		
-		// //play nullification audio
-		// GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Play();
-	
 	
 	//turn selection lines on
 	selectionLineUp.gameObject.SetActive( true );
@@ -1319,7 +1299,7 @@ function connectActiveDroneToScopes()
 
 		if( activeDrone.hackedScopeList[i] == true )
 		{
-			scopeList[i].setToHacked();
+			scopeList[i].setForHackedState();
 		}
 		else
 		{
@@ -1374,15 +1354,13 @@ function deselectDrone()
 	
 	activeDroneWaitingForAttackTarget = false;
 	
-	activeDrone.turnOffAllCommandButtonGraphics();
+	// activeDrone.turnOffAllCommandButtonGraphics();
 
 	disconnectDroneFromScopes();
 	
 	activeDrone = null;
 	
-	hideScopeButtons();
-	
-	hideCommandLabels();
+	turnOffScopes();
 	
 	resetDroneColors();
 	
@@ -1411,28 +1389,28 @@ function deselectDrone()
 
 
 
-function droneSuccessfullyHacked()
-{
+// function droneSuccessfullyHacked()
+// {
 
-	//drone changes
-	activeDrone.droneSuccessfullyHacked();
+// 	//drone changes
+// 	activeDrone.droneSuccessfullyHacked();
 	
 	
-	//ui changes
-	hideScopeButtons();
-	activeDrone.resetCommandButtonGraphics();
+// 	//ui changes
+// 	hideScopeButtons();
+	// activeDrone.resetCommandButtonGraphics();
 
 
-	//message
+// 	//message
 
-	var droneHackMessage : String = activeDrone.modelString + " DRONE NULLIFIED";
-	addMessage( droneHackMessage );
+// 	var droneHackMessage : String = activeDrone.modelString + " DRONE NULLIFIED";
+// 	addMessage( droneHackMessage );
 	
 	
-	//stop audio
-	GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
+// 	//stop audio
+// 	GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
 
-}
+// }
 
 
 
@@ -1619,24 +1597,28 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 {
 
 	//drone commands
-	if( _scopeIndex == 0 && _buttonIndex == 0 ) //attk
+	if( _scopeIndex == 0 )
 	{
-		attkButtonPressed();
-	}
-	
-	if( _scopeIndex == 0 && _buttonIndex == 1 ) //move
-	{
-		moveButtonPressed();
-	}
-	
-	if( _scopeIndex == 0 && _buttonIndex == 2 ) //slvg
-	{
-		
-	}
 
-	if( _scopeIndex == 0 && _buttonIndex == 3 ) //dock
-	{
-		dockButtonPressed();
+		if( _buttonIndex == 0 ) //attk
+		{
+			attkButtonPressed();
+		}
+		else if( _buttonIndex == 1 ) //move
+		{
+			moveButtonPressed();
+		}
+		else if( _buttonIndex == 2 ) //slvg
+		{
+			
+		}
+		else if( _buttonIndex == 3 ) //dock
+		{
+			dockButtonPressed();
+		}
+
+		scopeList[0].setForHackedState();
+
 	}
 	
 	
@@ -1657,7 +1639,7 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 			
 		}
 		
-		activeDrone.resetCommandButtonGraphics();
+		scopeList[1].setForHackedState();
 		
 	}
 	
@@ -1665,7 +1647,7 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 
 
 
-function hideScopeButtons()
+function turnOffScopes()
 {
 
 	for( var s : int = 0; s < numScopes; s++ )
@@ -1678,10 +1660,12 @@ function hideScopeButtons()
 		
 		for( var i : int = 0; i < 4; i++ )
 		{
-			scopeList[s].waveTypeIconList[i].gameObject.SetActive( false );
+			scopeList[s].setWaveTypeIconVisibility( false );
 		}
 	
 	}
+
+	hideCommandLabels();
 
 }
 
@@ -1740,7 +1724,7 @@ function attkButtonPressed()
 	
 		activeDroneWaitingForAttackTarget = true;
 		activeDroneWaitingForDestination = false;
-		activeDrone.resetCommandButtonGraphics();
+		scopeList[0].setForHackedState();
 		
 		GameManager.instance.SFX_ATTK.Play();
 		
@@ -1765,7 +1749,7 @@ function moveButtonPressed()
 	
 		activeDroneWaitingForAttackTarget = false;
 		activeDroneWaitingForDestination = true;
-		activeDrone.resetCommandButtonGraphics();
+		scopeList[0].setForHackedState();
 		
 		GameManager.instance.SFX_MOVE.Play();
 		
@@ -2093,9 +2077,7 @@ function turnOffRScan()
 	
 	setRScanLineState( false );//turn off scan lines
 	
-	hideScopeButtons();
-	
-	hideCommandLabels();
+	turnOffScopes();
 
 }
 

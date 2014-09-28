@@ -124,7 +124,7 @@ function updateStage()
 		else if( dronePath.delayCounter == -1 )
 		{
 		
-			if( dronePath.drone.isActive == true &&  dronePath.drone.hacked == false )
+			if( dronePath.drone.isActive == true &&  dronePath.drone.hackedScopeList[0] == false )
 			{
 			
 				hostileDronesExist = true;

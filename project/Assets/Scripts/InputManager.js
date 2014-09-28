@@ -166,9 +166,9 @@ function handleKeyboardControls()
 	if( Input.GetKey( KeyCode.H ) )
 	{
 	
-		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hacked == false )
+		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hackedScopeList[0] == false )
 		{
-			SublayerGameDelegate.instance.droneSuccessfullyHacked();
+			// SublayerGameDelegate.instance.droneSuccessfullyHacked();
 		}
 		
 	}
@@ -178,7 +178,7 @@ function handleKeyboardControls()
 	if( Input.GetKeyDown( KeyCode.A ) )
 	{
 	
-		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hacked == true )
+		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hackedScopeList[0] == true )
 		{
 			SublayerGameDelegate.instance.attkButtonPressed();
 		}
@@ -190,7 +190,7 @@ function handleKeyboardControls()
 	if( Input.GetKeyDown( KeyCode.M ) )
 	{
 	
-		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hacked == true )
+		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hackedScopeList[0] == true )
 		{
 			SublayerGameDelegate.instance.moveButtonPressed();
 		}
@@ -448,7 +448,7 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 		
 		
 			//skip if not a hostile drone
-			if( drone.hacked == true )
+			if( drone.hackedScopeList[0] == true )
 				return;
 		
 		
