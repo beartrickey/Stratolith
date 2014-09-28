@@ -21,6 +21,11 @@ public static var STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED : int = 1;
 public static var STAGE_STATE_CLEARED : int = 2;
 public var state : int = STAGE_STATE_LOCKED;
 
+// Difficulty
+// Determines how many points go into drone creation
+// 40 would allow for drones with all indexes set to 10
+public var difficultyLevel : int = 0;
+
 
 
 function initStage()
@@ -169,7 +174,7 @@ function generateStage()
 	// nullifiable = _hackable;
 
 	// num drones
-	var numDrones : int = Random.Range(5, 9);
+	var numDrones : int = Random.Range(5, 8);
 
 	// Drone Path Prefab
 	var dronePathPrefab : GameObject = Resources.Load("DronePath");

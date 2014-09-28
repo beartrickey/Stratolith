@@ -19,7 +19,8 @@ public var counter : int = 0;
 
 public var droneType : int = 0;
 
-public var health : float = 100.0;
+public var maxHealth : float = 0.0;
+public var health : float = 0.0;
 
 // List of flags for each scopes hack state
 public var hackedScopeList = new boolean[3];
@@ -52,11 +53,16 @@ public var destination : Vector2 = Vector2( 0.0, 0.0 );
 
 
 //power diversion
+public var damageIndex : int = 0;
+public var speedIndex : int = 0;
+public var healthIndex : int = 0;
+public var rangeIndex : int = 0;
+
 public static var DRONE_POWER_NONE : int = -1;
 public static var DRONE_POWER_VELO : int = 0;
 public static var DRONE_POWER_WEAP : int = 1;
 public static var DRONE_POWER_SHLD : int = 2;
-public static var DRONE_POWER_FUNC : int = 3;
+public static var DRONE_POWER_RNGE : int = 3;
 public var dronePowerState : int = DRONE_POWER_NONE;
 
 
@@ -149,29 +155,23 @@ function onInstantiate()
 
 
 
-function initRandomDrone( _hackable : boolean, _damage : int, _speed : int, _health : int, _range : int, _path : DronePath )
+function initRandomDrone( _hackable : boolean, _damageIndex : int, _speedIndex : int, _healthIndex : int, _rangeIndex : int, _path : DronePath )
 {
 
-	// public static var droneAttackRangeList = new Array( 300.0, 560.0, 75.0, 200.0, 200.0, 560.0, 0.0 );
-	// public static var droneBulletDamageList = new Array( 2.0, 5.0, 20.0, 1.0, 1.0, 1.0, 0.0 );
-	// public static var droneHealthList = new Array( 3.0, 5.0, 20.0, 2.0, 50.0, 5.0, 10.0 );
-	// public static var droneReloadFramesList = new Array( 180, 360, 0, 180, 180.0, 260.0, 0.0 );
-	// public static var droneMaxSpeedList = new Array( 0.15, 0.15, 0.0375, 0.15, 0.15, 0.15, 0.2 );
-
-	// var speed : float = Random.Range(0.15, 0.0375);
-	// var health : float = Math.Floor(Random.Range(1.0, 20.0));
-	// var range : float = Math.Floor(Random.Range(100.0, 500.0));
-
-	bulletDamage = 0.0 + ((20.0 - 0.0) * (_damage / 10.0));
-	// reloadCounterMax = 0.0 + ((20.0 - 0.0) * (_damage / 10.0));
-	reloadCounterMax = 200;
-	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (_speed / 10.0));
-	health = Math.Floor(1.0 + ((20.0 - 1.0) * (_health / 10.0)));
-	attackRange = 100.0 + ((500.0 - 100.0) * (_range / 10.0));
-
 	// Set Values
-	modelString = _damage.ToString("D1") + _speed.ToString("D1") + _health.ToString("D1") + _range.ToString("D1");
+	damageIndex = _damageIndex;
+	speedIndex = _speedIndex;
+	healthIndex = _healthIndex;
+	rangeIndex = _rangeIndex;
+
+	modelString = damageIndex.ToString("D1") + speedIndex.ToString("D1") + healthIndex.ToString("D1") + rangeIndex.ToString("D1");
+
+	adjustStatsForPowerDiversion();
+
+	health = maxHealth;
+
 	nullifiable = _hackable;
+
 	droneType = DRONE_MODEL_RAND;
 
 
@@ -782,6 +782,13 @@ function startIdle()
 
 
 
+function startPowerDiversionWeap()
+{
+
+}
+
+
+
 function startDroneDeath()
 {
 	
@@ -1306,6 +1313,66 @@ function damageDrone( _damage : float )
 	
 }
 
+
+
+//////////////////////////////////////////////////////
+// Power Diversion and Stats
+//////////////////////////////////////////////////////
+
+
+
+function adjustStatsForPowerDiversion()
+{
+
+	// Base stats
+	bulletDamage = 0.0 + ((20.0 - 0.0) * (damageIndex / 10.0));
+	reloadCounterMax = 200;
+	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (speedIndex / 10.0));
+	maxHealth =  Math.Floor(1.0 + ((20.0 - 1.0) * (healthIndex / 10.0)));
+	attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
+
+	// Diverted stats
+	if( dronePowerState == DRONE_POWER_WEAP )
+	{
+		bulletDamage *= 1.5;
+		maxSpeed *= 0.5;
+		attackRange *= 0.5;
+		// Drone also takes more damage
+	}
+	else if( dronePowerState == DRONE_POWER_VELO )
+	{
+		bulletDamage *= 0.5;
+		maxSpeed *= 1.5;
+		attackRange *= 0.5;
+		// Drone also takes more damage
+	}
+	else if( dronePowerState == DRONE_POWER_SHLD )
+	{
+
+		bulletDamage *= 0.5;
+		maxSpeed *= 0.5;
+		attackRange *= 0.5;
+		// Drone also takes less damage
+	}
+	else if( dronePowerState == DRONE_POWER_RNGE )
+	{
+
+		bulletDamage *= 0.5;
+		maxSpeed *= 0.5;
+		attackRange *= 1.5;
+		// Drone also takes more damage
+	}
+
+}
+
+
+
+
+
+
+//////////////////////////////////////////////////////
+// Drone Graphics
+//////////////////////////////////////////////////////
 
 
 function setDroneColor()

@@ -247,12 +247,14 @@ function setForHackedState()
 			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispDOCK" );
 			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
 		}
+		
 	}
 
 
 	//POWER DIVERSION
 	if( index == 1 )
 	{
+
 		slgd.powerDiversionLabel.gameObject.SetActive( true );
 		slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispOFF" );
 		
@@ -277,7 +279,7 @@ function setForHackedState()
 			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
 		}
-		else if( drone.dronePowerState == Drone.DRONE_POWER_FUNC )
+		else if( drone.dronePowerState == Drone.DRONE_POWER_RNGE )
 		{
 			modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispFUNC" );

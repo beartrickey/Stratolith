@@ -1638,6 +1638,8 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 			activeDrone.dronePowerState = _buttonIndex;
 			
 		}
+
+		activeDrone.adjustStatsForPowerDiversion();
 		
 		scopeList[1].setForHackedState();
 		
