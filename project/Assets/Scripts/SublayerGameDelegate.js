@@ -143,6 +143,7 @@ public var dockSlotList = new DockSlot[3];
 
 
 //rscan
+public var rScanLocationQueue = new Array();
 public var rScanCircle : tk2dSprite = null;
 public var rScanItemLocator : tk2dSprite;
 public var rScanButton : ButtonScript;
@@ -194,7 +195,10 @@ function onInstantiate()
 	
 	
 	// R-Scan button
+	var rScanButtonSprite : tk2dSprite = rScanButton.gameObject.GetComponent(tk2dSprite);
+	rScanButtonSprite.SetSprite("Interface-Tactical-RScanButtonOFF");
 	sl.addButton( rScanButton );
+	//Interface-Standby-ResumeOFF
 	rScanButton.onTouchDownInsideDelegate = rScanButtonPressed;
 
 
@@ -904,9 +908,11 @@ function handleScopeDragging()
 	activeScope.knob.knobPosition = activeScope.hackWaveData.waveLengthKnob;
 	activeScope.knob.setKnobRotation();
 	
+	if( rScanModeActive == false && activeDrone == null )
+		return;
 	
 	// update waves for unhacked scopes
-	if( activeScope.state == Scope.SCOPE_STATE_UNHACKED )
+	if( activeScope.state == Scope.SCOPE_STATE_UNHACKED)
 		onHackWaveChanged();
 
 }
@@ -1425,7 +1431,7 @@ function setScopesForScopeLevel()
 		scopeOneLabels.transform.position = Vector3( 490.4458, 335.1377, -225.0 );
 
 		scopeList[1].gameObject.transform.position = Vector3( 613.5668, -77.90067, 0.0 );
-		scopeTwoLabels.transform.position = Vector3( 490.4458, -77.90067, -225.0 );
+		scopeTwoLabels.transform.position = Vector3( 490.4458, -65.882, -225.0 );
 	}
 	else if( PlayerData.instance.scopeLevel == 3 )
 	{
@@ -1642,6 +1648,7 @@ function turnOffScopes()
 		scopeList[s].hackWave.gameObject.SetActive( false );
 		scopeList[s].resultWave.gameObject.SetActive( false );
 		scopeList[s].cannotNullifyLabel.gameObject.SetActive( false );
+		scopeList[s].activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
 		
 		for( var i : int = 0; i < 4; i++ )
 		{
@@ -1902,12 +1909,29 @@ function getNumberOfDocksUsed() : int
 
 
 
+function addRScanLocation( _position : Vector2 )
+{
+
+	rScanLocationQueue.Push( _position );
+
+	// Set R-Scan button graphics
+	var rScanButtonSprite : tk2dSprite = rScanButton.GetComponent(tk2dSprite);
+	rScanButtonSprite.SetSprite("Interface-Tactical-StandbyButtonON");  // HACK: using red standby button now
+
+}
+
+
+
 function rScanButtonPressed()
 {
 
 	//HACK: Pause for Alex TGS build
 	// gm.goFromGameToPause();
 	// return;
+
+	// Bail if no locations available
+	if( rScanLocationQueue.length == 0 )
+		return;
 
 
 	if( rScanModeActive == true )
@@ -1938,7 +1962,8 @@ function rScanButtonPressed()
 
 
 		//set locator position
-		rScanItemLocator.gameObject.transform.position = getRScanItemPosition();
+		var location : Vector2 = rScanLocationQueue[0];
+		rScanItemLocator.gameObject.transform.position = location;
 
 	}
 
@@ -1992,7 +2017,6 @@ function rScanSuccess()
 
 	rScanItemLocator.gameObject.SetActive( true );
 
-
 	//update messag
 	var rScanSuccessMessage : String = "R-SCAN COMPLETE:\nSEND SALVAGE DRONE ";
 	addMessage( rScanSuccessMessage );
@@ -2007,6 +2031,12 @@ function onDroneCollectItem( _drone : Drone )
 	_drone.hasItem = true;
 	_drone.itemGraphic.gameObject.SetActive( true );
 	rScanItemLocator.gameObject.SetActive( false );
+
+	// Change button graphic if no locations left in list
+	rScanLocationQueue.Shift();
+	if( rScanLocationQueue.length == 0 )
+		var rScanButtonSprite : tk2dSprite = rScanButton.gameObject.GetComponent( tk2dSprite );
+		rScanButtonSprite.SetSprite("Interface-Tactical-RScanButtonOFF");
 
 }
 

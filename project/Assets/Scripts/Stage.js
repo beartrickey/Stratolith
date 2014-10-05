@@ -180,7 +180,7 @@ function generateStage()
 	var dronePathPrefab : GameObject = Resources.Load("DronePath");
 	
 	// Delay between drone appearances
-	var delayGap : int = 1500;
+	var delayGap : int = 1700;
 	var conflictTime : int = 0;
 
 	for( var i : int = 0; i < numDrones; i++ )
@@ -195,11 +195,11 @@ function generateStage()
 
 		// Drone
 		dronePathList[i].droneType = Drone.DRONE_MODEL_RAND;
-		dronePathList[i].message = "HELLZ YEAH!";
+		dronePathList[i].message = "INCOMING HOSTILE";
 
 		// Timing between drone appearances gets shorter
 		conflictTime += delayGap;
-		delayGap *= 0.75;
+		delayGap *= 0.91;
 
 	}
 

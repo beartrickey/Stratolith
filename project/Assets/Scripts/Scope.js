@@ -113,15 +113,18 @@ function startSuccessfulHackSequence()
 
 
 	// Update drone
-	drone.hackedScopeList[index] = true;
-
-	// Do more if this is the main control scope
-	if( index == 0 )
+	if( drone != null )
 	{
-		drone.startIdle();
-		GameManager.instance.SFX_DRONE_HACKED.Play();
-		GameManager.instance.currentStage.remainingHostileDrones -= 1;
-		drone.setDroneColor();
+		drone.hackedScopeList[index] = true;
+
+		// Do more if this is the main control scope
+		if( index == 0 )
+		{
+			drone.startIdle();
+			GameManager.instance.SFX_DRONE_HACKED.Play();
+			GameManager.instance.currentStage.remainingHostileDrones -= 1;
+			drone.setDroneColor();
+		}
 	}
 
 }
@@ -185,11 +188,9 @@ function setForHackedState()
 	// Reset mod buttons and light
 	for( var m : int = 0; m < 4; m++ )
 	{
-
 		modButtonList[m].setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
-		activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
-	
 	}
+	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
 
 
 	// Main Control

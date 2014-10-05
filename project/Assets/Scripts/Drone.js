@@ -783,6 +783,10 @@ function startDroneDeath()
 	SublayerGameDelegate.instance.addMessage( droneDeathMessage );
 	
 	//GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
+
+	// Leave RScan location
+	SublayerGameDelegate.instance.addRScanLocation(position);
+
 	
 	//decrement hostile drone count if hostile drone killed
 	if( hackedScopeList[0] == false )

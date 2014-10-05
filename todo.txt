@@ -27,3 +27,59 @@
 
 
 * Loading screen has moving clouds
+
+* Drone Types:
+
+	2 Point Drones:
+		Other:
+			0110
+
+
+	3 Point Drones:
+		Other:
+			0120 
+			0210
+
+	4 Point Drones:
+		Attack:
+			1111 - Basic attack drone
+		Other:
+			0310 - Recon
+			0220 - Mixed Recon
+			0130 - Basic tanker drone
+
+
+	5 Point Drones:
+
+	Attack:
+	2111 - Power attack drone
+	1211 - Speed attack drone
+	1121 - Defense attack drone
+	1112 - Range attack drone
+
+	Other:
+	0410 - Recon drone
+	0230 - Mixed Recon
+	0320 - Mixed Recon
+	0140 - Tanker drone
+
+
+	Level 6:
+
+	3111 - Attack drone
+	1113 - Attack drone range
+	1311 - Attack drone fast
+	1131 - Attack drone shield
+
+	0510 - Recon drone
+	0330 - Mixed Recon
+	0150 - Tanker drone
+
+
+
+	level 35
+	9998
+
+
+	Level 36
+	9999 - All mighty
