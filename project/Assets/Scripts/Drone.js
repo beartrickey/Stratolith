@@ -59,10 +59,10 @@ public var healthIndex : int = 0;
 public var rangeIndex : int = 0;
 
 public static var DRONE_POWER_NONE : int = -1;
-public static var DRONE_POWER_VELO : int = 0;
-public static var DRONE_POWER_WEAP : int = 1;
-public static var DRONE_POWER_SHLD : int = 2;
-public static var DRONE_POWER_RNGE : int = 3;
+public static var DRONE_POWER_WEAP : int = 0;
+public static var DRONE_POWER_VELO : int = 1;
+public static var DRONE_POWER_RNGE : int = 2;
+public static var DRONE_POWER_SHLD : int = 3;
 public var dronePowerState : int = DRONE_POWER_NONE;
 
 
@@ -92,6 +92,8 @@ public var targetIcon : tk2dSprite;
 public var targetLine : DottedLineRenderer;
 
 public var icon : tk2dSprite;
+
+public var circleRenderer : CircleRenderer;
 
 
 //damage
@@ -244,6 +246,8 @@ function baseInitialize()
 	updateDroneGraphics();
 	
 	setDroneColor();
+
+	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
 }
 
@@ -1339,6 +1343,8 @@ function adjustStatsForPowerDiversion()
 		// Drone also takes more damage
 	}
 
+	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
+
 }
 
 
@@ -1423,6 +1429,10 @@ function setDroneColor()
 	{
 		droneSelectionBox.gameObject.SetActive( false );
 	}
+
+
+	//circle renderer
+	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 	
 }
 
