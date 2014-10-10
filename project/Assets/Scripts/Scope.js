@@ -224,8 +224,8 @@ function setForHackedState()
 		{
 			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.activeCommandLabel.gameObject.SetActive( true );
-			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
-			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectDest" );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispRCON" );
+			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispSelectRecon" );
 		}
 		else if( drone.state == Drone.DRONE_STATE_ATTK ) //ATTK
 		{
@@ -245,7 +245,7 @@ function setForHackedState()
 		{
 			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
 			slgd.activeCommandLabel.gameObject.SetActive( true );
-			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispCLLD" );
+			slgd.activeCommandLabel.SetSprite( "Scope-CmndCoreDispRCON" );
 			slgd.commandRequestLabel.SetSprite( "Scope-CmndCoreDispInProg" );
 		}
 		else if( drone.state == Drone.DRONE_STATE_DOCK ) //DOCK
@@ -275,22 +275,22 @@ function setForHackedState()
 		if( drone.dronePowerState == Drone.DRONE_POWER_VELO )
 		{
 			modButtonList[0].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispVELO" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispWEAP" );
 		}
 		else if( drone.dronePowerState == Drone.DRONE_POWER_WEAP )
 		{
 			modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispWEAP" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispATTK" );
 		}
 		else if( drone.dronePowerState == Drone.DRONE_POWER_SHLD )
 		{
 			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispRNGE" );
 		}
 		else if( drone.dronePowerState == Drone.DRONE_POWER_RNGE )
 		{
 			modButtonList[3].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
-			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispFUNC" );
+			slgd.powerDiversionLabel.SetSprite( "Scope-PowerDispSHLD" );
 		}
 
 	}

@@ -18,6 +18,7 @@ public var frameNumber : int = 0;
 
 //base graphics
 public var panel : tk2dSprite = null;
+public var scopeBackground : tk2dSprite = null;
 
 //scanner
 public var shieldScannerCenter : Transform;
@@ -147,6 +148,7 @@ public var rScanLocationQueue = new Array();
 public var rScanCircle : tk2dSprite = null;
 public var rScanItemLocator : tk2dSprite;
 public var rScanButton : ButtonScript;
+public var rScanButtonRing : tk2dSprite;
 public var rScanModeActive : boolean;
 
 public var rScanItemRotation : float = 0.0;
@@ -195,8 +197,6 @@ function onInstantiate()
 	
 	
 	// R-Scan button
-	var rScanButtonSprite : tk2dSprite = rScanButton.gameObject.GetComponent(tk2dSprite);
-	rScanButtonSprite.SetSprite("Interface-Tactical-RScanButtonOFF");
 	sl.addButton( rScanButton );
 	//Interface-Standby-ResumeOFF
 	rScanButton.onTouchDownInsideDelegate = rScanButtonPressed;
@@ -1415,7 +1415,7 @@ function setScopesForScopeLevel()
 		scopeList[0].locked = false;
 		scopeList[1].locked = true;
 		scopeList[2].locked = true;
-		panel.SetSprite( "Interface-Tactical-State1Base" );
+		scopeBackground.SetSprite( "Interface-Tactical-State1" );
 
 		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 126.7359, 0.0 );
 		scopeOneLabels.transform.position = Vector3( 490.4458, 128.9894, -225.0 );
@@ -1425,7 +1425,7 @@ function setScopesForScopeLevel()
 		scopeList[0].locked = false;
 		scopeList[1].locked = false;
 		scopeList[2].locked = true;
-		panel.SetSprite( "Interface-Tactical-State2Base" );
+		scopeBackground.SetSprite( "Interface-Tactical-State2" );
 
 		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 332.5808, 0.0 );
 		scopeOneLabels.transform.position = Vector3( 490.4458, 335.1377, -225.0 );
@@ -1439,7 +1439,7 @@ function setScopesForScopeLevel()
 		scopeList[1].locked = false;
 		scopeList[2].locked = false;
 
-		panel.SetSprite( "Interface-Tactical-State3Base" );
+		scopeBackground.SetSprite( "Interface-Tactical-State3" );
 
 		scopeList[0].gameObject.transform.position = Vector3( 613.5668, 537.2813, 0.0 );
 		scopeOneLabels.transform.position = Vector3( 490.4458, 537.2813, -225.0 );
@@ -1915,8 +1915,7 @@ function addRScanLocation( _position : Vector2 )
 	rScanLocationQueue.Push( _position );
 
 	// Set R-Scan button graphics
-	var rScanButtonSprite : tk2dSprite = rScanButton.GetComponent(tk2dSprite);
-	rScanButtonSprite.SetSprite("Interface-Tactical-StandbyButtonON");  // HACK: using red standby button now
+	rScanButtonRing.gameObject.SetActive(true);
 
 }
 
@@ -2035,8 +2034,7 @@ function onDroneCollectItem( _drone : Drone )
 	// Change button graphic if no locations left in list
 	rScanLocationQueue.Shift();
 	if( rScanLocationQueue.length == 0 )
-		var rScanButtonSprite : tk2dSprite = rScanButton.gameObject.GetComponent( tk2dSprite );
-		rScanButtonSprite.SetSprite("Interface-Tactical-RScanButtonOFF");
+		rScanButtonRing.gameObject.SetActive(false);
 
 }
 

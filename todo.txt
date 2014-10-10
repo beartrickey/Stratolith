@@ -40,6 +40,7 @@
 			0120 
 			0210
 
+
 	4 Point Drones:
 		Attack:
 			1111 - Basic attack drone
@@ -50,18 +51,16 @@
 
 
 	5 Point Drones:
-
-	Attack:
-	2111 - Power attack drone
-	1211 - Speed attack drone
-	1121 - Defense attack drone
-	1112 - Range attack drone
-
-	Other:
-	0410 - Recon drone
-	0230 - Mixed Recon
-	0320 - Mixed Recon
-	0140 - Tanker drone
+		Attack:
+			2111 - Power attack drone
+			1211 - Speed attack drone
+			1121 - Defense attack drone
+			1112 - Range attack drone
+		Other:
+			0410 - Recon drone
+			0230 - Mixed Recon
+			0320 - Mixed Recon
+			0140 - Tanker drone
 
 
 	Level 6:
