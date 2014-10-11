@@ -247,6 +247,7 @@ function baseInitialize()
 	
 	setDroneColor();
 
+	circleRenderer.gameObject.SetActive( true );
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
 }
@@ -780,6 +781,8 @@ function startDroneDeath()
 	droneInfoLabel.gameObject.SetActive( false );
 	
 	targetIcon.gameObject.SetActive( false );
+
+	circleRenderer.gameObject.SetActive( false );
 	
 	targetLine.setDotState( false );
 

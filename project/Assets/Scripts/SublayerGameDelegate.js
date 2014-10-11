@@ -145,7 +145,7 @@ public var dockSlotList = new DockSlot[3];
 
 //rscan
 public var rScanLocationQueue = new Array();
-public var rScanCircle : tk2dSprite = null;
+public var rScanCircle : CircleRenderer = null;
 public var rScanItemLocator : tk2dSprite;
 public var rScanButton : ButtonScript;
 public var rScanButtonRing : tk2dSprite;
@@ -153,6 +153,9 @@ public var rScanModeActive : boolean;
 
 public var rScanItemRotation : float = 0.0;
 public var rScanItemLength : float = 400.0;
+public static var rScanItemBlinkCounterOnFrames : int = 90;
+public static var rScanItemBlinkCounterOffFrames : int = 45;
+public var rScanItemBlinkCounter : int = 0;
 
 
 //Messaging
@@ -198,8 +201,9 @@ function onInstantiate()
 	
 	// R-Scan button
 	sl.addButton( rScanButton );
-	//Interface-Standby-ResumeOFF
 	rScanButton.onTouchDownInsideDelegate = rScanButtonPressed;
+
+	rScanCircle.onInitialize(50.0, true);
 
 
 	// Item Locator button
@@ -713,6 +717,13 @@ function updateRadarGraphics()
 	
 		updateRScan();
 	
+	}
+
+
+	// Update rscan item locator
+	if( rScanItemLocator.gameObject.activeSelf == true )
+	{
+		updateRScanItem();
 	}
 	
 	
@@ -1951,7 +1962,6 @@ function rScanButtonPressed()
 
 		// activate circle
 		rScanCircle.gameObject.SetActive( true );
-		rScanCircle.color.a = 0.25;
 		
 
 		//randomize item position
@@ -2003,6 +2013,33 @@ function updateRScan()
 	{
 		rScanCircle.gameObject.transform.localScale.x = 1.0;
 		rScanCircle.gameObject.transform.localScale.y = 1.0;
+	}
+
+}
+
+
+
+function updateRScanItem()
+{
+
+	rScanItemBlinkCounter--;
+
+	if( rScanItemBlinkCounter <= 0 )
+	{
+
+		if( rScanItemLocator.color.a == 0.0 )
+		{
+			rScanItemLocator.color.a = 1.0;
+			rScanItemBlinkCounter = rScanItemBlinkCounterOnFrames;
+		}
+		else
+		{
+
+			rScanItemLocator.color.a = 0.0;
+			rScanItemBlinkCounter = rScanItemBlinkCounterOffFrames;
+
+		}
+
 	}
 
 }

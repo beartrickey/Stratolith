@@ -205,8 +205,7 @@ function handleKeyboardControls()
 		if( SublayerGameDelegate.instance.activeDrone != null )
 		{
 		
-			SublayerGameDelegate.instance.activeDrone.deactivate();
-			SublayerGameDelegate.instance.deselectDrone();
+			SublayerGameDelegate.instance.activeDrone.startDroneDeath();
 			
 		}
 		
