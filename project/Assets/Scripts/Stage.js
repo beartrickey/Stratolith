@@ -109,10 +109,10 @@ function updateStage()
 				if( i % 2 == 0 )
 					hackable = true;
 
-				var damage : float = Random.Range(0, 10);
-				var speed : float = Random.Range(1, 10);
-				var range : float = Random.Range(0, 10);
-				var health : float = Random.Range(1, 10);
+				var damage : float = Random.Range(1, 4) * 2;
+				var speed : float = Random.Range(1, 4) * 2;
+				var range : float = Random.Range(1, 4) * 2;
+				var health : float = Random.Range(1, 4) * 2;
 
 				dronePath.drone.initRandomDrone( hackable, damage, speed, health, range, dronePath );
 

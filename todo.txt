@@ -1,4 +1,15 @@
 
+* Put drones into JSON object
+	-Hackable/unhackable
+	-parameters
+	-drone paths
+
+* Allow for scripted (non-random) stages for the tutorial/demo stages
+
+* Change collision code
+
+
+
 
 * Stage generation
 	-Difficulty
@@ -28,57 +39,72 @@
 
 * Loading screen has moving clouds
 
-* Drone Types:
 
-	2 Point Drones:
-		Other:
-			0110
+*WEAP, VELO, RNGE, SHLD
 
+	1 Wave Type
+		4 point drones
+			Hybrid	0202 (unhackable)
 
-	3 Point Drones:
-		Other:
-			0120 
-			0210
+		6 point drones
+			Carrier	0204
+			Scout 	0402 (unhackable)
 
+		8 point drones
+			Base	2222
+			Scout	0602 (unhackable)
+			Carrier	0206
+			Hybrid	0404 (unhackable)
 
-	4 Point Drones:
-		Attack:
-			1111 - Basic attack drone
-		Other:
-			0310 - Recon
-			0220 - Mixed Recon
-			0130 - Basic tanker drone
+	2 Wave Types
+		10 Point
+			Power	4222
+			Speed 	2422 (unhackable)
+			Range 	2242
+			Shield 	2224 (unhackable)
+			Carrier	0208
+			Scout	0802 (unhackable)
 
+		12 point
+			Power	6222
+			Speed 	2622 (unhackable)
+			Range 	2262
+			Shield 	2226 (unhackable)
+			Carrier	0408
+			Scout	0804 (unhackable)
+			Hybrid	0606
 
-	5 Point Drones:
-		Attack:
-			2111 - Power attack drone
-			1211 - Speed attack drone
-			1121 - Defense attack drone
-			1112 - Range attack drone
-		Other:
-			0410 - Recon drone
-			0230 - Mixed Recon
-			0320 - Mixed Recon
-			0140 - Tanker drone
+		14 point
+			Power	8222 (unhackable)
+			Speed 	2822
+			Range 	2282 (unhackable)
+			Shield 	2228
+			Carrier	0608 (unhackable)
+			Scout	0806
 
+	3 Wave Types
+		16 point
+			Base	4444 (unhackable)
+			Hybrid	0808
 
-	Level 6:
+		20 point
+			Power	8444 (unhackable)
+			Speed 	4844
+			Range 	4484 (unhackable)
+			Shield 	4448
 
-	3111 - Attack drone
-	1113 - Attack drone range
-	1311 - Attack drone fast
-	1131 - Attack drone shield
+		24 point
+			Base	6666 (unhackable)
 
-	0510 - Recon drone
-	0330 - Mixed Recon
-	0150 - Tanker drone
+	4 Wave Types
+		26 point
+			Power 	8666
+			Speed 	6866 (unhackable)
+			Range 	6686
+			Shield 	6668 (unhackable)
+			
+		32 point
+			Base 	8888
 
-
-
-	level 35
-	9998
-
-
-	Level 36
-	9999 - All mighty
+		36 point
+			Base	9999

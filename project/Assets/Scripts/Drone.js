@@ -168,7 +168,7 @@ function initRandomDrone( _hackable : boolean, _damageIndex : int, _speedIndex :
 	healthIndex = _healthIndex;
 	rangeIndex = _rangeIndex;
 
-	modelString = damageIndex.ToString("D1") + speedIndex.ToString("D1") + healthIndex.ToString("D1") + rangeIndex.ToString("D1");
+	modelString = damageIndex.ToString("D1") + speedIndex.ToString("D1") + rangeIndex.ToString("D1") + healthIndex.ToString("D1");
 
 	adjustStatsForPowerDiversion();
 
@@ -1308,10 +1308,16 @@ function adjustStatsForPowerDiversion()
 {
 
 	// Base stats
-	bulletDamage = 0.0 + ((20.0 - 0.0) * (damageIndex / 10.0));
+	// bulletDamage = 0.0 + ((20.0 - 0.0) * (damageIndex / 10.0));
+	// reloadCounterMax = 200;
+	// maxSpeed = 0.0375 + ((0.15 - 0.0375) * (speedIndex / 10.0));
+	// maxHealth =  Math.Floor(1.0 + ((20.0 - 1.0) * (healthIndex / 10.0)));
+	// attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
+
+	bulletDamage = damageIndex;
 	reloadCounterMax = 200;
 	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (speedIndex / 10.0));
-	maxHealth =  Math.Floor(1.0 + ((20.0 - 1.0) * (healthIndex / 10.0)));
+	maxHealth = healthIndex;
 	attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
 
 	// Diverted stats
