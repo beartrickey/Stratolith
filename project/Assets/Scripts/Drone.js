@@ -10,6 +10,235 @@ public static var droneMaxSpeedList = new Array( 0.15, 0.15, 0.0375, 0.15, 0.15,
 public static var droneNullifiableList = new Array( true, true, false, true, false, false, true );
 public static var droneBlueprintSpriteId = new Array( 82, 85, 84, -1, 86, 83, -1 );
 
+public static var droneJson = [
+	{
+		"modelNumber": "0202",
+		"totalPower": 4,
+		"waveTypes": 1,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0204",
+		"totalPower": 6,
+		"waveTypes": 1,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2222",
+		"totalPower": 8,
+		"waveTypes": 1,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0602",
+		"totalPower": 8,
+		"waveTypes": 1,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0206",
+		"totalPower": 8,
+		"waveTypes": 1,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0404",
+		"totalPower": 8,
+		"waveTypes": 1,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "4222",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2422",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2242",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2224",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0208",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0802",
+		"totalPower": 10,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "6222",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2622",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2262",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2226",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0408",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0804",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0606",
+		"totalPower": 12,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "8222",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2822",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2282",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "2228",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0608",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0806",
+		"totalPower": 14,
+		"waveTypes": 2,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "4444",
+		"totalPower": 16,
+		"waveTypes": 3,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "0808",
+		"totalPower": 16,
+		"waveTypes": 3,
+		"hackable": true,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "8444",
+		"totalPower": 20,
+		"waveTypes": 3,
+		"hackable": false,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "4844",
+		"totalPower": 20,
+		"waveTypes": 3,
+		"hackable": false,
+		"dronePaths": []
+	}
+
+];
+
+	// 	20 point
+	// 		Power	8444 (unhackable)
+	// 		Speed 	4844
+	// 		Range 	4484 (unhackable)
+	// 		Shield 	4448
+
+	// 	24 point
+	// 		Base	6666 (unhackable)
+
+	// 4 Wave Types
+	// 	26 point
+	// 		Power 	8666
+	// 		Speed 	6866 (unhackable)
+	// 		Range 	6686
+	// 		Shield 	6668 (unhackable)
+			
+	// 	32 point
+	// 		Base 	8888
+
+	// 	36 point
+	// 		Base	9999
+
 
 public var isActive : boolean = false;
 
