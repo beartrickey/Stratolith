@@ -11,25 +11,35 @@ public static var droneNullifiableList = new Array( true, true, false, true, fal
 public static var droneBlueprintSpriteId = new Array( 82, 85, 84, -1, 86, 83, -1 );
 
 public static var droneJson = [
+
+	// 1 Wave Type
+	// 4 Power
 	{
 		"modelNumber": "0202",
 		"totalPower": 4,
 		"waveTypes": 1,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 6 Power
 	{
 		"modelNumber": "0204",
 		"totalPower": 6,
 		"waveTypes": 1,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 8 Power
 	{
 		"modelNumber": "2222",
 		"totalPower": 8,
 		"waveTypes": 1,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -37,6 +47,7 @@ public static var droneJson = [
 		"totalPower": 8,
 		"waveTypes": 1,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -44,6 +55,7 @@ public static var droneJson = [
 		"totalPower": 8,
 		"waveTypes": 1,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -51,13 +63,18 @@ public static var droneJson = [
 		"totalPower": 8,
 		"waveTypes": 1,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 2 Wave Types
+	// 10 Power
 	{
 		"modelNumber": "4222",
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -65,6 +82,7 @@ public static var droneJson = [
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -72,6 +90,7 @@ public static var droneJson = [
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -79,6 +98,7 @@ public static var droneJson = [
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -86,6 +106,7 @@ public static var droneJson = [
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -93,13 +114,17 @@ public static var droneJson = [
 		"totalPower": 10,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 12 Power
 	{
 		"modelNumber": "6222",
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -107,6 +132,7 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -114,6 +140,7 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -121,6 +148,7 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -128,6 +156,7 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -135,6 +164,7 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -142,13 +172,17 @@ public static var droneJson = [
 		"totalPower": 12,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 14 Power
 	{
 		"modelNumber": "8222",
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -156,6 +190,7 @@ public static var droneJson = [
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -163,6 +198,7 @@ public static var droneJson = [
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -170,6 +206,7 @@ public static var droneJson = [
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -177,6 +214,7 @@ public static var droneJson = [
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -184,13 +222,18 @@ public static var droneJson = [
 		"totalPower": 14,
 		"waveTypes": 2,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 3 Wave Types
+	// 16 Power
 	{
 		"modelNumber": "4444",
 		"totalPower": 16,
 		"waveTypes": 3,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
@@ -198,46 +241,109 @@ public static var droneJson = [
 		"totalPower": 16,
 		"waveTypes": 3,
 		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	},
+
+	// 20 Power
 	{
 		"modelNumber": "8444",
 		"totalPower": 20,
 		"waveTypes": 3,
 		"hackable": false,
+		"reload": 200,
 		"dronePaths": []
 	},
 	{
 		"modelNumber": "4844",
 		"totalPower": 20,
 		"waveTypes": 3,
+		"hackable": true,
+		"reload": 200,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "4484",
+		"totalPower": 20,
+		"waveTypes": 3,
 		"hackable": false,
+		"reload": 200,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "4448",
+		"totalPower": 20,
+		"waveTypes": 3,
+		"hackable": true,
+		"reload": 200,
+		"dronePaths": []
+	},
+
+	// 24 Power
+	{
+		"modelNumber": "6666",
+		"totalPower": 24,
+		"waveTypes": 3,
+		"hackable": false,
+		"reload": 200,
+		"dronePaths": []
+	},
+
+	// 26 Power
+	{
+		"modelNumber": "8666",
+		"totalPower": 26,
+		"waveTypes": 4,
+		"hackable": true,
+		"reload": 200,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "6866",
+		"totalPower": 26,
+		"waveTypes": 4,
+		"hackable": false,
+		"reload": 200,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "6686",
+		"totalPower": 26,
+		"waveTypes": 4,
+		"hackable": true,
+		"reload": 200,
+		"dronePaths": []
+	},
+	{
+		"modelNumber": "6668",
+		"totalPower": 26,
+		"waveTypes": 4,
+		"hackable": false,
+		"reload": 200,
+		"dronePaths": []
+	},
+
+	// 32 Power
+	{
+		"modelNumber": "8888",
+		"totalPower": 32,
+		"waveTypes": 4,
+		"hackable": true,
+		"reload": 200,
+		"dronePaths": []
+	},
+
+	// 36 Power
+	{
+		"modelNumber": "9999",
+		"totalPower": 36,
+		"waveTypes": 4,
+		"hackable": true,
+		"reload": 200,
 		"dronePaths": []
 	}
 
 ];
-
-	// 	20 point
-	// 		Power	8444 (unhackable)
-	// 		Speed 	4844
-	// 		Range 	4484 (unhackable)
-	// 		Shield 	4448
-
-	// 	24 point
-	// 		Base	6666 (unhackable)
-
-	// 4 Wave Types
-	// 	26 point
-	// 		Power 	8666
-	// 		Speed 	6866 (unhackable)
-	// 		Range 	6686
-	// 		Shield 	6668 (unhackable)
-			
-	// 	32 point
-	// 		Base 	8888
-
-	// 	36 point
-	// 		Base	9999
 
 
 public var isActive : boolean = false;
@@ -383,7 +489,7 @@ function onInstantiate()
 	slgd = SublayerGameDelegate.instance;
 	
 	targetLine.onInstantiate();
-
+	
 }
 
 
@@ -1536,50 +1642,46 @@ function damageDrone( _damage : float )
 function adjustStatsForPowerDiversion()
 {
 
-	// Base stats
-	// bulletDamage = 0.0 + ((20.0 - 0.0) * (damageIndex / 10.0));
-	// reloadCounterMax = 200;
-	// maxSpeed = 0.0375 + ((0.15 - 0.0375) * (speedIndex / 10.0));
-	// maxHealth =  Math.Floor(1.0 + ((20.0 - 1.0) * (healthIndex / 10.0)));
-	// attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
-
-	bulletDamage = damageIndex;
-	reloadCounterMax = 200;
-	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (speedIndex / 10.0));
-	maxHealth = healthIndex;
-	attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
+	var tempDamageIndex : int = parseInt(modelString[0]);
+	var tempVelocityIndex : int = parseInt(modelString[1]);
+	var tempRangeIndex : int = parseInt(modelString[2]);
+	var tempShieldIndex = parseInt(modelString[3]);
 
 	// Diverted stats
 	if( dronePowerState == DRONE_POWER_WEAP )
 	{
-		bulletDamage *= 1.5;
-		maxSpeed *= 0.5;
-		attackRange *= 0.5;
+		bulletDamage += 1;
+		maxSpeed -= 1;
+		attackRange -= 1;
 		// Drone also takes more damage
 	}
 	else if( dronePowerState == DRONE_POWER_VELO )
 	{
-		bulletDamage *= 0.5;
-		maxSpeed *= 1.5;
-		attackRange *= 0.5;
+		bulletDamage -= 1;
+		maxSpeed += 1;
+		attackRange -= 1;
+		// Drone also takes more damage
+	}
+	else if( dronePowerState == DRONE_POWER_RNGE )
+	{
+		bulletDamage -= 1;
+		maxSpeed -= 1;
+		attackRange += 1;
 		// Drone also takes more damage
 	}
 	else if( dronePowerState == DRONE_POWER_SHLD )
 	{
-
-		bulletDamage *= 0.5;
-		maxSpeed *= 0.5;
-		attackRange *= 0.5;
+		bulletDamage -= 1;
+		maxSpeed -= 1;
+		attackRange -= 1;
 		// Drone also takes less damage
 	}
-	else if( dronePowerState == DRONE_POWER_RNGE )
-	{
 
-		bulletDamage *= 0.5;
-		maxSpeed *= 0.5;
-		attackRange *= 1.5;
-		// Drone also takes more damage
-	}
+	bulletDamage = tempDamageIndex;
+	reloadCounterMax = 200;
+	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (tempVelocityIndex / 10.0));
+	attackRange = 100.0 + ((500.0 - 100.0) * (tempRangeIndex / 10.0));
+	maxHealth = tempShieldIndex;
 
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
