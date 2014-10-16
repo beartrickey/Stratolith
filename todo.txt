@@ -1,7 +1,5 @@
 
 * Put drones into JSON object
-	-Hackable/unhackable
-	-parameters
 	-drone paths
 
 * Allow for scripted (non-random) stages for the tutorial/demo stages
