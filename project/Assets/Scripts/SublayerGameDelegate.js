@@ -132,6 +132,8 @@ public var activeDroneModelLabel : tk2dTextMesh;
 public var activeDronePowerLabel : tk2dTextMesh;
 public var activeDroneBlueprint : tk2dSprite;
 
+public var dronePerformanceGaugeList = new DronePerformanceGauge[4];
+
 
 //drone command buttons
 public var activeDroneWaitingForDestination : boolean = false;
@@ -197,6 +199,12 @@ function onInstantiate()
 	
 	activeDronePowerLabel.color = Color( 0.78, 0.78, 0.78, 0.6 );
 	activeDronePowerLabel.Commit();
+
+
+	for( var p : int = 0; p < 4; p++ )
+	{
+		dronePerformanceGaugeList[p].onInstantiate();
+	}
 	
 	
 	// R-Scan button
@@ -1258,7 +1266,8 @@ function selectDrone( _button : ButtonScript )
 	
 	activeDronePowerLabel.text = activeDrone.health + "p";
 	activeDronePowerLabel.Commit();
-	
+
+	setActiveDronePerformanceGauges();	
 	
 	//change blueprint
 	activeDroneBlueprint.gameObject.SetActive( true );
@@ -1281,6 +1290,47 @@ function selectDrone( _button : ButtonScript )
 	//reset drone colors
 	resetDroneColors();
 	
+}
+
+
+
+function setActiveDronePerformanceGauges()
+{
+
+	// Drone performance gauges
+	for( var p : int = 0; p < 4; p++ )
+	{
+
+		// Base Value
+		var baseString : String = "" + activeDrone.modelString[p];
+		var baseValue : int = parseInt( baseString );
+
+		// Actual Value
+		var actualValue : int = baseValue;
+
+		if( p == 0 )
+			actualValue = activeDrone.damageIndex;
+		if( p == 1 )
+			actualValue = activeDrone.velocityIndex;
+		if( p == 2 )
+			actualValue = activeDrone.rangeIndex;
+		if( p == 3 )
+			actualValue = activeDrone.shieldIndex;
+
+		// Boost
+		var boost : boolean = false;
+		if( p == 0 && activeDrone.dronePowerState == Drone.DRONE_POWER_WEAP )
+			boost = true;
+		if( p == 1 && activeDrone.dronePowerState == Drone.DRONE_POWER_VELO )
+			boost = true;
+		if( p == 2 && activeDrone.dronePowerState == Drone.DRONE_POWER_RNGE )
+			boost = true;
+		if( p == 3 && activeDrone.dronePowerState == Drone.DRONE_POWER_SHLD )
+			boost = true;
+
+		dronePerformanceGaugeList[p].setGauge( baseValue, actualValue, boost );
+	}
+
 }
 
 
@@ -1380,37 +1430,16 @@ function deselectDrone()
 	activeDronePowerLabel.Commit();
 	
 	activeDroneBlueprint.gameObject.SetActive( false );
-	
+
+	for( var p : int = 0; p < 4; p++ )
+	{
+		dronePerformanceGaugeList[p].turnGaugeOff();
+	}
 	
 	//stop audio
 	GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
 
 }
-
-
-
-// function droneSuccessfullyHacked()
-// {
-
-// 	//drone changes
-// 	activeDrone.droneSuccessfullyHacked();
-	
-	
-// 	//ui changes
-// 	hideScopeButtons();
-	// activeDrone.resetCommandButtonGraphics();
-
-
-// 	//message
-
-// 	var droneHackMessage : String = activeDrone.modelString + " DRONE NULLIFIED";
-// 	addMessage( droneHackMessage );
-	
-	
-// 	//stop audio
-// 	GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
-
-// }
 
 
 
@@ -1640,6 +1669,8 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 		}
 
 		activeDrone.adjustStatsForPowerDiversion();
+
+		setActiveDronePerformanceGauges();
 		
 		scopeList[1].setForHackedState();
 		

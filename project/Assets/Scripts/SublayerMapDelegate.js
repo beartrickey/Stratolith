@@ -153,7 +153,6 @@ function onInstantiate()
 
 
 	// Splines
-	Debug.Log('Create map splines');
 	var gos : GameObject[];
 	gos = GameObject.FindGameObjectsWithTag("MapSpline");
     for( var i : int = 0; i < gos.length; i++ )

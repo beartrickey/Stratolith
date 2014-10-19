@@ -389,8 +389,8 @@ public var destination : Vector2 = Vector2( 0.0, 0.0 );
 
 //power diversion
 public var damageIndex : int = 0;
-public var speedIndex : int = 0;
-public var healthIndex : int = 0;
+public var velocityIndex : int = 0;
+public var shieldIndex : int = 0;
 public var rangeIndex : int = 0;
 
 public static var DRONE_POWER_NONE : int = -1;
@@ -499,11 +499,11 @@ function initRandomDrone( _hackable : boolean, _damageIndex : int, _speedIndex :
 
 	// Set Values
 	damageIndex = _damageIndex;
-	speedIndex = _speedIndex;
-	healthIndex = _healthIndex;
+	velocityIndex = _speedIndex;
 	rangeIndex = _rangeIndex;
+	shieldIndex = _healthIndex;
 
-	modelString = damageIndex.ToString("D1") + speedIndex.ToString("D1") + rangeIndex.ToString("D1") + healthIndex.ToString("D1");
+	modelString = damageIndex.ToString("D1") + velocityIndex.ToString("D1") + rangeIndex.ToString("D1") + shieldIndex.ToString("D1");
 
 	adjustStatsForPowerDiversion();
 
@@ -604,7 +604,10 @@ function initializeDrone( _dronePath : DronePath )
 	hackedScopeList[1] = false;
 	hackedScopeList[2] = false;
 	
-	setValuesForDroneType();
+	modelString = droneModelNumberList[droneType];
+	adjustStatsForPowerDiversion();
+
+	health = maxHealth;
 	
 	attackTarget = slgd.shieldScannerCenter.gameObject;
 	
@@ -1642,46 +1645,46 @@ function damageDrone( _damage : float )
 function adjustStatsForPowerDiversion()
 {
 
-	var tempDamageIndex : int = parseInt(modelString[0]);
-	var tempVelocityIndex : int = parseInt(modelString[1]);
-	var tempRangeIndex : int = parseInt(modelString[2]);
-	var tempShieldIndex = parseInt(modelString[3]);
+	damageIndex = parseInt( "" + modelString[0] );
+	velocityIndex = parseInt( "" + modelString[1] );
+	rangeIndex = parseInt( "" + modelString[2] );
+	shieldIndex = parseInt( "" + modelString[3] );
 
 	// Diverted stats
 	if( dronePowerState == DRONE_POWER_WEAP )
 	{
-		bulletDamage += 1;
-		maxSpeed -= 1;
-		attackRange -= 1;
-		// Drone also takes more damage
+		damageIndex += 1;
+		velocityIndex -= 1;
+		rangeIndex -= 1;
+		shieldIndex -= 1;
 	}
 	else if( dronePowerState == DRONE_POWER_VELO )
 	{
-		bulletDamage -= 1;
-		maxSpeed += 1;
-		attackRange -= 1;
-		// Drone also takes more damage
+		damageIndex -= 1;
+		velocityIndex += 1;
+		rangeIndex -= 1;
+		shieldIndex -= 1;
 	}
 	else if( dronePowerState == DRONE_POWER_RNGE )
 	{
-		bulletDamage -= 1;
-		maxSpeed -= 1;
-		attackRange += 1;
-		// Drone also takes more damage
+		damageIndex -= 1;
+		velocityIndex -= 1;
+		rangeIndex += 1;
+		shieldIndex -= 1;
 	}
 	else if( dronePowerState == DRONE_POWER_SHLD )
 	{
-		bulletDamage -= 1;
-		maxSpeed -= 1;
-		attackRange -= 1;
-		// Drone also takes less damage
+		damageIndex -= 1;
+		velocityIndex -= 1;
+		rangeIndex -= 1;
+		shieldIndex += 1;
 	}
 
-	bulletDamage = tempDamageIndex;
+	bulletDamage = damageIndex;
 	reloadCounterMax = 200;
-	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (tempVelocityIndex / 10.0));
-	attackRange = 100.0 + ((500.0 - 100.0) * (tempRangeIndex / 10.0));
-	maxHealth = tempShieldIndex;
+	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (velocityIndex / 10.0));
+	attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
+	maxHealth = shieldIndex;
 
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
