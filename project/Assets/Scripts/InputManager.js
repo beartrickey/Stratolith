@@ -168,7 +168,7 @@ function handleKeyboardControls()
 	
 		if( SublayerGameDelegate.instance.activeDrone != null && SublayerGameDelegate.instance.activeDrone.hackedScopeList[0] == false )
 		{
-			// SublayerGameDelegate.instance.droneSuccessfullyHacked();
+
 		}
 		
 	}
@@ -205,7 +205,7 @@ function handleKeyboardControls()
 		if( SublayerGameDelegate.instance.activeDrone != null )
 		{
 		
-			SublayerGameDelegate.instance.activeDrone.startDroneDeath();
+//			SublayerGameDelegate.instance.activeDrone.startDroneDeath();
 			
 		}
 		

@@ -58,7 +58,9 @@ function standbyButtonPressed_game()
 function abortOperationButtonPressed()
 {
 
-	gm.goFromCatalogToGameOver();
+//	gm.goFromCatalogToGameOver();
+    // HACK: for IGF demo, go to title
+    gm.goToTitle();
 
 }
 

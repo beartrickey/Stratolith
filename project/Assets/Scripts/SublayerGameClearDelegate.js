@@ -35,8 +35,9 @@ function onInstantiate()
 function continueButtonPressed()
 {
 
-	gm.goFromGameClearToMap();
-
+//	gm.goFromGameClearToMap();
+// HACK: For IGF demo, only go back to title screen
+    gm.goToTitle();
 }
 
 

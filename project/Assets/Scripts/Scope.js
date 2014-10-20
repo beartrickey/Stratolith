@@ -68,6 +68,7 @@ function startSuccessfulHackSequence()
 	state = SCOPE_STATE_HACK_SEQUENCE;
 	blinkCounter = 60;
 
+    GameManager.instance.SFX_DRONE_HACKED.Play();
 	
 	//turn off active light
 	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );

@@ -26,7 +26,7 @@ public var startButton : ButtonScript;
 
 
 
-function onInstantiate()
+function onInstantiate( startWithSplash : boolean )
 {
 
 	//set singleton reference
@@ -43,8 +43,19 @@ function onInstantiate()
 
 
 	// Start initial counter for splash screen
-	state = TITLE_STATE_SPLASH;
-	counter = SPLASH_FRAMES;
+    if( startWithSplash == true )
+    {
+
+        state = TITLE_STATE_SPLASH;
+        counter = SPLASH_FRAMES;
+
+    }
+    else
+    {
+        splashScreen.gameObject.SetActive( false );
+        state = TITLE_STATE_MAIN_TITLE;
+    }
+
 
 }
 
@@ -55,7 +66,9 @@ function startButtonPressed()
 	// Only allow button press after splash screen has faded in
 	if( state == TITLE_STATE_MAIN_TITLE )
 	{
-		gm.goFromTitleToMap();
+//		gm.goFromTitleToMap();
+        // HACK: Skip map screen for IGF demo
+        gm.goFromMapToGame();
 	}
 }
 

@@ -1565,21 +1565,6 @@ function deactivate()
 
 
 
-function droneSuccessfullyHacked()
-{
-	
-	setDroneColor();
-	
-	startIdle();
-	
-	GameManager.instance.SFX_DRONE_HACKED.Play();
-	
-	GameManager.instance.currentStage.remainingHostileDrones -= 1;
-
-}
-
-
-
 function updateLabelText()
 {
 

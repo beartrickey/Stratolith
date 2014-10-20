@@ -38,8 +38,8 @@ public var fullScreenBlur : GameObject;
 
 // Unity Level
 public var onUnityLevelLoadDone : function() = null;
-public var minimumLoadingFrames : int = 60;  // 1 Seconds
-public var loadingCounter : int = minimumLoadingFrames;
+public static var minimumLoadingFrames : int = 300;  // 5 Seconds
+public static var loadingCounter : int = minimumLoadingFrames;
 
 
 // Stage Data
@@ -98,7 +98,9 @@ function Start()
 	
 	//load user data
 	PlayerData.instance.loadData();
-	currentStage = getStageForId( PlayerData.instance.currentStageId );
+//	currentStage = getStageForId( PlayerData.instance.currentStageId );
+    // HACK: Force player to random stage for IGF demo
+    currentStage = getStageForId(3);
 	
 	
 	//figure out screen dimensions
@@ -108,7 +110,7 @@ function Start()
 	// start sublayers	
 	sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
 	sublayerTitleDelegate.gm = this;
-	sublayerTitleDelegate.onInstantiate();
+	sublayerTitleDelegate.onInstantiate( true );
 	sublayerTitleDelegate.gameObject.SetActive( true );
 	activeSublayer = sublayerTitleDelegate.sl;
 
@@ -274,6 +276,39 @@ function startLoadingScreen( onLoadFunc : function() )
 //TITLE
 
 
+function goToTitle()
+{
+
+    sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
+    startLoadingScreen( goToTitleDone );
+
+}
+
+
+
+function goToTitleDone()
+{
+
+    // start sublayers
+    sublayerTitleDelegate = instantiateSublayerFromResource("SublayerTitle").GetComponent( SublayerTitleDelegate );
+    sublayerTitleDelegate.gm = this;
+    sublayerTitleDelegate.onInstantiate( false );
+    sublayerTitleDelegate.gameObject.SetActive( true );
+    activeSublayer = sublayerTitleDelegate.sl;
+
+
+    // init sublayer pause
+    sublayerPauseDelegate.onInstantiate();
+
+
+    //play title music
+    BGM_TACTICAL.Stop();
+    BGM_OPS.Stop();
+    BGM_TITLE.Play();
+
+}
+
+
 
 function goFromTitleToMap()
 {
@@ -366,6 +401,7 @@ function goFromMapToGameDone()
 	}
 
 	BGM_OPS.Stop();
+    BGM_TITLE.Stop();
 	BGM_TACTICAL.Play();
 
 }
