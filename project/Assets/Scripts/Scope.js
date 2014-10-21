@@ -67,8 +67,6 @@ function startSuccessfulHackSequence()
 
 	state = SCOPE_STATE_HACK_SEQUENCE;
 	blinkCounter = 60;
-
-    GameManager.instance.SFX_DRONE_HACKED.Play();
 	
 	//turn off active light
 	activeLight.SetSprite( "Interface-Tactical-WaveActiveLightOFF" );
@@ -122,10 +120,17 @@ function startSuccessfulHackSequence()
 		if( index == 0 )
 		{
 			drone.startIdle();
-			GameManager.instance.SFX_DRONE_HACKED.Play();
 			GameManager.instance.currentStage.remainingHostileDrones -= 1;
 			drone.setDroneColor();
 		}
+
+        // HACK: for IGF build
+        if( drone.hackedScopeList[0] == true && drone.hackedScopeList[1] == true )
+        {
+            GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
+            GameManager.instance.SFX_DRONE_HACKED.Play();
+        }
+
 	}
 
 }

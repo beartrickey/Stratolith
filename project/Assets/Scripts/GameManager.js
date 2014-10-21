@@ -158,10 +158,17 @@ function setScreenDimensions()
 	{
 	
 		Screen.SetResolution( 1024, 768, false );
-		
-		screenWidth = 1024;//1440
-		screenHeight = 768;//900
-		
+		screenWidth = 1024;
+		screenHeight = 768;
+
+//        Screen.SetResolution( 1440, 900, false );
+//        screenWidth = 1440;
+//        screenHeight = 900;
+
+//        Screen.SetResolution( 1920, 1200, false );
+//        screenWidth = 1920;
+//        screenHeight = 1200;
+
 	}
 	
 	

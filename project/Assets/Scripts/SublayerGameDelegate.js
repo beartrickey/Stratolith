@@ -1276,12 +1276,29 @@ function selectDrone( _button : ButtonScript )
 	if( activeDrone.droneType == Drone.DRONE_MODEL_RAND )
 	{
 		// Do nothing
-	}
+        // HACK FOR IGF
+        var shieldIndex : int = parseInt( "" + activeDrone.modelString[3] );
+
+        if( shieldIndex == 2 )
+            spriteId = Drone.droneBlueprintSpriteId[ 2 ];
+        else if( shieldIndex == 4 )
+            spriteId = Drone.droneBlueprintSpriteId[ 5 ];
+        else if( shieldIndex == 6 )
+            spriteId = Drone.droneBlueprintSpriteId[ 0 ];
+        else if( shieldIndex == 8 )
+            spriteId = Drone.droneBlueprintSpriteId[ 4 ];
+    }
 	else
 	{
-		spriteId = Drone.droneBlueprintSpriteId[ activeDrone.droneType ];	
+		spriteId = Drone.droneBlueprintSpriteId[ activeDrone.droneType ];
 	}
-	
+
+    // HACK: SFX for IGF build
+    if( activeDrone.hackedScopeList[0] == false && activeDrone.hackedScopeList[1] == false )
+        gm.SFX_NULLIFICATION_IN_PROGRESS.Play();
+    else
+        gm.SFX_NULLIFICATION_IN_PROGRESS.Stop();
+
 	
 	if( spriteId != -1 )
 		activeDroneBlueprint.SetSprite( spriteId );

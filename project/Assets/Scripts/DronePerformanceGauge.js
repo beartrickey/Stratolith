@@ -28,13 +28,15 @@ function onInstantiate()
 function setGauge( baseValue : int, actualValue : int, boost : boolean )
 {
 
+    gameObject.SetActive( true );
+
 	// Set value dots
 	var numActiveDots : int = actualValue * dotsPerValue;
 
-	Debug.Log('setGauge');
-	Debug.Log('baseValue: ' + baseValue);
-	Debug.Log('actualValue: ' + actualValue);
-	Debug.Log('numActiveDots: ' + numActiveDots);
+//	Debug.Log('setGauge');
+//	Debug.Log('baseValue: ' + baseValue);
+//	Debug.Log('actualValue: ' + actualValue);
+//	Debug.Log('numActiveDots: ' + numActiveDots);
 
 	for( var i : int = 0; i < numDots; i++ )
 	{
@@ -54,7 +56,6 @@ function setGauge( baseValue : int, actualValue : int, boost : boolean )
 	}
 
 	// Set base value triangle
-	baseValueIndicator.gameObject.SetActive( true );
 	baseValueIndicator.gameObject.transform.localPosition.y = baseValue * dotsPerValue * dotSpacing;
 
 	// Set boost indicator
@@ -67,14 +68,7 @@ function setGauge( baseValue : int, actualValue : int, boost : boolean )
 function turnGaugeOff()
 {
 
-	for( var i : int = 0; i < numDots; i++ )
-	{
-		dotList[i].gameObject.SetActive( false );
-	}
-
-	baseValueIndicator.gameObject.SetActive( false );
-
-	boostIndicator.gameObject.SetActive( false );
+    gameObject.SetActive( false );
 
 }
 
