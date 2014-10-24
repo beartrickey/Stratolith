@@ -24,7 +24,7 @@ public var counter : int = 0;
 //BUTTONS
 public var startButton : ButtonScript;
 public var startButtonSprite : tk2dSprite = null;
-public static var blinkSeconds : float = 2.14;
+public static var blinkSeconds : float = 0.428;//0.857;//2.14;
 public static var blinkCounterMax : float = 60.0 * blinkSeconds;
 public static var blinkCounter : float = 0.0;
 
@@ -84,7 +84,7 @@ function sublayerTitleUpdate()
     blinkCounter += 1.0;
     var blinkCounterScaled : float = blinkCounter / blinkCounterMax;
     var blinkCounterRadians : float = blinkCounterScaled * 6.28;
-    var opacity : float = 0.75 + (Mathf.Sin(blinkCounterRadians) * 0.25);
+    var opacity : float = 0.5 + (Mathf.Sin(blinkCounterRadians) * 0.5);
     startButtonSprite.color.a = opacity;
 
 
