@@ -62,8 +62,8 @@ function calculateWave()
 
 	setValuesForKnobPositions();
 
-	var startingX : float = 0.0;//SublayerGameDelegate.instance.oscilloscopeCenter.position.x;
-	var startingY : float = 0.0;//SublayerGameDelegate.instance.oscilloscopeCenter.position.y;
+	var startingX : float = 0.0;
+	var startingY : float = 0.0;
 	
 	var numPeriods : float = totalScreenLength / waveLength;
 	
@@ -104,40 +104,57 @@ function calculateWave()
 		//change amplitude for modulations
 		var moddedAmplitude = amplitude;
 		
-		if( waveType == 1 )
-		{
 		
-			var subT : float = t * 3.0;
-			var sinVal : float = Mathf.Sin( subT );
-			moddedAmplitude *= sinVal * invert;
-		
-		}
-		
-		
-		//wave types
-		if( waveType == 0 ) //sine
+		// Wave types
+		if( waveType == 0 ) // Sine
 		{
 		
 			ypos = startingY + ( sinWaveY * moddedAmplitude );
 			
 		}
-		else if( waveType == 1 ) //M W wave
+		else if( waveType == 1 ) // M W wave
 		{
-			
-			if( sinWaveY < 0.0 )
-				ypos = startingY - moddedAmplitude;
-			else if( sinWaveY > 0.0 )
-				ypos = startingY + moddedAmplitude;
+
+			ypos = startingY + ( sinWaveY * moddedAmplitude );
+
+			var offset : float = 0.0;
+			var amplitudeOffset : float = 0.0;
+			var strength : float = 0.0;
+
+			if( sinWaveY > 0.5 )
+			{
+				offset = sinWaveY - 0.5;
+				strength = (offset / 0.5) * 1.5;
+				amplitudeOffset = offset * moddedAmplitude * strength;
+				ypos -= amplitudeOffset;
+			}
+			else if( sinWaveY < -0.5 )
+			{
+				offset = -sinWaveY - 0.5;
+				strength = (offset / 0.5) * 1.5;
+				amplitudeOffset = offset * moddedAmplitude * strength;
+				ypos += amplitudeOffset;
+			}
 				
 		}
-		else if( waveType == 2 ) //flat line
+		else if( waveType == 2 ) // Flat line
 		{
-			var triangleOutput : float = Mathf.Abs( 2.0 * ( ((t+1.57) / 6.28) - Mathf.Floor(((t+1.57) / 6.28) + 0.5) ) );
-			
-			//ypos = Mathf.Abs( 2 * ((t / 3.14) - Mathf.Floor((t / 3.14) + 0.5)) ) * amplitude * 2.0; //old
-			ypos = triangleOutput * moddedAmplitude * 2.0;
-			
-			ypos += startingY - moddedAmplitude;
+
+			ypos = startingY + ( sinWaveY * moddedAmplitude );
+
+			var currentPeriod : float = Mathf.Floor( t / 6.28 );
+			var tOffset : float = t - (currentPeriod * 6.28);
+			var startEffect : float = 2.0;//3.14;
+			var endEffect : float = 5.5;//4.71;
+			var effectLength : float = endEffect - startEffect;
+
+			if( tOffset > startEffect && tOffset < endEffect )
+			{
+				var normalizedEffect : float = (tOffset - startEffect) / effectLength;
+				strength = (Mathf.Cos( normalizedEffect * 6.28 ) * 0.5) - 0.5;
+
+				ypos -= ( sinWaveY * moddedAmplitude * -strength);
+			}
 			
 		}
 		else if( waveType == 3 ) //stretch

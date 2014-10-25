@@ -69,9 +69,7 @@ function startButtonPressed()
 	// Only allow button press after splash screen has faded in
 	if( state == TITLE_STATE_MAIN_TITLE )
 	{
-//		gm.goFromTitleToMap();
-        // HACK: Skip map screen for IGF demo
-        gm.goFromMapToGame();
+		gm.goFromTitleToMap();
 	}
 }
 

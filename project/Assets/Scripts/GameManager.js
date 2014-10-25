@@ -98,9 +98,7 @@ function Start()
 	
 	//load user data
 	PlayerData.instance.loadData();
-//	currentStage = getStageForId( PlayerData.instance.currentStageId );
-    // HACK: Force player to random stage for IGF demo
-    currentStage = getStageForId(3);
+	currentStage = getStageForId( PlayerData.instance.currentStageId );
 	
 	
 	//figure out screen dimensions
