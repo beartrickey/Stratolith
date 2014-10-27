@@ -3,12 +3,16 @@
 	Properties
 	{
 	
-		_wavelength ( "wavelength", Float ) = 0.5
-		_phase ( "phase", Float ) = 0.5
-		_lineWidth ( "line width", Float ) = 0.005
-		_type ( "type", int ) = 0
+		_hackWavelength ( "wavelength", Float ) = 0.5
+		_hackPhase ( "phase", Float ) = 0.5
+		_hackType ( "type", int ) = 0
+		
+		_defenseWavelength ( "wavelength", Float ) = 0.5
+		_defensePhase ( "phase", Float ) = 0.5
+		_defenseType ( "type", int ) = 0
 		
 	}
+
  
 	SubShader
 	{
@@ -25,10 +29,13 @@
 
 			#include "UnityCG.cginc"
 			
-			float _wavelength;
-			float _phase;
-			float _type;
-
+			float _hackWavelength;
+			float _hackPhase;
+			float _hackType;
+			
+			float _defenseWavelength;
+			float _defensePhase;
+			float _defenseType;
 
 			struct vertexInput
 			{
@@ -59,50 +66,146 @@
 			}
 			
 			
-			float4 frag( fragmentInput i ) : COLOR
+			float4 drawWave( fragmentInput i, float _wavelength, float _phase, float _type )
 			{
-					
-//				_lineWidth += 0.01;
 			
-				//float screenLength = 1.0;
-			
-				//float numPeriods = screenLength / _wavelength;
-	
-				//float totalT = ( 3.14 * numPeriods );
+				// Initial setup
+				float resolutionX = 470.0;
+				float resolutionY = 235.0;
+				float uvx = i.texcoord0.x;
+				float uvy = i.texcoord0.y;
 				
-				//float startingT = totalT * -0.5;
+				// Wave periods, t
+				float numPeriods = resolutionX / -_wavelength;
+				float totalT = ( 3.14 * numPeriods );
+				float startingT = (totalT * -0.5) + _phase;
+				float t = startingT + (uvx * totalT);
 				
-				//float t = startingT + _phase;
+				float startingY = 0.5;
 				
+							
 				// Line Width is relative to sine outcome
-				float lineWidthMax = 0.005;
-				float lineWidthMin = 0.0025;
+				float wavelengthMultiplier = 1.0;
+				wavelengthMultiplier += 4.0 - ((_wavelength / 200.0) * 4.0);
+				
+				if( wavelengthMultiplier < 1.0 )
+					wavelengthMultiplier = 1.0;
+				
+				float lineWidthMax = 0.007 * wavelengthMultiplier;
+				float lineWidthMin = 0.0035 * wavelengthMultiplier;
 				float lineWidthLength = lineWidthMax - lineWidthMin;
-				float sineOutcome = sin( i.texcoord0.x * 20.0 );
+				float sineOutcome = sin( t );
 				float absoluteOutcome = abs( sineOutcome ); // 0.0 to 1.0
 				float resultLineWidth = lineWidthMax - (lineWidthLength * absoluteOutcome);
 				
-				float lineY = sin( i.texcoord0.x * 20.0 ) * 0.1;
 				
-				lineY += 0.5;
+				// Sine wave
+				float amplitude = 0.35;
+				float sinWaveY = sin( t );
+				float lineY = 0.0;
 				
-				float dif = abs( lineY - i.texcoord0.y );
+				// Wave Types
+				if( _type == 0 ) // Sine
+				{
+				
+					lineY = startingY + (sinWaveY * amplitude);
+					
+				}
+				else if( _type == 1 ) // M W wave
+				{
+
+					lineY = startingY + (sinWaveY * amplitude);
+
+					float offset = 0.0;
+					float amplitudeOffset = 0.0;
+					float strength = 0.0;
+
+					if( sinWaveY > 0.5 )
+					{
+						offset = sinWaveY - 0.5;
+						strength = (offset / 0.5) * 1.5;
+						amplitudeOffset = offset * strength;
+						lineY -= amplitudeOffset;
+					}
+					else if( sinWaveY < -0.5 )
+					{
+						offset = -sinWaveY - 0.5;
+						strength = (offset / 0.5) * 1.5;
+						amplitudeOffset = offset * strength;
+						lineY += amplitudeOffset;
+					}
+						
+				}
+				else if( _type == 2 ) // Flat line
+				{
+
+					lineY = startingY + (sinWaveY * amplitude);
+
+					float currentPeriod = floor( t / 6.28 );
+					float tOffset = t - (currentPeriod * 6.28);
+					float startEffect = 2.0;//3.14;
+					float endEffect = 5.5;//4.71;
+					float effectLength = endEffect - startEffect;
+					float strength = 0.0;
+
+					if( tOffset > startEffect && tOffset < endEffect )
+					{
+						float normalizedEffect = (tOffset - startEffect) / effectLength;
+						strength = (cos( normalizedEffect * 6.28 ) * 0.5) - 0.5;
+
+						lineY -= ( sinWaveY * -strength);
+					}
+					
+				}
+				else if( _type == 3 ) //stretch
+				{
+					
+					
+				}
 			
-				float4 col = float4( 1.0, 1.0, 1.0, 0.7 );
+			
+				// Color
+				float dif = abs( lineY - uvy ); // i.texcoord0.y
+				float4 col = float4( 1.0, 1.0, 1.0, 0.5 );
 				
-				
-				//everything outside of line is transparent
+				// Glow
 				if( dif > resultLineWidth )
 				{
 
 					float fadeDistance = resultLineWidth * 8.0;
-					float alpha = 0.6 - (sqrt(dif) * 5.0);
+					float alpha = 0.6 - (sqrt(dif) * 3.0);
+					
+					if( alpha < 0.0 )
+						alpha = 0.0;
+					if( alpha > 1.0 )
+						alpha = 1.0;
+					
 					col = float4( 1.0, 1.0, 1.0, alpha );
 
 				}
-					
-				
+			
 				return col;
+			}
+			
+			
+			float4 frag( fragmentInput i ) : COLOR
+			{
+				
+				float4 resultColor = float4( 0.0, 0.0, 0.0, 0.0 );
+				float4 hackColor = float4( 0.0, 0.0, 0.0, 0.0 );
+				float4 defenseColor = float4( 0.0, 0.0, 0.0, 0.0 );
+				
+				hackColor = drawWave( i, _hackWavelength, _hackPhase, _hackType );
+				defenseColor = drawWave( i, _defenseWavelength, _defensePhase, _defenseType );
+				
+				resultColor = float4(
+					hackColor.x * defenseColor.x,
+					hackColor.y * defenseColor.y,
+					hackColor.z * defenseColor.z,
+					hackColor.w + defenseColor.w
+				);
+				
+				return resultColor;
 				
 			}
 			

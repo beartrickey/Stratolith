@@ -76,13 +76,6 @@ function calculateWave()
 	var tStep : float = totalT / Wave.numPoints;
 	
 	
-	//invert enemy waves
-	var invert : float = 1.0;
-	
-	if( inputType == 1 )
-		invert = -1.0;
-	
-	
 	//iterate through line points
 	for( var i : int = 0; i < Wave.numPoints; i++ )
 	{
@@ -92,10 +85,6 @@ function calculateWave()
 		
 		var xpos : float = startingX + ( scaledT * totalScreenLength );
 		var ypos : float = 0.0;
-		
-		var floati : float = i;
-		var floatPoints : float = Wave.numPoints;
-		var scaledScreenSpaceX : float = floati / floatPoints;
 		
 		
 		var sinWaveY : float = Mathf.Sin( t );
@@ -160,12 +149,6 @@ function calculateWave()
 		else if( waveType == 3 ) //stretch
 		{
 			
-			var modWave : float = 6.14 * scaledScreenSpaceX;
-			modWave -= 3.14;
-			modWave = Mathf.Sin(modWave);
-			var stretchSinWaveY : float = Mathf.Sin( modWave );
-			
-			ypos = startingY + ( stretchSinWaveY * moddedAmplitude );
 			
 		}
 	
