@@ -11,8 +11,6 @@ public var slgd : SublayerGameDelegate;
 
 public var scope : Scope;
 
-
-
 function initResultWave()
 {
 
@@ -51,8 +49,10 @@ function drawResultWave( )
 		
 		var yDif : float = scope.waveDifList[i];
 		var xPos : float = scope.defenseWaveData.wavePoints[i].x;
+
+		var direction : float = Mathf.Abs(yDif) / yDif;
 		
-		var topVert : Vector3 = Vector3( xPos, yDif + startingY, 0.0 );
+		var topVert : Vector3 = Vector3( xPos, yDif + startingY + direction, 0.0 );
 		var bottomVert : Vector3 = Vector3( xPos, startingY, 0.0 );
 		
 		var topVertIndex : int = i * 2;
