@@ -439,15 +439,15 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 		}
 
 		//select item as salvage target
-		var itemLocator : RScanItemLocator = _buttonScript.gameObject.GetComponent( RScanItemLocator );
+		var itemLocator : ItemLocator = _buttonScript.gameObject.GetComponent( ItemLocator );
 
 		if( itemLocator != null )
 		{
 
 			//target selected item
 			slgd.turnOffCommandRequest();
-			slgd.activeDrone.startSlvg( itemLocator.gameObject.transform.position );
-			GameManager.instance.SFX_CHOOSE_TARGET.Play();	
+			slgd.activeDrone.startSlvg( itemLocator );
+			GameManager.instance.SFX_CHOOSE_TARGET.Play();
 
 			return;
 

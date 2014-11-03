@@ -446,6 +446,7 @@ public var droneDockingCounter : int = 0;
 
 
 // Item collection
+public var targetItem : ItemLocator = null;
 public var hasItem : boolean = false;
 public var itemGraphic : tk2dSprite = null;
 
@@ -782,7 +783,7 @@ function handleNavigation()
 		
 		if( distanceFromTarget < stopThreshold )
 		{
-		
+
 			startIdle();
 			slgd.onDroneCollectItem( this );
 			
@@ -1059,12 +1060,14 @@ function startMove( _touchCoordinates : Vector2 )
 
 
 
-function startSlvg( _touchCoordinates : Vector2 )
+function startSlvg( _itemLocator : ItemLocator )
 {
 
 	state = DRONE_STATE_SLVG;
 
-	destination = _touchCoordinates;
+	targetItem = _itemLocator;
+
+	destination = _itemLocator.gameObject.transform.position;
 	
 	attackTarget = null;
 
@@ -1129,9 +1132,8 @@ function startDroneDeath()
 	
 	//GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
 
-	// Leave RScan location
-	SublayerGameDelegate.instance.addRScanLocation(position);
-
+	// Leave item
+	SublayerGameDelegate.instance.placeItemAtPosition( position );
 	
 	//decrement hostile drone count if hostile drone killed
 	if( hackedScopeList[0] == false )

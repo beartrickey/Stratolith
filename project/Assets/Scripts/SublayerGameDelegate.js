@@ -145,26 +145,18 @@ public var activeDroneWaitingForSalvageTarget : boolean = false;
 public var dockSlotList = new DockSlot[3];
 
 
-//rscan
+// Cannon
 public var rScanLocationQueue = new Array();
 public var rScanCircle : CircleRenderer = null;
-public var rScanItemLocator : tk2dSprite;
 public var rScanButton : ButtonScript;
 public var rScanButtonRing : tk2dSprite;
 public var rScanModeActive : boolean;
 
-public var rScanItemRotation : float = 0.0;
-public var rScanItemLength : float = 400.0;
-public static var rScanItemBlinkCounterOnFrames : int = 90;
-public static var rScanItemBlinkCounterOffFrames : int = 45;
-public var rScanItemBlinkCounter : int = 0;
-
-
-//Messaging
-//TODO: make separate message and manager compontents for more complicated messaging system
-//	-recurring
-//	-custom time span
-//	-message intro/outro animation
+// Items
+public var itemContainer : GameObject = null;
+public var itemLocatorPrefab : GameObject = null;
+public static var numItems : int = 8;
+public var itemLocatorList = new ItemLocator[numItems];
 
 //print text
 public var messageLabel : tk2dTextMesh;
@@ -205,17 +197,22 @@ function onInstantiate()
 	{
 		dronePerformanceGaugeList[p].onInstantiate();
 	}
-	
-	
-	// R-Scan button
-	sl.addButton( rScanButton );
-	rScanButton.onTouchDownInsideDelegate = rScanButtonPressed;
-
-	rScanCircle.onInitialize(50.0, true);
 
 
-	// Item Locator button
-	sl.addButton( rScanItemLocator.gameObject.GetComponent( ButtonScript ) );
+	// Item Locator buttons
+	for( var i : int = 0; i < numItems; i++ )
+	{
+
+		var itemLocatorGameObject : GameObject = GameObject.Instantiate( itemLocatorPrefab, Vector3( 0.0, 0.0, 0.0 ), itemLocatorPrefab.transform.rotation );
+		itemLocatorGameObject.transform.parent = itemContainer.transform;
+
+		var itemLocator : ItemLocator = itemLocatorGameObject.GetComponent( ItemLocator );
+		itemLocatorList[i] = itemLocator;
+
+		var itemLocatorButton : ButtonScript = itemLocatorGameObject.GetComponent( ButtonScript );
+		sl.addButton( itemLocatorButton );
+
+	}
 	
 	
 	//standby button
@@ -493,13 +490,13 @@ function sublayerGameUpdate()
 	
 	
 	//complete r-scan if top scope is hacked
-	if( 
-		rScanModeActive == true &&
-		scopeList[0].state == Scope.SCOPE_STATE_HACKED
-	)
-	{
-		rScanSuccess();
-	}
+	// if( 
+	// 	rScanModeActive == true &&
+	// 	scopeList[0].state == Scope.SCOPE_STATE_HACKED
+	// )
+	// {
+	// 	rScanSuccess();
+	// }
 	
 	
 	//update radar scanner at different rate than logic
@@ -720,18 +717,23 @@ function updateRadarGraphics()
 	
 	
 	//update rscan if active
-	if( rScanModeActive == true )
-	{
+	// if( rScanModeActive == true )
+	// {
 	
-		updateRScan();
+	// 	updateRScan();
 	
-	}
+	// }
 
 
-	// Update rscan item locator
-	if( rScanItemLocator.gameObject.activeSelf == true )
+	// Update itemLocators
+	for( var il : int = 0; il < numItems; il++ )
 	{
-		updateRScanItem();
+	
+		if( itemLocatorList[il].isActive == false )
+			continue;
+	
+		itemLocatorList[il].updateItemLocator();
+		
 	}
 	
 	
@@ -1229,8 +1231,8 @@ function selectDrone( _button : ButtonScript )
 
 
 	//disallow if in rscan mode?
-	if( rScanModeActive == true )
-		turnOffRScan();
+	// if( rScanModeActive == true )
+	// 	turnOffRScan();
 	
 	
 	//play audio
@@ -1963,147 +1965,43 @@ function getNumberOfDocksUsed() : int
 
 
 ///////////////////////////////////////////////////////////////////////////
-// R SCAN BUTTON
+// Items
 ///////////////////////////////////////////////////////////////////////////
 
 
 
-function addRScanLocation( _position : Vector2 )
+function getFreeItem() : ItemLocator
 {
 
-	rScanLocationQueue.Push( _position );
-
-	// Set R-Scan button graphics
-	rScanButtonRing.gameObject.SetActive(true);
-
-}
-
-
-
-function rScanButtonPressed()
-{
-
-	//HACK: Pause for Alex TGS build
-	// gm.goFromGameToPause();
-	// return;
-
-	// Bail if no locations available
-	if( rScanLocationQueue.length == 0 )
-		return;
-
-
-	if( rScanModeActive == true )
-	{
-	
-		turnOffRScan();
-		
-	}
-	else
-	{
-	
-		rScanModeActive = true;
-		
-		deselectDrone();
-		
-		scopeList[0].resetWaves();
-
-
-		// activate circle
-		rScanCircle.gameObject.SetActive( true );
-		
-
-		//randomize item position
-		rScanItemRotation = Random.Range( 0.0, 6.28 );
-		rScanItemLength = Random.Range( 200.0, (scannerWidth - 50.0) );
-		// Debug.Log( 'rScanItemRotation: ' + rScanItemRotation );
-
-
-		//set locator position
-		var location : Vector2 = rScanLocationQueue[0];
-		rScanItemLocator.gameObject.transform.position = location;
-
-	}
-
-}
-
-
-
-function getRScanItemPosition() : Vector3
-{
-	var xcomp : float = Mathf.Sin( rScanItemRotation ) * rScanItemLength;
-	var ycomp : float = Mathf.Cos( rScanItemRotation ) * rScanItemLength;
-
-	return shieldScannerCenter.position + Vector3( xcomp, ycomp );
-}
-
-
-
-function updateRScan()
-{
-
-	// Rate
-	var maxAreaUnderGraph : float = 25000.0;
-	var minAreaUnderGraph : float = resultWaveThreshold + 250.0;
-	var totalPossibleArea : float = maxAreaUnderGraph - minAreaUnderGraph;
-	var scaledCloseness : float = 1.0 - ((scopeList[0].areaUnderCurve - minAreaUnderGraph) / totalPossibleArea);
-
-	var baseRate : float = 1.01;
-	var rate : float = baseRate + (scaledCloseness * 0.075);
-
-
-	// Increase cirlce size
-	rScanCircle.gameObject.transform.localScale.x *= rate;
-	rScanCircle.gameObject.transform.localScale.y *= rate;
-
-
-	// Reset back to center
-	if( rScanCircle.gameObject.transform.localScale.x > 11.0 )
-	{
-		rScanCircle.gameObject.transform.localScale.x = 1.0;
-		rScanCircle.gameObject.transform.localScale.y = 1.0;
-	}
-
-}
-
-
-
-function updateRScanItem()
-{
-
-	rScanItemBlinkCounter--;
-
-	if( rScanItemBlinkCounter <= 0 )
+	for( var i : int = 0; i < numItems; i++ )
 	{
 
-		if( rScanItemLocator.color.a == 0.0 )
-		{
-			rScanItemLocator.color.a = 1.0;
-			rScanItemBlinkCounter = rScanItemBlinkCounterOnFrames;
-		}
-		else
+		if( itemLocatorList[i].isActive == false )
 		{
 
-			rScanItemLocator.color.a = 0.0;
-			rScanItemBlinkCounter = rScanItemBlinkCounterOffFrames;
+			return itemLocatorList[i];
 
 		}
 
 	}
 
+	return null;
+
 }
 
 
 
-function rScanSuccess()
+function placeItemAtPosition( _position : Vector2 )
 {
 
-	turnOffRScan();
+	var item : ItemLocator = getFreeItem();
 
-	rScanItemLocator.gameObject.SetActive( true );
+	if( item != null )
+	{
 
-	//update messag
-	var rScanSuccessMessage : String = "R-SCAN COMPLETE:\nSEND SALVAGE DRONE ";
-	addMessage( rScanSuccessMessage );
+		item.onInitialize( _position );
+
+	}
 
 }
 
@@ -2112,29 +2010,33 @@ function rScanSuccess()
 function onDroneCollectItem( _drone : Drone )
 {
 
+	// Skip if item has been deactivated
+	if( _drone.targetItem.isActive == false )
+		return;
+
+
+	// Deactivate target item
+	_drone.targetItem.deactivate();
+
+
+	// Change drone graphic
 	_drone.hasItem = true;
 	_drone.itemGraphic.gameObject.SetActive( true );
-	rScanItemLocator.gameObject.SetActive( false );
-
-	// Change button graphic if no locations left in list
-	rScanLocationQueue.Shift();
-	if( rScanLocationQueue.length == 0 )
-		rScanButtonRing.gameObject.SetActive(false);
 
 }
 
 
 
-function turnOffRScan()
-{
+// function turnOffRScan()
+// {
 
-	rScanModeActive = false;  // Toggle off state
+// 	rScanModeActive = false;  // Toggle off state
 
-	rScanCircle.gameObject.SetActive( false );  // Toggle off circle
+// 	rScanCircle.gameObject.SetActive( false );  // Toggle off circle
 
-	turnOffScopes();
+// 	turnOffScopes();
 
-}
+// }
 
 
 
@@ -2148,6 +2050,10 @@ function standbyButtonPressed()
 	gm.goFromGameToCatalog();
 
 }
+
+
+
+
 
 
 
