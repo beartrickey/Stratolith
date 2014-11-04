@@ -146,11 +146,9 @@ public var dockSlotList = new DockSlot[3];
 
 
 // Cannon
-public var rScanLocationQueue = new Array();
-public var rScanCircle : CircleRenderer = null;
-public var rScanButton : ButtonScript;
-public var rScanButtonRing : tk2dSprite;
-public var rScanModeActive : boolean;
+public var cannonTarget : tk2dSprite = null;
+public var cannonButton : ButtonScript;
+public var cannonModeActive : boolean;
 
 // Items
 public var itemContainer : GameObject = null;
@@ -197,6 +195,11 @@ function onInstantiate()
 	{
 		dronePerformanceGaugeList[p].onInstantiate();
 	}
+
+
+	// Cannon
+	sl.addButton( cannonButton );
+	cannonButton.onTouchDownInsideDelegate = cannonButtonPressed;
 
 
 	// Item Locator buttons
@@ -489,16 +492,6 @@ function sublayerGameUpdate()
 	}
 	
 	
-	//complete r-scan if top scope is hacked
-	// if( 
-	// 	rScanModeActive == true &&
-	// 	scopeList[0].state == Scope.SCOPE_STATE_HACKED
-	// )
-	// {
-	// 	rScanSuccess();
-	// }
-	
-	
 	//update radar scanner at different rate than logic
 	updateRadarGraphics();
 
@@ -717,12 +710,12 @@ function updateRadarGraphics()
 	
 	
 	//update rscan if active
-	// if( rScanModeActive == true )
-	// {
+	if( cannonModeActive == true )
+	{
 	
-	// 	updateRScan();
+		updateCannon();
 	
-	// }
+	}
 
 
 	// Update itemLocators
@@ -929,7 +922,7 @@ function handleScopeDragging()
 	activeScope.knob.knobPosition = activeScope.hackWaveData.waveLengthKnob;
 	activeScope.knob.setKnobRotation();
 	
-	if( rScanModeActive == false && activeDrone == null )
+	if( cannonModeActive == false && activeDrone == null )
 		return;
 	
 	// update waves for unhacked scopes
@@ -1228,11 +1221,6 @@ function selectDrone( _button : ButtonScript )
 {
 
 	Debug.Log( "selectDrone" );
-
-
-	//disallow if in rscan mode?
-	// if( rScanModeActive == true )
-	// 	turnOffRScan();
 	
 	
 	//play audio
@@ -1610,7 +1598,7 @@ function modButtonPressed( _button : ButtonScript )
 		
 		
 	//for rscan
-	if( rScanModeActive == true )
+	if( cannonModeActive == true )
 	{
 		waveModulationButtonPressed( buttonIndex );
 	}
@@ -2026,17 +2014,68 @@ function onDroneCollectItem( _drone : Drone )
 }
 
 
+///////////////////////////////////////////////////////////////////////////
+// Cannon
+///////////////////////////////////////////////////////////////////////////
 
-// function turnOffRScan()
-// {
 
-// 	rScanModeActive = false;  // Toggle off state
 
-// 	rScanCircle.gameObject.SetActive( false );  // Toggle off circle
+function updateCannon()
+{
 
-// 	turnOffScopes();
+	var maxLength : float = scannerWidth;
+	var length : float = maxLength * scopeList[0].knob.knobPosition;
+	var rotation : float = scopeList[0].phaseDial.knobPosition;
 
-// }
+	var xcomp : float = Mathf.Sin( rotation ) * length;
+	var ycomp : float = Mathf.Cos( rotation ) * length;
+
+	cannonTarget.gameObject.transform.position = shieldScannerCenter.position + Vector3( xcomp, ycomp );
+
+}
+
+
+
+function cannonButtonPressed()
+{
+
+
+	if( cannonModeActive == true )
+	{
+	
+		turnOffCannon();
+		
+	}
+	else
+	{
+	
+		cannonModeActive = true;
+		
+		deselectDrone();
+		
+		scopeList[0].resetWaves();
+
+
+		// activate circle
+		cannonTarget.gameObject.SetActive( true );
+		
+
+	}
+
+}
+
+
+
+function turnOffCannon()
+{
+
+	cannonModeActive = false;  // Toggle off state
+
+	cannonTarget.gameObject.SetActive( false );  // Toggle off circle
+
+	turnOffScopes();
+
+}
 
 
 

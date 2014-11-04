@@ -2,9 +2,13 @@
 
 public var isActive : boolean = false;
 
-public static var blinkCounterOnFrames : int = 90;
-public static var blinkCounterOffFrames : int = 45;
-public static var itemLifespan : int = 1800;
+public static var blinkCounterOnFramesNormal : int = 90;
+public static var blinkCounterOffFramesNormal : int = 45;
+
+public static var blinkCounterOnFramesFast : int = 20;
+public static var blinkCounterOffFramesFast : int = 10;
+
+public static var itemLifespan : int = 3600; // 1 minute
 public var counter : int = 0;
 public var frames : int = 0;
 
@@ -18,7 +22,7 @@ function onInitialize( _position : Vector2 )
 	gameObject.SetActive( true );
 	isActive = true;
 	frames = 0;
-	counter = blinkCounterOnFrames;
+	counter = blinkCounterOnFramesNormal;
 
 }
 
@@ -35,6 +39,16 @@ function deactivate()
 function updateItemLocator()
 {
 
+	// Lifespan
+	frames++;
+
+	if( frames >= itemLifespan )
+	{
+		deactivate();
+	}
+
+	var framesRemaining = itemLifespan - frames;
+
 	// Blink
 	counter--;
 
@@ -43,22 +57,25 @@ function updateItemLocator()
 		if( sprite.color.a == 0.0 )
 		{
 			sprite.color.a = 1.0;
-			counter = blinkCounterOnFrames;
+
+			counter = blinkCounterOnFramesNormal;
+
+			if( framesRemaining < 600 )
+				counter = blinkCounterOnFramesFast;				
+
 		}
 		else
 		{
 			sprite.color.a = 0.0;
-			counter = blinkCounterOffFrames;
+
+			counter = blinkCounterOffFramesNormal;
+
+			if( framesRemaining < 600 )
+				counter = blinkCounterOffFramesFast;
 		}
 	}
 
-	// Lifespan
-	frames++;
-
-	if( frames >= itemLifespan )
-	{
-		deactivate();
-	}
+	
 
 }
 
