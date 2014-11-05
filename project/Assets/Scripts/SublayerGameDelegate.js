@@ -1220,8 +1220,10 @@ function updateStateMachine()
 function selectDrone( _button : ButtonScript )
 {
 
-	Debug.Log( "selectDrone" );
-	
+	// Debug.Log( "selectDrone" );
+
+	if( cannonModeActive == true )
+		turnOffCannon();
 	
 	//play audio
 	GameManager.instance.SFX_BUTTON_PRESS.Play();
@@ -2025,7 +2027,7 @@ function updateCannon()
 
 	var maxLength : float = scannerWidth;
 	var length : float = maxLength * scopeList[0].knob.knobPosition;
-	var rotation : float = scopeList[0].phaseDial.knobPosition;
+	var rotation : float = scopeList[0].hackWaveData.phaseKnob * 6.28;
 
 	var xcomp : float = Mathf.Sin( rotation ) * length;
 	var ycomp : float = Mathf.Cos( rotation ) * length;
@@ -2068,6 +2070,43 @@ function cannonButtonPressed()
 
 function turnOffCannon()
 {
+
+	// Check for nearby drone to disable
+	for( var d : int = 0; d < numDrones; d++ )
+	{
+		
+		var drone : Drone = droneList[d];
+	
+		//skip inactive drones
+		if( drone.isActive == false )
+			continue;
+			
+			
+		//skip other docked and dying drones
+		if(
+			drone.state == Drone.DRONE_STATE_PREPARING_TO_DOCK ||
+			drone.state == Drone.DRONE_STATE_DOCKED ||
+			drone.state == Drone.DRONE_STATE_PREPARING_TO_LAUNCH ||
+			drone.state == Drone.DRONE_STATE_CHARGED_TO_DEATH ||
+			drone.state == Drone.DRONE_STATE_DYING
+		)
+			continue;
+			
+		
+		//get distance
+		var dif : Vector2 = position - drone.position;
+		
+		var distance : float = dif.magnitude;
+		
+		var collisionRange : float = 50.0;
+		
+		if( distance < collisionRange )
+		{
+			selectDrone()
+		}
+		
+	}
+
 
 	cannonModeActive = false;  // Toggle off state
 
