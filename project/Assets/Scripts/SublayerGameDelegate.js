@@ -2055,7 +2055,7 @@ function cannonButtonPressed()
 		
 		deselectDrone();
 		
-		scopeList[0].resetWaves();
+		// scopeList[0].resetWaves();
 
 
 		// activate circle
@@ -2070,6 +2070,8 @@ function cannonButtonPressed()
 
 function turnOffCannon()
 {
+
+	var position : Vector2 = cannonTarget.gameObject.transform.position;
 
 	// Check for nearby drone to disable
 	for( var d : int = 0; d < numDrones; d++ )
@@ -2102,7 +2104,18 @@ function turnOffCannon()
 		
 		if( distance < collisionRange )
 		{
-			selectDrone()
+
+			if( drone.hackedScopeList[0] == false )
+			{
+
+				drone.hackedScopeList[0] = true;
+				drone.startIdle();
+				GameManager.instance.currentStage.remainingHostileDrones -= 1;
+				drone.setDroneColor();
+				GameManager.instance.SFX_DRONE_HACKED.Play();
+
+			}
+
 		}
 		
 	}
