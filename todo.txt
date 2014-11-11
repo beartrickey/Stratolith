@@ -4,11 +4,6 @@
 
 * Allow for scripted (non-random) stages for the tutorial/demo stages
 
-* Change collision code
-
-
-
-
 * Stage generation
 	-Difficulty
 		-Evenly match nullifiable and unnullifiable drone stats
@@ -20,13 +15,8 @@
 
 	-Stretch time out a bit more to allow for r-scanning, salvaging, and drone maintenance
 
-
-* R-Scan
-	-Items stay on radar for N frames before hostile drone picks them up
-
+* Items
 	-Items are saved if drone survives conflict or docks
-
-	-Items can be used for anything - World Map Unlock, Tech Unlock, Data Unlock, Drone Creation?
 
 
 * Stage End
@@ -35,74 +25,5 @@
 	-Pick drone to keep in dock(s)
 
 
-* Loading screen has moving clouds
+* Loading screen has moving clouds?
 
-
-*WEAP, VELO, RNGE, SHLD
-
-	1 Wave Type
-		4 point drones
-			Hybrid	0202 (unhackable)
-
-		6 point drones
-			Carrier	0204
-			Scout 	0402 (unhackable)
-
-		8 point drones
-			Base	2222
-			Scout	0602 (unhackable)
-			Carrier	0206
-			Hybrid	0404 (unhackable)
-
-	2 Wave Types
-		10 Point
-			Power	4222
-			Speed 	2422 (unhackable)
-			Range 	2242
-			Shield 	2224 (unhackable)
-			Carrier	0208
-			Scout	0802 (unhackable)
-
-		12 point
-			Power	6222
-			Speed 	2622 (unhackable)
-			Range 	2262
-			Shield 	2226 (unhackable)
-			Carrier	0408
-			Scout	0804 (unhackable)
-			Hybrid	0606
-
-		14 point
-			Power	8222 (unhackable)
-			Speed 	2822
-			Range 	2282 (unhackable)
-			Shield 	2228
-			Carrier	0608 (unhackable)
-			Scout	0806
-
-	3 Wave Types
-		16 point
-			Base	4444 (unhackable)
-			Hybrid	0808
-
-		20 point
-			Power	8444 (unhackable)
-			Speed 	4844
-			Range 	4484 (unhackable)
-			Shield 	4448
-
-		24 point
-			Base	6666 (unhackable)
-
-	4 Wave Types
-		26 point
-			Power 	8666
-			Speed 	6866 (unhackable)
-			Range 	6686
-			Shield 	6668 (unhackable)
-			
-		32 point
-			Base 	8888
-
-		36 point
-			Base	9999
