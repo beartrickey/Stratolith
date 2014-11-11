@@ -1,3 +1,14 @@
+* Make items selectable on radar
+
+* Add image file attribute to drone hashtables
+
+* Make stage based only on using cannon and collecting items with convoy drone?
+
+* Work on fourth wave type
+
+* Drones utilize different wave types
+
+* Cannon has limited number of uses per stage
 
 * Put drones into JSON object
 	-drone paths

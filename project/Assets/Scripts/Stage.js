@@ -104,17 +104,14 @@ function updateStage()
 			if( dronePath.droneType == 99 )
 			{
 
-				var hackable : boolean = false;
+				var hackable : int = 0;
 
 				if( i % 2 == 0 )
-					hackable = true;
+					hackable = 1;
 
-				var damage : float = Random.Range(1, 4) * 2;
-				var speed : float = Random.Range(1, 4) * 2;
-				var range : float = Random.Range(1, 4) * 2;
-				var health : float = Random.Range(1, 4) * 2;
+				var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 8, hackable );
 
-				dronePath.drone.initRandomDrone( hackable, damage, speed, health, range, dronePath );
+				dronePath.drone.initRandomDrone( droneHashtable, dronePath );
 
 			}
 			else

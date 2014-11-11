@@ -2108,11 +2108,15 @@ function turnOffCannon()
 			if( drone.hackedScopeList[0] == false )
 			{
 
-				drone.hackedScopeList[0] = true;
-				drone.startIdle();
-				GameManager.instance.currentStage.remainingHostileDrones -= 1;
-				drone.setDroneColor();
-				GameManager.instance.SFX_DRONE_HACKED.Play();
+				// Hack drone
+				// drone.hackedScopeList[0] = true;
+				// drone.startIdle();
+				// GameManager.instance.currentStage.remainingHostileDrones -= 1;
+				// drone.setDroneColor();
+				// GameManager.instance.SFX_DRONE_HACKED.Play();
+
+				// Damage drone
+				drone.damageDrone( 20.0 );
 
 			}
 

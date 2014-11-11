@@ -345,6 +345,40 @@ public static var droneJson = [
 
 ];
 
+static function getDroneWithAttributes( _totalPower : int, _hackable : int ) : System.Collections.Hashtable
+{
+	// _totalPower : int, sum of all digits in modelNumber
+	// _hackable : int, -1 any, 0 false, 1 true 
+
+	var tempDronePool = new Array();
+
+	// Gather initial drones and add to pool
+	for( var d : int = 0; d < droneJson.length; d++ )
+	{
+
+		// Power Level
+		if( droneJson[d]["totalPower"] != _totalPower )
+		{
+			continue;
+		}
+
+		// Hackability
+		if( _hackable == 0 &&  droneJson[d]["hackable"] == true )
+			continue;
+		if( _hackable == 1 &&  droneJson[d]["hackable"] == false )
+			continue;
+
+		// Add to pool
+		tempDronePool.Push( droneJson[d] );
+
+	}
+
+	// Choose one randomly from the pool
+	var randomIndex : int = Random.Range( 0, tempDronePool.length );
+	return tempDronePool[randomIndex];
+
+}
+
 
 public var isActive : boolean = false;
 
@@ -495,28 +529,22 @@ function onInstantiate()
 
 
 
-function initRandomDrone( _hackable : boolean, _damageIndex : int, _speedIndex : int, _healthIndex : int, _rangeIndex : int, _path : DronePath )
+function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _dronePath : DronePath )
 {
 
-	// Set Values
-	damageIndex = _damageIndex;
-	velocityIndex = _speedIndex;
-	rangeIndex = _rangeIndex;
-	shieldIndex = _healthIndex;
-
-	modelString = damageIndex.ToString("D1") + velocityIndex.ToString("D1") + rangeIndex.ToString("D1") + shieldIndex.ToString("D1");
+	modelString = _droneHashtable["modelNumber"];
 
 	adjustStatsForPowerDiversion();
 
 	health = maxHealth;
 
-	nullifiable = _hackable;
+	nullifiable = _droneHashtable["hackable"];
 
 	droneType = DRONE_MODEL_RAND;
 
 
 	// Set Path
-	dronePath = _path;
+	dronePath = _dronePath;
 
 	currentPoint = 1;
 
