@@ -1872,9 +1872,9 @@ function addSavedDronesToDockSlots()
 			continue;
 		}
 
-		var droneType = PlayerData.instance.dockedDroneData[d].droneType;
+		var modelString = PlayerData.instance.dockedDroneData[d].modelString;
 
-		if( droneType == -1 )
+		if( modelString == "" )
 		{
 			Debug.Log("dockedDroneData -1");
 			continue;
@@ -1882,9 +1882,9 @@ function addSavedDronesToDockSlots()
 
 
 		//setup new drone
-		Debug.Log("setting up drone of type: " + droneType);
+		Debug.Log("setting up drone of type: " + modelString);
 		var drone : Drone = getFreeDrone();
-		drone.initializeDockedDrone( droneType );
+		drone.initializeDockedDrone( modelString );
 
 		addDroneToFreeDockSlot( drone );
 

@@ -669,10 +669,14 @@ function initializeDrone( _dronePath : DronePath )
 
 
 
-function initializeDockedDrone( _droneType )
+function initializeDockedDrone( _modelString : String )
 {
 	
-	droneType = _droneType;
+	modelString = _modelString;
+
+	adjustStatsForPowerDiversion();
+
+	health = maxHealth;
 
 	dronePath = null;
 
@@ -681,8 +685,6 @@ function initializeDockedDrone( _droneType )
 	hackedScopeList[0] = true;
 	hackedScopeList[1] = true;
 	hackedScopeList[2] = true;
-	
-	setValuesForDroneType();
 
 	attackTarget = null;
 
@@ -692,19 +694,6 @@ function initializeDockedDrone( _droneType )
 	
 	
 	baseInitialize();
-
-}
-
-
-
-function setValuesForDroneType()
-{
-
-	attackRange = droneAttackRangeList[droneType];
-	modelString = droneModelNumberList[droneType];
-	health = droneHealthList[droneType];
-	reloadCounterMax = droneReloadFramesList[droneType];
-	maxSpeed = droneMaxSpeedList[droneType];
 
 }
 
