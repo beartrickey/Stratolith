@@ -21,7 +21,7 @@ public var stageData = new List.<StageData>();
 class DockedDroneData
 {
 
-	var droneType : int = -1;
+	var modelString : String = "";
 
 }
 
@@ -93,7 +93,7 @@ function loadData()
 		for( var d = 0; d < 3; d++ )
 		{
 
-			dockedDroneData[d].droneType = -1;
+			dockedDroneData[d].modelString = "";
 		
 		}
 	}
@@ -122,14 +122,14 @@ function saveData()
 		{
 
 			Debug.Log( "dock has no drone" );
-			dockedDroneData[d].droneType = -1;
+			dockedDroneData[d].modelString = "";
 
 		}
 		else
 		{
 
-			Debug.Log( "saving docked drone of type: " + dockSlotList[d].drone.droneType );
-			dockedDroneData[d].droneType = dockSlotList[d].drone.droneType;
+			Debug.Log( "saving docked drone of type: " + dockSlotList[d].drone.modelString );
+			dockedDroneData[d].modelString = dockSlotList[d].drone.modelString;
 
 		}
 	
