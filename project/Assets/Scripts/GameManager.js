@@ -454,7 +454,7 @@ function goFromGameToCatalog()
 function resetStage()
 {
 	
-	sublayerGameDelegate.deselectDrone();
+	sublayerGameDelegate.deselectRadarObject();
 	
 	sublayerGameDelegate.clearScene();
 	

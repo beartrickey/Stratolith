@@ -405,7 +405,7 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 		wasTouchInsideRadarCircle( _ray ) == true &&
 		_buttonScript == null )
 	{
-		slgd.deselectDrone();
+		slgd.deselectRadarObject();
 	}
 
 	

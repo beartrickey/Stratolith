@@ -1179,7 +1179,7 @@ function enteredStratolith()
 
 	//deselect this drone if currently selected
 	if( slgd.activeDrone == this )
-		slgd.deselectDrone();
+		slgd.deselectRadarObject();
 
 	droneDockingCounter = 360;
 	
@@ -1356,32 +1356,7 @@ function updateDroneGraphics()
 	// Set selection lines if selected
 	if( slgd.activeDrone == this )
 	{
-	
-		var iconOffset : float = 40.0;
-		var lineLength : float = 1024.0;
-		var offset : float = ( lineLength * 0.5 ) + iconOffset;
-		
-		
-		//up
-		var xpos : float = roundedPos.x;
-		var ypos : float = roundedPos.y + offset;
-		slgd.selectionLineUp.gameObject.transform.position = Vector2( xpos, ypos );
-		
-		//down
-		xpos = roundedPos.x;
-		ypos = roundedPos.y - offset;
-		slgd.selectionLineDown.gameObject.transform.position = Vector2( xpos, ypos );
-		
-		//left
-		xpos = roundedPos.x - offset;
-		ypos = roundedPos.y;
-		slgd.selectionLineLeft.gameObject.transform.position = Vector2( xpos, ypos );
-		
-		//right
-		xpos = roundedPos.x + offset;
-		ypos = roundedPos.y;
-		slgd.selectionLineRight.gameObject.transform.position = Vector2( xpos, ypos );
-	
+		slgd.setSelectionLines( roundedPos );
 	}
 	
 }
@@ -1572,7 +1547,7 @@ function deactivate()
 
 	//deselect this drone if currently selected
 	if( slgd.activeDrone == this )
-		slgd.deselectDrone();
+		slgd.deselectRadarObject();
 
 	isActive = false;
 	

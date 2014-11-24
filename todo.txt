@@ -4,8 +4,6 @@
 
 * Make stage based only on using cannon and collecting items with convoy drone?
 
-* Work on fourth wave type
-
 * Drones utilize different wave types
 
 * Cannon has limited number of uses per stage
@@ -24,7 +22,6 @@
 	-Unify drone types and paths
 		-Don't have close range drones circle around radar (they'll never be able to attack the stratolith)
 
-	-Stretch time out a bit more to allow for r-scanning, salvaging, and drone maintenance
 
 * Items
 	-Items are saved if drone survives conflict or docks

@@ -404,7 +404,7 @@ function startGame()
 function abortStage()
 {
 
-	deselectDrone();
+	deselectRadarObject();
 	
 	clearScene();
 
@@ -422,7 +422,7 @@ function stageSuccessfullyCleared()
 	// save data
 	PlayerData.instance.saveData();
 
-	deselectDrone();
+	deselectRadarObject();
 	
 	clearScene();
 		
@@ -435,7 +435,7 @@ function stageSuccessfullyCleared()
 function stageLost()
 {
 
-	deselectDrone();
+	deselectRadarObject();
 	clearScene();
 	
 	gm.goFromGameToGameOver();
@@ -1402,23 +1402,25 @@ function resetDroneColors()
 
 
 
-function deselectDrone()
+function deselectRadarObject()
 {
 
-	if( activeDrone == null )
-		return;
+	if( activeDrone )
+	{
+		activeDroneWaitingForDestination = false;
 	
-	activeDroneWaitingForDestination = false;
-	
-	activeDroneWaitingForAttackTarget = false;
+		activeDroneWaitingForAttackTarget = false;
 
-	activeDroneWaitingForSalvageTarget = false;
-	
-	// activeDrone.turnOffAllCommandButtonGraphics();
+		activeDroneWaitingForSalvageTarget = false;
 
-	disconnectDroneFromScopes();
-	
-	activeDrone = null;
+		disconnectDroneFromScopes();
+		
+		activeDrone = null;
+
+		//stop audio
+		GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
+
+	}
 	
 	turnOffScopes();
 	
@@ -1445,15 +1447,50 @@ function deselectDrone()
 	{
 		dronePerformanceGaugeList[p].turnGaugeOff();
 	}
-	
-	//stop audio
-	GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
 
 }
 
 
 
-///////////////////////SCOPES
+///////////////////////////////////////////////////////////////////////////
+// Radar
+///////////////////////////////////////////////////////////////////////////
+
+
+function setSelectionLines( _position : Vector2 )
+{
+
+	var iconOffset : float = 40.0;
+	var lineLength : float = 1024.0;
+	var offset : float = ( lineLength * 0.5 ) + iconOffset;
+	
+	
+	//up
+	var xpos : float = _position.x;
+	var ypos : float = _position.y + offset;
+	selectionLineUp.gameObject.transform.position = Vector2( xpos, ypos );
+	
+	//down
+	xpos = _position.x;
+	ypos = _position.y - offset;
+	selectionLineDown.gameObject.transform.position = Vector2( xpos, ypos );
+	
+	//left
+	xpos = _position.x - offset;
+	ypos = _position.y;
+	selectionLineLeft.gameObject.transform.position = Vector2( xpos, ypos );
+	
+	//right
+	xpos = _position.x + offset;
+	ypos = _position.y;
+	selectionLineRight.gameObject.transform.position = Vector2( xpos, ypos );
+
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+// Scopes
+///////////////////////////////////////////////////////////////////////////
 
 
 
@@ -1964,9 +2001,40 @@ function getNumberOfDocksUsed() : int
 function selectItem( _buttonScript : ButtonScript )
 {
 
-	deselectDrone();
+	var item : ItemLocator = _buttonScript.gameObject.GetComponent( ItemLocator );
 
+	deselectRadarObject();
+
+	if( cannonModeActive == true )
+		turnOffCannon();
 	
+	//play audio
+	GameManager.instance.SFX_BUTTON_PRESS.Play();
+	
+	
+	//change drone stats under radar
+	activeDroneModelLabel.text = "----";
+	activeDroneModelLabel.Commit();
+	
+	activeDronePowerLabel.text = "----";
+	activeDronePowerLabel.Commit();
+
+
+	// Selection Line Color
+	var color : Color = Color(1.0, 1.0, 1.0, 0.6);
+	selectionLineUp.color = color;
+	selectionLineDown.color = color;
+	selectionLineLeft.color = color;
+	selectionLineRight.color = color;
+
+	// Selection Line Positions
+	setSelectionLines( item.gameObject.transform.position );
+
+	// Selection Line visibility
+	selectionLineUp.gameObject.SetActive( true );
+	selectionLineDown.gameObject.SetActive( true );
+	selectionLineLeft.gameObject.SetActive( true );
+	selectionLineRight.gameObject.SetActive( true );
 
 }
 
@@ -2065,7 +2133,7 @@ function cannonButtonPressed()
 	
 		cannonModeActive = true;
 		
-		deselectDrone();
+		deselectRadarObject();
 		
 		// scopeList[0].resetWaves();
 
