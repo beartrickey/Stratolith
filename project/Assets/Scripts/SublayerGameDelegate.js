@@ -45,6 +45,7 @@ public var radarStaticEffect : Renderer;
 
 
 //selection lines
+public var selectionCircle : tk2dSprite;
 public var selectionLineUp : tk2dSprite;
 public var selectionLineDown : tk2dSprite;
 public var selectionLineLeft : tk2dSprite;
@@ -1247,11 +1248,8 @@ function selectDrone( _button : ButtonScript )
 	connectActiveDroneToScopes();
 	
 	//turn selection lines on
-	selectionLineUp.gameObject.SetActive( true );
-	selectionLineDown.gameObject.SetActive( true );
-	selectionLineLeft.gameObject.SetActive( true );
-	selectionLineRight.gameObject.SetActive( true );
-	
+	setSelectionLines( drone.hackedScopeList[0] );
+	updateSelectionLines( drone.gameObject.transform.position );
 	
 	//change drone stats under radar
 	activeDroneModelLabel.text = activeDrone.modelString;
@@ -1428,6 +1426,7 @@ function deselectRadarObject()
 	
 	
 	//turn selection lines off
+	selectionCircle.gameObject.SetActive( false );
 	selectionLineUp.gameObject.SetActive( false );
 	selectionLineDown.gameObject.SetActive( false );
 	selectionLineLeft.gameObject.SetActive( false );
@@ -1457,33 +1456,75 @@ function deselectRadarObject()
 ///////////////////////////////////////////////////////////////////////////
 
 
-function setSelectionLines( _position : Vector2 )
+
+function updateSelectionLines( _position : Vector2 )
 {
 
 	var iconOffset : float = 40.0;
 	var lineLength : float = 1024.0;
 	var offset : float = ( lineLength * 0.5 ) + iconOffset;
+
+	// Circle
+	selectionCircle.gameObject.transform.position = _position;
 	
-	
-	//up
+	// Up
 	var xpos : float = _position.x;
 	var ypos : float = _position.y + offset;
 	selectionLineUp.gameObject.transform.position = Vector2( xpos, ypos );
 	
-	//down
+	// Down
 	xpos = _position.x;
 	ypos = _position.y - offset;
 	selectionLineDown.gameObject.transform.position = Vector2( xpos, ypos );
 	
-	//left
+	// Left
 	xpos = _position.x - offset;
 	ypos = _position.y;
 	selectionLineLeft.gameObject.transform.position = Vector2( xpos, ypos );
 	
-	//right
+	// Right
 	xpos = _position.x + offset;
 	ypos = _position.y;
 	selectionLineRight.gameObject.transform.position = Vector2( xpos, ypos );
+
+}
+
+
+
+function setSelectionLines( _hacked : boolean )
+{
+
+	var color : Color = Color(1.0, 1.0, 1.0, 0.2);
+
+	if( _hacked )
+	{
+		// White
+		selectionCircle.SetSprite( "Radar-SelectionNull" );
+	}
+	else
+	{
+		// Yellow
+		selectionCircle.SetSprite( "Radar-SelectionHostile" );
+		color.r = 255.0 / 255.0;
+		color.g = 239.0 / 255.0;
+		color.b = 64.0 / 255.0;
+		color.a = 0.2;
+	}
+
+
+	// Selection Line Color
+	selectionLineUp.color = color;
+	selectionLineDown.color = color;
+	selectionLineLeft.color = color;
+	selectionLineRight.color = color;
+
+
+	// Selection Line visibility
+	selectionCircle.gameObject.SetActive( true );
+	selectionLineUp.gameObject.SetActive( true );
+	selectionLineDown.gameObject.SetActive( true );
+	selectionLineLeft.gameObject.SetActive( true );
+	selectionLineRight.gameObject.SetActive( true );
 
 }
 
@@ -2019,22 +2060,8 @@ function selectItem( _buttonScript : ButtonScript )
 	activeDronePowerLabel.text = "----";
 	activeDronePowerLabel.Commit();
 
-
-	// Selection Line Color
-	var color : Color = Color(1.0, 1.0, 1.0, 0.6);
-	selectionLineUp.color = color;
-	selectionLineDown.color = color;
-	selectionLineLeft.color = color;
-	selectionLineRight.color = color;
-
-	// Selection Line Positions
-	setSelectionLines( item.gameObject.transform.position );
-
-	// Selection Line visibility
-	selectionLineUp.gameObject.SetActive( true );
-	selectionLineDown.gameObject.SetActive( true );
-	selectionLineLeft.gameObject.SetActive( true );
-	selectionLineRight.gameObject.SetActive( true );
+	setSelectionLines( true );
+	updateSelectionLines( item.gameObject.transform.position );
 
 }
 

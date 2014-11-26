@@ -452,8 +452,6 @@ public var bulletDamage : float = 0.0;
 ////graphics
 public var boxCollider : BoxCollider;
 
-public var droneSelectionBox : tk2dSprite;
-
 public var destinationIcon : tk2dSprite;
 
 public var targetIcon : tk2dSprite;
@@ -1356,7 +1354,7 @@ function updateDroneGraphics()
 	// Set selection lines if selected
 	if( slgd.activeDrone == this )
 	{
-		slgd.setSelectionLines( roundedPos );
+		slgd.updateSelectionLines( roundedPos );
 	}
 	
 }
@@ -1720,41 +1718,16 @@ function setDroneColor()
 	//set label color
 	droneInfoLabel.color = color;
 	droneInfoLabel.Commit();
-	
-	
-	//set selection box color
-	if( this == slgd.activeDrone )
-	{
-	
-		droneSelectionBox.gameObject.SetActive( true );
-		
-		color.a = 0.2;
-		
-		if( hackedScopeList[0] == true )
-		{
-			droneSelectionBox.SetSprite( "Radar-SelectionNull" );
-		}
-		else
-		{
-			droneSelectionBox.SetSprite( "Radar-SelectionHostile" );
-		}
-		
-		
-		//selection lines
-		slgd.selectionLineUp.color = color;
-		slgd.selectionLineDown.color = color;
-		slgd.selectionLineLeft.color = color;
-		slgd.selectionLineRight.color = color;
-		
-	}
-	else
-	{
-		droneSelectionBox.gameObject.SetActive( false );
-	}
 
 
 	//circle renderer
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
+
+	// If selected on radar
+	if( this == slgd.activeDrone )
+	{
+		slgd.setSelectionLines( hackedScopeList[0] );
+	}
 	
 }
 
