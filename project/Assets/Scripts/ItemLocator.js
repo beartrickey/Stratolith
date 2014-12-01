@@ -17,21 +17,39 @@ public var sprite : tk2dSprite;
 
 public static var techUpgradeJson = [
 
-	// EW Cannon
+	// Cloud Scanner
 	{
 		"index": 0,
-		"name": "EW Cannon",
+		"name": "Cloud Scanner",
 		"requiredItems": 1,
 		"dependency": -1,
 		"description": ""
 	},
 
-	// Cannon Amplifier
+	// Scanner 45 degrees
 	{
 		"index": 0,
-		"name": "Cannon Amplifier",
+		"name": "Cloud Scanner Upgrade 1",
 		"requiredItems": 1,
-		"dependency": -1, // EW Cannon
+		"dependency": -1, // Cloud Scanner
+		"description": ""
+	},
+
+	// Scanner 90 degrees
+	{
+		"index": 0,
+		"name": "Cloud Scanner Upgrade 2",
+		"requiredItems": 1,
+		"dependency": -1, // Cloud Scanner
+		"description": ""
+	},
+
+	// Scanner 180 degrees
+	{
+		"index": 0,
+		"name": "Cloud Scanner Upgrade 3",
+		"requiredItems": 1,
+		"dependency": -1, // Cloud Scanner
 		"description": ""
 	},
 
@@ -40,7 +58,7 @@ public static var techUpgradeJson = [
 		"index": 0,
 		"name": "Power Diversion",
 		"requiredItems": 5,
-		"dependency": -1, // EW Cannon
+		"dependency": -1, // Nothing
 		"description": ""
 	},
 

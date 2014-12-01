@@ -5,16 +5,12 @@ public var mesh : Mesh;
 
 public var outline : LineRenderer;
 
-public static var instance : ResultWave;
-
 public var slgd : SublayerGameDelegate;
 
 public var scope : Scope;
 
 function initResultWave()
 {
-
-	instance = this;
 
 	mesh = gameObject.GetComponent( MeshFilter ).mesh;
 	

@@ -582,7 +582,7 @@ function checkForButtonCollision( _ray : Ray ) : ButtonScript
 	
 	var hitList : RaycastHit[] = Physics.RaycastAll( _ray, 1000 );
 	
-	//Debug.Log( "hitList Length : " + hitList.length );
+	// Debug.Log( "hitList Length : " + hitList.length );
 	
 	
 	//bail if nothing hit
@@ -590,7 +590,7 @@ function checkForButtonCollision( _ray : Ray ) : ButtonScript
 		return;
 	
 	
-	//Debug.Log( "hitList.length" + hitList.length );
+	// Debug.Log( "hitList.length" + hitList.length );
 	
 	//loop through hit list for any buttons on screen
 	var closestButton : ButtonScript = null;
