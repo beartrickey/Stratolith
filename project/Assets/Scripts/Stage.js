@@ -109,7 +109,7 @@ function updateStage()
 				if( i % 2 == 0 )
 					hackable = 1;
 
-				var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 8, hackable );
+				var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 10, hackable );
 
 				dronePath.drone.initRandomDrone( droneHashtable, dronePath );
 

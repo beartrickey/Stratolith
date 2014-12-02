@@ -510,6 +510,8 @@ public static var DRONE_STATE_FOLLOWING_PATH : int = 10;
 
 public var state : int = DRONE_STATE_IDLE;
 
+public var insideCloud : boolean = false;
+
 
 
 function onInstantiate()
@@ -1355,6 +1357,39 @@ function updateDroneGraphics()
 	if( slgd.activeDrone == this )
 	{
 		slgd.updateSelectionLines( roundedPos );
+	}
+
+
+	// Is drone inside a cloud?
+	if( hackedScopeList[0] == false )
+	{
+		gameObject.SetActive( true );
+		insideCloud = false;
+		var ray : Ray = new Ray( gameObject.transform.position, Vector3(0.0, 0.0, -1.0) );
+		var hitList : RaycastHit[] = Physics.RaycastAll( ray, 1000 );
+
+		// Bail if nothing hit
+		if( hitList.length <= 0 )
+		{
+			return;
+		}
+
+		for( var i : int = 0; i < hitList.length; i++ )
+		{
+			var hit : RaycastHit = hitList[i];
+			
+			var cloud : Cloud = hit.collider.GetComponent( Cloud );
+
+			if( cloud == null )
+				continue;
+
+			if( slgd.activeDrone == this )
+				slgd.deselectRadarObject();
+
+			gameObject.SetActive( false );
+			insideCloud = true;
+
+		}
 	}
 	
 }

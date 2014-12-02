@@ -11,7 +11,7 @@ public var slgd : SublayerGameDelegate;
 
 public static var numPoints : int = 50;
 
-static var radius : float = 100.0;
+static var radius : float = 200.0;
 
 static var arcWidth : float = 6.28 / numPoints;
 
@@ -74,6 +74,8 @@ function arrangeVerts()
 		var yPos : float = Mathf.Sin( t ) * heightMapList[p - 1];
 		newVertices[p] = Vector3( xPos, yPos, 0.0 );
 		
+		outline.SetPosition( p - 1, Vector3( xPos, yPos, 0.0 ) );
+
 	}	
 	
 	
