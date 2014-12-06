@@ -1,10 +1,5 @@
 ﻿Shader "CloudShader"
 {
-	Properties
-	{
-		
-	}
-
  
 	SubShader
 	{
@@ -35,24 +30,25 @@
 			float4 frag( float4 sp:WPOS ) : COLOR
 			{
 			
-//				float2 screenSpace = sp.xy / _ScreenParams.xy;
-				float2 screenSpace = sp.xy;
+				float2 screenSpace = sp.xy / _ScreenParams.xy;
+//				float2 screenSpace = sp.xy;
 				
 				// Grid parameters
-//				float gridSpacing = 0.005;
-//				float lineWidth = 0.001;
-				float gridSpacing = 5.0;
-				float lineWidth = 1.0;
+				float gridSpacing = 0.015;
+				float lineWidth = 0.003;
+				
+				// Follow the slope down to the x-intercept
+				float xIntercept = screenSpace.x - screenSpace.y;  // Assuming a slope of 45 degress (x == y)
 
 				// Get closest grid line
-				int closestLineIndex = floor(screenSpace.x / gridSpacing);
+				int closestLineIndex = floor(xIntercept / gridSpacing);
 				float closestLineX = closestLineIndex * gridSpacing;
-				float xDif = abs(screenSpace.x - closestLineX);
+				float xDif = abs(xIntercept - closestLineX);
 				
 				
 				if( xDif < lineWidth )
 				{
-					return float4( 1.0, 1.0, 1.0, 0.2 );
+					return float4( 1.0, 1.0, 1.0, 0.1 );
 				}
 				else
 				{
