@@ -9,7 +9,7 @@ public var outline : LineRenderer;
 
 public var slgd : SublayerGameDelegate;
 
-public static var numPoints : int = 50;
+public static var numPoints : int = 100;
 
 static var radius : float = 200.0;
 
@@ -17,7 +17,7 @@ static var arcWidth : float = 6.28 / numPoints;
 
 public var heightMapList = new float[numPoints];
 
-function Start()
+function onInstantiate()
 {
 
 	mesh = gameObject.GetComponent( MeshFilter ).mesh;
@@ -25,18 +25,22 @@ function Start()
 	outline = gameObject.GetComponent( LineRenderer );
 
 	myCollider = gameObject.GetComponent( MeshCollider );
-
-	// myCollider.OnCollisionEnter = cloudCollision;
 	
-	// slgd = SublayerGameDelegate.instance;
+	slgd = SublayerGameDelegate.instance;
+
+	radius = Random.Range(50.0, 200.0);
+
+	var sineCounter : float = Random.Range(-3.14, 3.14);
 
 	//randomly generate heights
 	for( var p : int = 0; p < numPoints; p++ )
 	{
+
+		sineCounter += Random.Range(0.25, 0.5);
 		
-		var range : float = 10.0;
-		
-		var randomHeightOffset : float = Random.Range( -range, range );
+		var range : float = Random.Range(5.0, 10.0) * Mathf.Sin(sineCounter);
+
+		var randomHeightOffset : float = range + Random.Range( -4.0, 4.0 );
 		
 		var height : float = radius + randomHeightOffset;
 		
@@ -45,6 +49,10 @@ function Start()
 	}
 	
 	arrangeVerts();
+
+	// Random scale deformity
+	gameObject.transform.localScale.x += Random.Range(-0.5, 0.5);
+	gameObject.transform.localScale.y += Random.Range(-0.5, 0.5);
 	
 }
 
@@ -116,4 +124,13 @@ function arrangeVerts()
 	myCollider.sharedMesh = mesh;
 
 }
+
+
+function updateCloud()
+{
+
+	gameObject.transform.position += slgd.windVelocity;
+
+}
+
 

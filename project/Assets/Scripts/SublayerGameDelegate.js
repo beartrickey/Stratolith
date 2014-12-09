@@ -52,6 +52,14 @@ public var selectionLineLeft : tk2dSprite;
 public var selectionLineRight : tk2dSprite;
 
 
+// Clouds
+public var cloudPrefab : GameObject;
+public var numClouds : int = 8;
+public var cloudList = new Cloud[numClouds];
+
+public var windVelocity : Vector2;
+
+
 //bullets
 public var bulletPrefab : GameObject;
 public static var numBullets : int = 8;
@@ -310,6 +318,31 @@ function onInstantiate()
 		bulletList[b] = bullet;
 		
 		bullet.onInstantiate();
+	
+	}
+
+
+	// Make clouds
+	var windSpeed : float = Random.Range(0.0, 0.1);
+	
+	windVelocity = new Vector2(
+		Random.Range(-windSpeed, windSpeed),
+		Random.Range(-windSpeed, windSpeed)
+	);
+
+	for( var c : int = 0; c < numClouds; c++ )
+	{
+		
+		var scannerRadius = scannerWidth;
+		var posx : float = Random.Range(-scannerRadius, scannerRadius) + shieldScannerCenter.position.x;
+		var posy : float = Random.Range(-scannerRadius, scannerRadius) + shieldScannerCenter.position.y;
+
+		var cloudGameObject : GameObject = GameObject.Instantiate( cloudPrefab, Vector3( posx, posy, -75.0 ), cloudPrefab.transform.rotation );
+		cloudGameObject.transform.parent = gameObject.transform;
+		var cloud : Cloud = cloudGameObject.GetComponent( Cloud );
+		cloudList[c] = cloud;
+		
+		cloud.onInstantiate();
 	
 	}
 	
@@ -709,6 +742,12 @@ function updateRadarGraphics()
 	//skip N frames
 	//if( frameNumber % 30 != 0 ) //only update radar graphics every N frames
 	//	return;
+
+	// Update clouds
+	for( var c : int = 0; c < numClouds; c++ )
+	{
+		cloudList[c].updateCloud();
+	}
 	
 	
 	//update rscan if active
