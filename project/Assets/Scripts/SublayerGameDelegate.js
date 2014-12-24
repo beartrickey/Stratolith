@@ -128,11 +128,6 @@ public var attkCommandLabel : tk2dSprite;
 public var chrgCommandLabel : tk2dSprite;
 
 // Surge labels
-public static var SURGE_STATE_OFF : int = 0;
-public static var SURGE_STATE_ON : int = 1;
-public static var SURGE_STATE_RECHARGING : int = 2;
-public var surgeState : int = SURGE_STATE_OFF;
-
 public var surgeOnCommandLabel : tk2dSprite;
 public var surgeOffCommandLabel : tk2dSprite;
 public var surgeTitleLabel : tk2dSprite;

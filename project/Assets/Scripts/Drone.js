@@ -1,13 +1,5 @@
 ﻿#pragma strict
 
-
-public static var droneModelNumberList = new Array( "6611", "8808", "1111", "5555", "7373", "2121", "0101" );
-public static var droneAttackRangeList = new Array( 300.0, 560.0, 75.0, 200.0, 200.0, 560.0, 0.0 );
-public static var droneBulletDamageList = new Array( 2.0, 5.0, 20.0, 1.0, 1.0, 1.0, 0.0 );
-public static var droneHealthList = new Array( 3.0, 5.0, 20.0, 2.0, 50.0, 5.0, 10.0 );
-public static var droneReloadFramesList = new Array( 180, 360, 0, 180, 180.0, 260.0, 0.0 );
-public static var droneMaxSpeedList = new Array( 0.15, 0.15, 0.0375, 0.15, 0.15, 0.15, 0.2 );
-public static var droneNullifiableList = new Array( true, true, false, true, false, false, true );
 public static var droneBlueprintSpriteId = new Array( 82, 85, 84, -1, 86, 83, -1 );
 
 public static var droneJson = [
@@ -433,6 +425,17 @@ public static var DRONE_POWER_VELO : int = 1;
 public static var DRONE_POWER_RNGE : int = 2;
 public static var DRONE_POWER_SHLD : int = 3;
 public var dronePowerState : int = DRONE_POWER_NONE;
+
+
+// Surge
+public static var SURGE_STATE_OFF : int = 0;
+public static var SURGE_STATE_ON : int = 1;
+public static var SURGE_STATE_RECHARGING : int = 2;
+public var surgeState : int = SURGE_STATE_OFF;
+
+public static var surgeUseCounterMax : int = 600; // 10 seconds
+public static var surgeRechargeCounterMax : int = 600; // 10 seconds
+public var surgeCounter : int = 0;
 
 
 //combat vars
