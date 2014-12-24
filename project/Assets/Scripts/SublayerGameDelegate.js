@@ -127,6 +127,20 @@ public var dockCommandLabel : tk2dSprite;
 public var attkCommandLabel : tk2dSprite;
 public var chrgCommandLabel : tk2dSprite;
 
+// Surge labels
+public static var SURGE_STATE_OFF : int = 0;
+public static var SURGE_STATE_ON : int = 1;
+public static var SURGE_STATE_RECHARGING : int = 2;
+public var surgeState : int = SURGE_STATE_OFF;
+
+public var surgeOnCommandLabel : tk2dSprite;
+public var surgeOffCommandLabel : tk2dSprite;
+public var surgeTitleLabel : tk2dSprite;
+public var surgeStateLabel : tk2dSprite;
+
+public static var numSurgePowerBars : int = 22;
+public var surgePowerBarArray = new tk2dSprite[numSurgePowerBars];
+
 
 //power diversion labels
 public var powerDiversionLabel : tk2dSprite;
@@ -1802,6 +1816,15 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 		scopeList[1].setForHackedState();
 		
 	}
+
+
+	// Surge buttons
+	if( _scopeIndex == 2 )
+	{
+
+
+
+	}
 	
 }
 
@@ -1839,6 +1862,7 @@ function turnOffScopes()
 function hideCommandLabels()
 {
 
+	// Basic commands
 	activeCommandLabel.gameObject.SetActive( false );
 	commandRequestLabel.gameObject.SetActive( false );
 	
@@ -1848,12 +1872,19 @@ function hideCommandLabels()
 	chrgCommandLabel.gameObject.SetActive( false );
 	
 	
+	// Power diversion
 	powerDiversionLabel.gameObject.SetActive( false );
-	
 	veloPowerLabel.gameObject.SetActive( false );
 	weapPowerLabel.gameObject.SetActive( false );
 	shldPowerLabel.gameObject.SetActive( false );
 	funcPowerLabel.gameObject.SetActive( false );
+
+
+	// Surge
+	surgeOnCommandLabel.gameObject.SetActive( false );
+	surgeOffCommandLabel.gameObject.SetActive( false );
+	surgeTitleLabel.gameObject.SetActive( false );
+	surgeStateLabel.gameObject.SetActive( false );
 	
 }
 
