@@ -116,7 +116,7 @@ function updateStage()
 			}
 			else
 			{
-				drone.initializeDrone( dronePath );
+				// drone.initializeDrone( dronePath );
 			}
 			
 			//add message to stack

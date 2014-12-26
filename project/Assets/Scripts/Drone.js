@@ -428,14 +428,14 @@ public var dronePowerState : int = DRONE_POWER_NONE;
 
 
 // Surge
-public static var SURGE_STATE_OFF : int = 0;
+public static var SURGE_STATE_READY : int = 0;
 public static var SURGE_STATE_ON : int = 1;
 public static var SURGE_STATE_RECHARGING : int = 2;
-public var surgeState : int = SURGE_STATE_OFF;
+public var surgeState : int = SURGE_STATE_READY;
 
-public static var surgeUseCounterMax : int = 600; // 10 seconds
-public static var surgeRechargeCounterMax : int = 600; // 10 seconds
-public var surgeCounter : int = 0;
+public static var surgeUseRate : float = 1.0 / (60.0 * 10.0); // 600 frames (10 seconds)
+public static var surgeRechargeRate : float = 1.0 / (60.0 * 20.0); // 600 frames (20 seconds)
+public var surgeAmount : float = 1.0;
 
 
 //combat vars
@@ -621,57 +621,6 @@ function baseInitialize()
 
 
 
-function initializeDrone( _dronePath : DronePath )
-{
-
-	dronePath = _dronePath;
-	
-	droneType = dronePath.droneType;
-	
-	currentPoint = 1;
-
-	state = DRONE_STATE_FOLLOWING_PATH;
-	
-	hackedScopeList[0] = false;
-	hackedScopeList[1] = false;
-	hackedScopeList[2] = false;
-	
-	modelString = droneModelNumberList[droneType];
-	adjustStatsForPowerDiversion();
-
-	health = maxHealth;
-	
-	attackTarget = slgd.shieldScannerCenter.gameObject;
-	
-	
-	//set position
-	position = dronePath.getPositionForIndex(0);
-	
-	
-	//set target
-	destination = dronePath.getPositionForIndex(1);
-	
-	
-	//adjust for new target
-	adjustForNewTargetPoint();
-	
-	
-	//set proper direction
-	var dif : Vector2 = position - destination;
-	var angleFromDroneToTargetInRads : float = Mathf.Atan2( dif.x, dif.y );
-	var angleFromDroneToTargetInDegrees : float = angleFromDroneToTargetInRads * Mathf.Rad2Deg;
-	angleFromDroneToTargetInDegrees -= 180.0;
-	angleFromDroneToTargetInDegrees = Mathf.Abs( angleFromDroneToTargetInDegrees );
-	
-	icon.gameObject.transform.localEulerAngles.z = angleFromDroneToTargetInDegrees;
-	direction = icon.gameObject.transform.localEulerAngles.z;
-	
-	baseInitialize();
-
-}
-
-
-
 function initializeDockedDrone( _modelString : String )
 {
 	
@@ -705,6 +654,8 @@ function initializeDockedDrone( _modelString : String )
 function updateDrone()
 {
 
+	handleSurge();
+
 	handleNavigation();
 	
 	updatePosition();
@@ -712,6 +663,89 @@ function updateDrone()
 	handleTactical();
 	
 	droneCollision();
+
+}
+
+
+
+function handleSurge()
+{
+
+	// Skip if drone is ready to surge
+	if( surgeState == SURGE_STATE_READY )
+		return;
+
+
+	// Surge is ON
+	if( surgeState == SURGE_STATE_ON )
+	{
+		surgeAmount -= surgeUseRate;
+
+		// Surge finished
+		if( surgeAmount <= 0.1 )
+		{
+			surgeFinished();
+		}
+
+	}
+	else if( surgeState == SURGE_STATE_RECHARGING )
+	{
+		surgeAmount += surgeRechargeRate;
+
+		// Recharge finished
+		if( surgeAmount >= 1.0 )
+		{
+			surgeRechargeFinished();
+		}
+	}
+
+
+	// Cap
+	if( surgeAmount < 0.0 )
+		surgeAmount = 0.0;
+	if( surgeAmount > 1.0 )
+		surgeAmount = 1.0;
+
+
+	if( slgd.activeDrone == this )
+	{
+		scopeList[2].setSurgePowerBarsForDrone();
+	}
+
+}
+
+
+function surgeRechargeFinished()
+{
+
+	// Set to ready state
+	surgeState = SURGE_STATE_READY;
+
+	// Update labels
+	if( slgd.activeDrone == this )
+		scopeList[2].setForHackedState();
+}
+
+
+
+function surgeFinished()
+{
+
+	// Set to recharging state
+	surgeState = SURGE_STATE_RECHARGING;
+
+
+	// Turn off any power diversion
+	dronePowerState = DRONE_POWER_NONE;
+
+
+	// Update labels
+	if( slgd.activeDrone == this )
+	{
+		scopeList[1].setForHackedState();
+		scopeList[2].setForHackedState();
+	}
+		
 
 }
 

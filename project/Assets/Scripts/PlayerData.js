@@ -63,7 +63,7 @@ function loadData()
 	scopeLevel = PlayerPrefs.GetInt( "scopeLevel", 1 );
 
 	// HACK
-	scopeLevel = 2;
+	scopeLevel = 3;
 
 	dockLevel = PlayerPrefs.GetInt( "dockLevel", 1 );
 

@@ -301,6 +301,90 @@ function setForHackedState()
 
 	}
 
+
+	// SURGE
+	if( index == 2 )
+	{
+
+		slgd.surgeOnCommandLabel.gameObject.SetActive( true );
+		slgd.surgeOffCommandLabel.gameObject.SetActive( true );
+
+		slgd.surgeTitleLabel.gameObject.SetActive( true );
+		slgd.surgeTitleLabel.SetSprite( "Scope-SurgeDispTITLE" );
+
+		slgd.surgeStateLabel.gameObject.SetActive( true );
+		slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispREADY" );
+
+		if( drone.surgeState == Drone.SURGE_STATE_ON )
+		{
+
+			// ON Button
+			modButtonList[1].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+
+			if( drone.dronePowerState == Drone.DRONE_POWER_WEAP )
+			{
+				slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispWEAP" );
+			}
+			else if( drone.dronePowerState == Drone.DRONE_POWER_VELO )
+			{
+				slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispVELO" );
+			}
+			else if( drone.dronePowerState == Drone.DRONE_POWER_RNGE )
+			{
+				slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispRNGE" );
+			}
+			else if( drone.dronePowerState == Drone.DRONE_POWER_SHLD )
+			{
+				slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispSHLD" );
+			}
+
+		}
+		else if( drone.surgeState == Drone.SURGE_STATE_READY )
+		{
+
+			// OFF Button
+			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispREADY" );
+
+		}
+		else if( drone.surgeState == Drone.SURGE_STATE_RECHARGING )
+		{
+
+			// OFF Button
+			modButtonList[2].setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+			slgd.surgeStateLabel.SetSprite( "Scope-SurgeDispRECHARGING" );
+
+		}
+
+	}
+
+}
+
+
+
+function setSurgePowerBarsForDrone()
+{
+
+	var numBarsToDisplay : int = 0;
+
+
+	// Display or hide bars
+	numBarsToDisplay = Mathf.Ceil( SublayerGameDelegate.numSurgePowerBars * drone.surgeAmount );
+	for( var p : int = 0; p < SublayerGameDelegate.numSurgePowerBars; p++ )
+	{
+
+		var bar : tk2dSprite = SublayerGameDelegate.instance.surgePowerBarArray[p];
+		if( p < numBarsToDisplay )
+		{
+			bar.gameObject.SetActive( true );
+		}
+		else
+		{
+			bar.gameObject.SetActive( false );
+		}
+
+	}
+
 }
 
 
@@ -404,14 +488,6 @@ function resetWaves()
 			resultWave.gameObject.SetActive( false );
 		}
 		
-	}
-	else if( Drone.droneNullifiableList[drone.droneType] == false )
-	{
-		cannotNullifyLabel.gameObject.SetActive( true );
-		
-		defenseWave.gameObject.SetActive( false );
-		hackWave.gameObject.SetActive( false );
-		resultWave.gameObject.SetActive( false );
 	}
 	
 	
