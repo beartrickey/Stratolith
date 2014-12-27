@@ -12,7 +12,12 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN
+		]
 	},
 
 	// 6 Power
@@ -22,7 +27,13 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 8 Power
@@ -32,7 +43,10 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "0602",
@@ -40,7 +54,13 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0206",
@@ -48,7 +68,13 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0404",
@@ -56,7 +82,13 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 2 Wave Types
@@ -67,7 +99,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2422",
@@ -75,7 +110,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2242",
@@ -83,7 +121,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2224",
@@ -91,7 +132,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "0208",
@@ -99,7 +143,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0802",
@@ -107,7 +157,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 12 Power
@@ -117,7 +173,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2622",
@@ -125,7 +184,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2262",
@@ -133,7 +195,11 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2226",
@@ -141,7 +207,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "0408",
@@ -149,7 +218,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0804",
@@ -157,7 +232,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0606",
@@ -165,7 +246,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 14 Power
@@ -175,7 +262,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2822",
@@ -183,7 +273,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2282",
@@ -191,7 +284,11 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	},
 	{
 		"modelNumber": "2228",
@@ -199,7 +296,10 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "0608",
@@ -207,7 +307,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 	{
 		"modelNumber": "0806",
@@ -215,7 +321,13 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 3 Wave Types
@@ -226,7 +338,10 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "0808",
@@ -234,7 +349,13 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_PASS_CLOSE_UP,
+			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
+			GameManager.DRONE_PATH_PASS_CLOSE_DOWN,
+			GameManager.DRONE_PATH_PASS_MEDIUM_DOWN,
+			GameManager.DRONE_PATH_TOKKOU
+		]
 	},
 
 	// 20 Power
@@ -244,7 +365,10 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "4844",
@@ -252,7 +376,10 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "4484",
@@ -260,7 +387,11 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	},
 	{
 		"modelNumber": "4448",
@@ -268,7 +399,10 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 
 	// 24 Power
@@ -278,7 +412,10 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 
 	// 26 Power
@@ -288,7 +425,10 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "6866",
@@ -296,7 +436,10 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 	{
 		"modelNumber": "6686",
@@ -304,7 +447,11 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	},
 	{
 		"modelNumber": "6668",
@@ -312,7 +459,10 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": false,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
+		]
 	},
 
 	// 32 Power
@@ -322,7 +472,11 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	},
 
 	// 36 Power
@@ -332,7 +486,11 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
-		"dronePaths": []
+		"dronePaths": [
+			GameManager.DRONE_PATH_CLOSE_STRIKE,
+			GameManager.DRONE_PATH_MEDIUM_STRIKE,
+			GameManager.DRONE_PATH_FAR_STRIKE
+		]
 	}
 
 ];
@@ -368,6 +526,23 @@ static function getDroneWithAttributes( _totalPower : int, _hackable : int ) : S
 	// Choose one randomly from the pool
 	var randomIndex : int = Random.Range( 0, tempDronePool.length );
 	return tempDronePool[randomIndex];
+
+}
+
+
+static function getDroneWithModelNumber( _modelString : String ) : System.Collections.Hashtable
+{
+
+	// Gather initial drones and add to pool
+	for( var d : int = 0; d < droneJson.length; d++ )
+	{
+
+		if( droneJson[d]["modelNumber"] == _modelString )
+		{
+			return droneJson[d];
+		}
+
+	}
 
 }
 

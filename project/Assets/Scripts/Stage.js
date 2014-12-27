@@ -97,29 +97,16 @@ function updateStage()
 			hostileDronesExist = true;
 			
 			
-			//setup new drone
+			// Setup new drone
 			var drone : Drone = slgd.getFreeDrone();
 			dronePath.drone = drone;
-	
-			if( dronePath.droneType == 99 )
-			{
 
-				var hackable : int = 0;
+			var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithModelNumber( dronePath.droneModelNumber );
 
-				if( i % 2 == 0 )
-					hackable = 1;
+			dronePath.drone.initRandomDrone( droneHashtable, dronePath );
 
-				var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 10, hackable );
-
-				dronePath.drone.initRandomDrone( droneHashtable, dronePath );
-
-			}
-			else
-			{
-				// drone.initializeDrone( dronePath );
-			}
 			
-			//add message to stack
+			// Add message to stack
 			SublayerGameDelegate.instance.addMessage( dronePath.message );
 			
 		}
@@ -145,15 +132,15 @@ function generateStage()
 {
 
 	// Theme
-		// Circle Long Range Attack
-		// Circle Medium Range Attack
-		// Few strong drones to protect against many weak drones
-		// Big bruiser to be taken down by many small drones
-		// Linear Convoy
-		// Hasami attack
-		// Friendly drone(s) in encounter getting attacked by enemies
-		// Tokkou Attack
-		// Mixed attack
+	// Circle Long Range Attack
+	// Circle Medium Range Attack
+	// Few strong drones to protect against many weak drones
+	// Big bruiser to be taken down by many small drones
+	// Linear Convoy
+	// Hasami attack
+	// Friendly drone(s) in encounter getting attacked by enemies
+	// Tokkou Attack
+	// Mixed attack
 	var STAGE_THEME_CIRCLE_LONG : int = 0;
 	var STAGE_THEME_CIRCLE_MEDIUM : int = 1;
 	var STAGE_THEME_CIRCLE_CLOSE : int = 2;
@@ -183,16 +170,34 @@ function generateStage()
 	for( var i : int = 0; i < numDrones; i++ )
 	{
 
-		// Path
+		var hackable : int = 0;
+
+		if( i % 2 == 0 )
+			hackable = 1;
+
+
+		// Drone information
+		var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 10, hackable );
+
+
+		// Drone Path
 		var dpgo : GameObject = GameObject.Instantiate( dronePathPrefab, Vector3.zero, dronePathPrefab.transform.rotation );
 		dronePathList[i] = dpgo.GetComponent( DronePath );
 		dronePathList[i].delayTime = conflictTime;
-		dronePathList[i].pathTemplate = GameManager.instance.pathTemplateList[Random.Range(0, 8)];
 		dronePathList[i].pathRotation = Random.Range(0.0, 360.0);
 
+
+		// Path Template
+		var availablePathList : int[] = droneHashtable["dronePaths"];
+		var numPathChoices : int = availablePathList.length;
+		var randomPathTemplate : int = availablePathList[Random.Range(0, numPathChoices)];
+		dronePathList[i].pathTemplate = GameManager.instance.pathTemplateList[randomPathTemplate];
+
+
 		// Drone
-		dronePathList[i].droneType = Drone.DRONE_MODEL_RAND;
+		dronePathList[i].droneModelNumber = droneHashtable["modelNumber"];
 		dronePathList[i].message = "INCOMING HOSTILE";
+
 
 		// Timing between drone appearances gets shorter
 		conflictTime += delayGap;

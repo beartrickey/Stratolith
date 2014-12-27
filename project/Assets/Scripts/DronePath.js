@@ -5,9 +5,9 @@ public var delayTime : int; //time from beginning of assault to this particular 
 
 public var delayCounter : int = 0;
 
-public var droneType : int;
-
 public var drone : Drone;
+
+public var droneModelNumber : String;
 
 public var pathTemplate : PathTemplate;
 
