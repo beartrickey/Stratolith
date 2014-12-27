@@ -1633,7 +1633,7 @@ function deactivate()
 function updateLabelText()
 {
 
-	droneInfoLabel.text = modelString + "\n" + health.ToString("F2") + "P";
+	droneInfoLabel.text = modelString + "\n" + health.ToString("F1") + "P";
 	droneInfoLabel.Commit();
 
 }

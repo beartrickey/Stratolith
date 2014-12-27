@@ -3,6 +3,17 @@
 
 ////ENUMS
 
+// Drone paths
+public var pathTemplateList = new PathTemplate[16];
+
+public static var DRONE_PATH_CLOSE_STRIKE : int = 0;
+public static var DRONE_PATH_MEDIUM_STRIKE : int = 1;
+public static var DRONE_PATH_FAR_STRIKE : int = 2;
+public static var DRONE_PATH_PASS_CLOSE_UP : int = 3;
+public static var DRONE_PATH_PASS_MEDIUM_UP : int = 4;
+public static var DRONE_PATH_PASS_CLOSE_DOWN : int = 5;
+public static var DRONE_PATH_PASS_MEDIUM_DOWN : int = 6;
+public static var DRONE_PATH_TOKKOU : int = 7;
 
 
 ////AUDIO
@@ -46,8 +57,6 @@ public static var loadingCounter : int = minimumLoadingFrames;
 public var currentStage : Stage;
 public var numStages : int = 31;
 public var stageList = new Stage[numStages];
-
-public var pathTemplateList = new PathTemplate[16];
 
 
 //sub layers:
