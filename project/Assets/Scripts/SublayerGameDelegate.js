@@ -1822,22 +1822,24 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 			}
 			
 		}
-		else if( activeDrone.surgeState == Drone.SURGE_STATE_RECHARGING )
-		{
-		
-			// Do nothing if the drone is recharging surge
-			
-		}
 		else
 		{
 			activeDrone.dronePowerState = _buttonIndex;
 		}
 
+		// Update drone
 		activeDrone.adjustStatsForPowerDiversion();
 
 		setActiveDronePerformanceGauges();
 		
 		scopeList[1].setForHackedState();
+
+
+		// Update surge if available
+		if( activeDrone.hackedScopeList[2] == true )
+		{
+			scopeList[2].setForHackedState();
+		}
 		
 	}
 
@@ -1853,16 +1855,15 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 			// Do nothing if no power diversion is in use, surge is already on, or surge is recharging
 			if(
 				activeDrone.dronePowerState == Drone.DRONE_POWER_NONE ||
-				activeDrone.surgeState == Drone.SURGE_STATE_ON || 
-				activeDrone.surgeState == Drone.SURGE_STATE_RECHARGING
+				activeDrone.surgeState == Drone.SURGE_STATE_ON
 			)
 			{
 				return;
 			}
-			else if( activeDrone.surgeState == Drone.SURGE_STATE_READY )
-			{
-				activeDrone.surgeState = Drone.SURGE_STATE_ON;
-			}
+			
+
+			// Turn on
+			activeDrone.surgeState = Drone.SURGE_STATE_ON;
 			
 		}
 		else if( _buttonIndex == 2 )  // OFF Button
@@ -1870,13 +1871,6 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 
 			// Set to recharging (Drone will turn to "ready" state when recharging finishes)
 			activeDrone.surgeState = Drone.SURGE_STATE_RECHARGING;
-
-			// Turn off power diversion
-			if( activeDrone.hackedScopeList[1] == true )
-			{
-				activeDrone.dronePowerState = Drone.DRONE_POWER_NONE;
-				scopeList[1].setForHackedState();
-			}
 		
 		}
 

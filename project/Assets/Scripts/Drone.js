@@ -721,6 +721,7 @@ function surgeRechargeFinished()
 	// Set to ready state
 	surgeState = SURGE_STATE_READY;
 
+
 	// Update labels
 	if( slgd.activeDrone == this )
 		scopeList[2].setForHackedState();
@@ -734,15 +735,13 @@ function surgeFinished()
 	// Set to recharging state
 	surgeState = SURGE_STATE_RECHARGING;
 
-
-	// Turn off any power diversion
-	dronePowerState = DRONE_POWER_NONE;
+	adjustStatsForPowerDiversion();
 
 
 	// Update labels
 	if( slgd.activeDrone == this )
 	{
-		scopeList[1].setForHackedState();
+		slgd.setActiveDronePerformanceGauges();
 		scopeList[2].setForHackedState();
 	}
 		
@@ -1699,35 +1698,65 @@ function adjustStatsForPowerDiversion()
 	rangeIndex = parseInt( "" + modelString[2] );
 	shieldIndex = parseInt( "" + modelString[3] );
 
+	var powerModifier : int = 1;
+
+	// Surge stats
+	if( surgeState == SURGE_STATE_ON )
+	{
+		powerModifier = 2;
+	}
+
+
 	// Diverted stats
 	if( dronePowerState == DRONE_POWER_WEAP )
 	{
-		damageIndex += 1;
-		velocityIndex -= 1;
-		rangeIndex -= 1;
-		shieldIndex -= 1;
+		damageIndex += powerModifier;
+		velocityIndex -= powerModifier;
+		rangeIndex -= powerModifier;
+		shieldIndex -= powerModifier;
 	}
 	else if( dronePowerState == DRONE_POWER_VELO )
 	{
-		damageIndex -= 1;
-		velocityIndex += 1;
-		rangeIndex -= 1;
-		shieldIndex -= 1;
+		damageIndex -= powerModifier;
+		velocityIndex += powerModifier;
+		rangeIndex -= powerModifier;
+		shieldIndex -= powerModifier;
 	}
 	else if( dronePowerState == DRONE_POWER_RNGE )
 	{
-		damageIndex -= 1;
-		velocityIndex -= 1;
-		rangeIndex += 1;
-		shieldIndex -= 1;
+		damageIndex -= powerModifier;
+		velocityIndex -= powerModifier;
+		rangeIndex += powerModifier;
+		shieldIndex -= powerModifier;
 	}
 	else if( dronePowerState == DRONE_POWER_SHLD )
 	{
-		damageIndex -= 1;
-		velocityIndex -= 1;
-		rangeIndex -= 1;
-		shieldIndex += 1;
+		damageIndex -= powerModifier;
+		velocityIndex -= powerModifier;
+		rangeIndex -= powerModifier;
+		shieldIndex += powerModifier;
 	}
+
+
+	// Clamp
+	if( damageIndex < 0 )
+		damageIndex = 0;
+	if( velocityIndex < 0 )
+		velocityIndex = 0;
+	if( rangeIndex < 0 )
+		rangeIndex = 0;
+	if( shieldIndex < 0 )
+		shieldIndex = 0;
+
+	if( damageIndex > 9 )
+		damageIndex = 9;
+	if( velocityIndex > 9 )
+		velocityIndex = 9;
+	if( rangeIndex > 9 )
+		rangeIndex = 9;
+	if( shieldIndex > 9 )
+		shieldIndex = 9;
+
 
 	bulletDamage = damageIndex;
 	reloadCounterMax = 200;
