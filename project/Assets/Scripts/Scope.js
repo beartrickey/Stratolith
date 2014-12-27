@@ -459,39 +459,22 @@ function resetWaves()
 	setWaveTypeIconVisibility( true );
 	
 	
-	//if drone is null, we are in r-scan mode
 	//set wave type based on drone type
-	if( drone == null )
+	if( drone.nullifiable == true )
 	{
-		defenseWaveData.waveType = 0;
-	}
-	else if( drone.droneType == Drone.DRONE_MODEL_6611 )
-	{
-		defenseWaveData.waveType = 0;
-	}
-	else if( drone.droneType == Drone.DRONE_MODEL_8808 )
-	{
-		defenseWaveData.waveType = 1;
-		defenseWaveData.waveLengthKnob = Random.Range( 0.6, 1.0 );
-	}
-	else if( drone.droneType == Drone.DRONE_MODEL_RAND )
-	{
+		// Randomly choose wave type based on drone's waveTypes
+		var randWaveType : int = Random.Range( 0, drone.waveTypes );
 
-		if( drone.nullifiable == true )
-		{
-			defenseWaveData.waveType = 0;
-		}
-		else
-		{
-			cannotNullifyLabel.gameObject.SetActive( true );
-		
-			defenseWave.gameObject.SetActive( false );
-			hackWave.gameObject.SetActive( false );
-			resultWave.gameObject.SetActive( false );
-		}
-		
+		defenseWaveData.waveType = randWaveType;
 	}
+	else
+	{
+		cannotNullifyLabel.gameObject.SetActive( true );
 	
+		defenseWave.gameObject.SetActive( false );
+		hackWave.gameObject.SetActive( false );
+		resultWave.gameObject.SetActive( false );
+	}
 	
 	//calculate and draw
 	defenseWaveData.calculateWave();

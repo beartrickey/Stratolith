@@ -385,8 +385,8 @@ public var health : float = 0.0;
 
 // List of flags for each scopes hack state
 public var hackedScopeList = new boolean[3];
-
 public var nullifiable : boolean = false;
+public var waveTypes : int = 0;
 
 
 //movement
@@ -542,6 +542,8 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 	health = maxHealth;
 
 	nullifiable = _droneHashtable["hackable"];
+
+	waveTypes = _droneHashtable["waveTypes"];
 
 	droneType = DRONE_MODEL_RAND;
 
@@ -1013,8 +1015,8 @@ function droneCollision()
 		if( distance < collisionRange )
 		{
 			// Damage both drones
-			damageDrone( 10.0 );
-			drone.damageDrone( 10.0 );
+			damageDrone( 1.0 );
+			drone.damageDrone( 1.0 );
 		}
 		
 	}
@@ -1631,7 +1633,7 @@ function deactivate()
 function updateLabelText()
 {
 
-	droneInfoLabel.text = modelString + "\n" + health + "P";
+	droneInfoLabel.text = modelString + "\n" + health.ToString("F2") + "P";
 	droneInfoLabel.Commit();
 
 }
@@ -1666,6 +1668,11 @@ function hitByBullet( _bullet : Bullet )
 
 function damageDrone( _damage : float )
 {
+
+	// Reduce damage taken based on shield power diversion.
+	// shieldIndex of 0 takes full damage, shieldIndex of 9 takes 1/10th damage
+	var damageReductionFactor : float = 1.0 - (shieldIndex * 0.1);
+	_damage *= damageReductionFactor;
 
 	health -= _damage;
 	

@@ -1320,7 +1320,7 @@ function selectDrone( _button : ButtonScript )
 	activeDroneModelLabel.text = activeDrone.modelString;
 	activeDroneModelLabel.Commit();
 	
-	activeDronePowerLabel.text = activeDrone.health + "p";
+	activeDronePowerLabel.text = activeDrone.health.ToString("F2") + "p";
 	activeDronePowerLabel.Commit();
 
 	setActiveDronePerformanceGauges();	
