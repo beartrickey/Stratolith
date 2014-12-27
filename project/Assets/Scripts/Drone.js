@@ -197,8 +197,7 @@ public static var droneJson = [
 		"reload": 200,
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
-			GameManager.DRONE_PATH_MEDIUM_STRIKE,
-			GameManager.DRONE_PATH_FAR_STRIKE
+			GameManager.DRONE_PATH_MEDIUM_STRIKE
 		]
 	},
 	{
@@ -712,6 +711,8 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 
 	modelString = _droneHashtable["modelNumber"];
 
+	dronePowerState = DRONE_POWER_NONE;
+
 	adjustStatsForPowerDiversion();
 
 	health = maxHealth;
@@ -802,6 +803,8 @@ function initializeDockedDrone( _modelString : String )
 {
 	
 	modelString = _modelString;
+
+	dronePowerState = DRONE_POWER_NONE;
 
 	adjustStatsForPowerDiversion();
 
@@ -1808,7 +1811,7 @@ function deactivate()
 function updateLabelText()
 {
 
-	droneInfoLabel.text = modelString + "\n" + health.ToString("F1") + "P";
+	droneInfoLabel.text = modelString + "\n" + health.ToString("F0") + "P";
 	droneInfoLabel.Commit();
 
 }
@@ -1930,20 +1933,20 @@ function adjustStatsForPowerDiversion()
 	if( shieldIndex < 0 )
 		shieldIndex = 0;
 
-	if( damageIndex > 9 )
-		damageIndex = 9;
-	if( velocityIndex > 9 )
-		velocityIndex = 9;
-	if( rangeIndex > 9 )
-		rangeIndex = 9;
-	if( shieldIndex > 9 )
-		shieldIndex = 9;
+	if( damageIndex > 10 )
+		damageIndex = 10;
+	if( velocityIndex > 10 )
+		velocityIndex = 10;
+	if( rangeIndex > 10 )
+		rangeIndex = 10;
+	if( shieldIndex > 10 )
+		shieldIndex = 10;
 
 
 	bulletDamage = damageIndex;
 	reloadCounterMax = 200;
 	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (velocityIndex / 10.0));
-	attackRange = 100.0 + ((500.0 - 100.0) * (rangeIndex / 10.0));
+	attackRange = (900.0 * (rangeIndex / 10.0));  // From 0 to 900
 	maxHealth = shieldIndex;
 
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );

@@ -177,7 +177,7 @@ function generateStage()
 
 
 		// Drone information
-		var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 10, hackable );
+		var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 14, hackable );
 
 
 		// Drone Path
