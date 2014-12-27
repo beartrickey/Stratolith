@@ -306,6 +306,8 @@ function setForHackedState()
 	if( index == 2 )
 	{
 
+		setSurgePowerBarsForDrone();
+
 		slgd.surgeOnCommandLabel.gameObject.SetActive( true );
 		slgd.surgeOffCommandLabel.gameObject.SetActive( true );
 

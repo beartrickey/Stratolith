@@ -1812,12 +1812,12 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 		{
 
 			// Turn off power diversion
-			activeDrone.dronePowerState = Drone.DRONE_POWER_NONE; 
+			activeDrone.dronePowerState = Drone.DRONE_POWER_NONE;
 
 			// Turn off surge as well
 			if( activeDrone.hackedScopeList[2] == true )
 			{
-				activeDrone.surgeState == Drone.SURGE_STATE_RECHARGING;
+				activeDrone.surgeState = Drone.SURGE_STATE_RECHARGING;
 				scopeList[2].setForHackedState();
 			}
 			
@@ -1870,6 +1870,13 @@ function droneCommandButtonPressed( _scopeIndex : int, _buttonIndex : int )
 
 			// Set to recharging (Drone will turn to "ready" state when recharging finishes)
 			activeDrone.surgeState = Drone.SURGE_STATE_RECHARGING;
+
+			// Turn off power diversion
+			if( activeDrone.hackedScopeList[1] == true )
+			{
+				activeDrone.dronePowerState = Drone.DRONE_POWER_NONE;
+				scopeList[1].setForHackedState();
+			}
 		
 		}
 
@@ -1942,6 +1949,11 @@ function hideCommandLabels()
 	surgeOffCommandLabel.gameObject.SetActive( false );
 	surgeTitleLabel.gameObject.SetActive( false );
 	surgeStateLabel.gameObject.SetActive( false );
+
+	for( var p : int = 0; p < numSurgePowerBars; p++ )
+	{
+		surgePowerBarArray[p].gameObject.SetActive( false );
+	}
 	
 }
 
