@@ -12,6 +12,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -27,6 +28,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -43,6 +45,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -54,6 +57,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -68,6 +72,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -82,6 +87,7 @@ public static var droneJson = [
 		"waveTypes": 1,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -99,6 +105,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -110,6 +117,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -121,6 +129,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -132,6 +141,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -143,6 +153,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -157,6 +168,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -173,6 +185,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -184,6 +197,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -195,6 +209,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -206,6 +221,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -217,6 +233,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -231,6 +248,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -245,6 +263,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -261,6 +280,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -272,6 +292,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -283,6 +304,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE,
@@ -295,6 +317,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -306,6 +329,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -320,6 +344,7 @@ public static var droneJson = [
 		"waveTypes": 2,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -337,6 +362,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -348,6 +374,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_PASS_CLOSE_UP,
 			GameManager.DRONE_PATH_PASS_MEDIUM_UP,
@@ -364,6 +391,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -375,6 +403,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -386,6 +415,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE,
@@ -398,6 +428,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -411,6 +442,7 @@ public static var droneJson = [
 		"waveTypes": 3,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -424,6 +456,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -435,6 +468,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -446,6 +480,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE,
@@ -458,6 +493,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": false,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE
@@ -471,6 +507,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE,
@@ -485,6 +522,7 @@ public static var droneJson = [
 		"waveTypes": 4,
 		"hackable": true,
 		"reload": 200,
+		"texture": "Drone-1111",
 		"dronePaths": [
 			GameManager.DRONE_PATH_CLOSE_STRIKE,
 			GameManager.DRONE_PATH_MEDIUM_STRIKE,
