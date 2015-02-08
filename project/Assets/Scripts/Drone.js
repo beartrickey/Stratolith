@@ -618,10 +618,6 @@ public var decelRate : float = 0.998;
 
 
 //paths
-public var dronePath : DronePath;
-
-public var currentPoint : int = 0;
-
 public var destination : Vector2 = Vector2( 0.0, 0.0 );
 
 
@@ -698,18 +694,6 @@ public var hasItem : boolean = false;
 public var itemGraphic : tk2dSprite = null;
 
 
-
-////MODELS
-public static var DRONE_MODEL_6611 : int = 0; //null close range strike
-public static var DRONE_MODEL_8808 : int = 1; //null long range strike
-public static var DRONE_MODEL_1111 : int = 2; //non-null tokkou strike
-public static var DRONE_MODEL_5555 : int = 3; //null close range
-public static var DRONE_MODEL_7373 : int = 4; //non-null med range strike
-public static var DRONE_MODEL_2121 : int = 5; //non-null long range strike
-public static var DRONE_MODEL_RAND : int = 99;
-
-
-
 ////STATES
 public static var DRONE_STATE_IDLE : int = 0;
 public static var DRONE_STATE_MOVE : int = 1;
@@ -759,14 +743,6 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 
 	waveTypes = _droneHashtable["waveTypes"];
 
-	droneType = DRONE_MODEL_RAND;
-
-
-	// Set Path
-	dronePath = _dronePath;
-
-	currentPoint = 1;
-
 	state = DRONE_STATE_FOLLOWING_PATH;
 
 	hackedScopeList[0] = false;
@@ -777,11 +753,11 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 	
 	
 	// Set position
-	position = dronePath.getPositionForIndex(0);
+	// position = dronePath.getPositionForIndex(0);
 	
 	
 	// Set target
-	destination = dronePath.getPositionForIndex(1);
+	// destination = dronePath.getPositionForIndex(1);
 	
 	
 	// Adjust for new target
@@ -847,8 +823,6 @@ function initializeDockedDrone( _modelString : String )
 	adjustStatsForPowerDiversion();
 
 	health = maxHealth;
-
-	dronePath = null;
 
 	state = DRONE_STATE_IDLE;
 	
@@ -983,9 +957,9 @@ function handleNavigation()
 		if( distanceFromTarget < stopThreshold )
 		{
 		
-			currentPoint = dronePath.getNextPointIndex( currentPoint );
+			// currentPoint = dronePath.getNextPointIndex( currentPoint );
 			
-			destination = dronePath.getPositionForIndex(currentPoint);
+			// destination = dronePath.getPositionForIndex(currentPoint);
 			
 			adjustForNewTargetPoint();
 
@@ -1101,11 +1075,6 @@ function deactivateIfOutsideRadar()
 	
 	if( distance > SublayerGameDelegate.instance.scannerWidth )
 	{
-
-		//decrement hostile drone count if hostile drone killed
-		if( hackedScopeList[0] == false )
-			GameManager.instance.currentStage.remainingHostileDrones -= 1;
-
 
 		//deactivate
 		deactivate();
@@ -1406,14 +1375,6 @@ function startDroneDeath()
 	// Leave item
 	SublayerGameDelegate.instance.placeItemAtPosition( position );
 	
-	//decrement hostile drone count if hostile drone killed
-	if( hackedScopeList[0] == false )
-	{
-	
-		GameManager.instance.currentStage.remainingHostileDrones -= 1;
-		
-	}
-	
 }
 
 
@@ -1459,8 +1420,7 @@ function updatePosition()
 	var velocity : Vector2 = Vector2( xcomp, ycomp );
 	velocity.Normalize();
 	
-	
-	
+
 	//hacked drones gradually increase and decrease speed
 	var pointDif : Vector2 = destination - position;
 	
@@ -1770,12 +1730,12 @@ function handleTactical()
 	if( distance < attackRange )
 	{
 				
-		//hack for self destruct drones
-		if( droneType == DRONE_MODEL_1111 )
-		{
-			hostileSelfDestruct();
-			return;
-		}
+		// //hack for self destruct drones
+		// if( droneType == DRONE_MODEL_1111 )
+		// {
+		// 	hostileSelfDestruct();
+		// 	return;
+		// }
 		
 		fireOnTarget( attackTarget );
 		

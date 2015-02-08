@@ -54,9 +54,9 @@ public static var loadingCounter : int = minimumLoadingFrames;
 
 
 // Stage Data
-public var currentStage : Stage;
-public var numStages : int = 31;
-public var stageList = new Stage[numStages];
+// public var currentStage : Stage;
+// public var numStages : int = 31;
+// public var stageList = new Stage[numStages];
 
 
 //sub layers:
@@ -97,17 +97,17 @@ function Start()
 
 
 	// Grab Stages From Scene
-	var gos : GameObject[];
-    gos = GameObject.FindGameObjectsWithTag("Stage");
-    for( var i : int = 0; i < gos.length; i++ )
-    {
-    	stageList[i] = gos[i].GetComponent( Stage );
-    }
+	// var gos : GameObject[];
+ //    gos = GameObject.FindGameObjectsWithTag("Stage");
+ //    for( var i : int = 0; i < gos.length; i++ )
+ //    {
+ //    	stageList[i] = gos[i].GetComponent( Stage );
+ //    }
 	
 	
 	//load user data
 	PlayerData.instance.loadData();
-	currentStage = getStageForId( PlayerData.instance.currentStageId );
+	// currentStage = getStageForId( PlayerData.instance.currentStageId );
 	
 	
 	//figure out screen dimensions
@@ -159,6 +159,7 @@ function setScreenDimensions()
 	//force window resolution for desktop
 	if( Application.platform == RuntimePlatform.OSXPlayer ||
 		Application.platform == RuntimePlatform.OSXEditor ||
+		Application.platform == RuntimePlatform.OSXWebPlayer ||
 		Application.platform == RuntimePlatform.WindowsPlayer ||
 		Application.platform == RuntimePlatform.WindowsEditor ||
 		Application.platform == RuntimePlatform.LinuxPlayer )
@@ -324,32 +325,71 @@ function goToTitleDone()
 
 
 
-function goFromTitleToMap()
+function goFromTitleToGame()
 {
 
 	sublayerLoadingScreenDelegate.loadingScreen.SetSprite( "Loading" );
-	startLoadingScreen( goFromTitleToMapDone );
+	startLoadingScreen( goFromTitleToGameDone );
 
 }
 
 
 
-function goFromTitleToMapDone()
+function goFromTitleToGameDone()
 {
 
-	sublayerMapDelegate = instantiateSublayerFromResource("SublayerMap").GetComponent( SublayerMapDelegate );
-	sublayerMapDelegate.gm = this;
-	sublayerMapDelegate.onInstantiate();
-	sublayerMapDelegate.gameObject.SetActive( true );
-	activeSublayer = sublayerMapDelegate.sl;
+	sublayerLoadingScreenDelegate.gameObject.SetActive( false );
 
-	Debug.Log("sublayerMap Initialized");
+	// Load sublayerGameDelegate
+	sublayerGameDelegate = instantiateSublayerFromResource("SublayerGame").GetComponent( SublayerGameDelegate );
+	sublayerGameDelegate.gm = this;
+	sublayerGameDelegate.onInstantiate();
+	sublayerGameDelegate.gameObject.SetActive( true );
+	activeSublayer = sublayerGameDelegate.sl;
+	sublayerGameDelegate.startGame();
 
-	// Audio
-	BGM_TITLE.Stop();
-	BGM_OPS.Play();
 
-	Debug.Log("playing ops bgm");
+	// Load sublayerCatalogDelegate
+	sublayerCatalogDelegate = instantiateSublayerFromResource("SublayerCatalog").GetComponent( SublayerCatalogDelegate );
+	sublayerCatalogDelegate.gm = this;
+	sublayerCatalogDelegate.onInstantiate();
+	sublayerCatalogDelegate.gameObject.SetActive( false );
+
+
+	// Load sublayerGameClearDelegate
+	sublayerGameClearDelegate = instantiateSublayerFromResource("SublayerGameClear").GetComponent( SublayerGameClearDelegate );
+	sublayerGameClearDelegate.gm = this;
+	sublayerGameClearDelegate.onInstantiate();
+	sublayerGameClearDelegate.gameObject.SetActive( false );
+
+
+	// Load sublayerGameOverDelegate
+	sublayerGameOverDelegate = instantiateSublayerFromResource("SublayerGameOver").GetComponent( SublayerGameOverDelegate );
+	sublayerGameOverDelegate.gm = this;
+	sublayerGameOverDelegate.onInstantiate();
+	sublayerGameOverDelegate.gameObject.SetActive( false );
+
+
+	//start blur in
+	sublayerGameDelegate.state = SublayerGameDelegate.GAME_STATE_BLUR_IN;
+	if(
+		Application.platform != RuntimePlatform.OSXEditor &&
+		Application.platform != RuntimePlatform.IPhonePlayer &&
+		Application.platform != RuntimePlatform.OSXWebPlayer
+	)
+	{
+		
+		fullScreenBlur.SetActive( true );
+		
+		fullScreenBlur.renderer.material.SetFloat( "resolution", 0.025 );
+		
+		fullScreenBlur.renderer.material.SetFloat( "brightness", 0.25 );
+		
+	}
+
+	BGM_OPS.Stop();
+    BGM_TITLE.Stop();
+	BGM_TACTICAL.Play();
 
 }
 
@@ -403,7 +443,11 @@ function goFromMapToGameDone()
 
 	//start blur in
 	sublayerGameDelegate.state = SublayerGameDelegate.GAME_STATE_BLUR_IN;
-	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
+	if(
+		Application.platform != RuntimePlatform.OSXEditor &&
+		Application.platform != RuntimePlatform.IPhonePlayer &&
+		Application.platform != RuntimePlatform.OSXWebPlayer
+	)
 	{
 		
 		fullScreenBlur.SetActive( true );
@@ -671,101 +715,101 @@ function goFromGameClearToMapDone()
 function onStageClear()
 {
 
-	currentStage.state = Stage.STAGE_STATE_CLEARED;
+// 	currentStage.state = Stage.STAGE_STATE_CLEARED;
 
-	unlockCurrentStageConnections();
-
-}
-
-
-
-function getStageForId( _id : int )
-{
-
-	for(  var i : int = 0; i < numStages; i++ )
-	{
-
-		if( stageList[i] == null )
-			continue;
-
-		if( stageList[i].stageId == _id )
-		{
-			Debug.Log( "found stage: " + _id );
-			return stageList[i];
-		}
-
-	}
-
-	return null;
+// 	unlockCurrentStageConnections();
 
 }
 
 
 
-function canRelocateBetweenStages( startStage : Stage, endStage : Stage ) : boolean
-{
+// function getStageForId( _id : int )
+// {
 
-	// Must be different stages
-	if( startStage == endStage )
-		return false;
+// 	for(  var i : int = 0; i < numStages; i++ )
+// 	{
+
+// 		if( stageList[i] == null )
+// 			continue;
+
+// 		if( stageList[i].stageId == _id )
+// 		{
+// 			Debug.Log( "found stage: " + _id );
+// 			return stageList[i];
+// 		}
+
+// 	}
+
+// 	return null;
+
+// }
+
+
+
+// function canRelocateBetweenStages( startStage : Stage, endStage : Stage ) : boolean
+// {
+
+// 	// Must be different stages
+// 	if( startStage == endStage )
+// 		return false;
 
 	
-	// Don't allow relocation to locked stage
-	if( endStage.state == Stage.STAGE_STATE_LOCKED )
-		return false;
+// 	// Don't allow relocation to locked stage
+// 	if( endStage.state == Stage.STAGE_STATE_LOCKED )
+// 		return false;
 
 	
-	// Don't allow relocation between two STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED stages
-	if( startStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED && endStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
-		return false;
+// 	// Don't allow relocation between two STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED stages
+// 	if( startStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED && endStage.state == Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED )
+// 		return false;
 
 
-	// Are stages actually connected?
-	return areStagesConnected( startStage, endStage );
+// 	// Are stages actually connected?
+// 	return areStagesConnected( startStage, endStage );
 
-}
-
-
-
-function areStagesConnected( _stageA : Stage, _stageB : Stage ) : boolean
-{
-
-	for(  var i : int = 0; i < 4; i++ )
-	{
-
-		if( _stageA.connectedStageIds[i] == _stageB.stageId )
-			return true;
-
-	}
-
-	return false;
-
-}
+// }
 
 
 
-function unlockCurrentStageConnections()
-{
+// function areStagesConnected( _stageA : Stage, _stageB : Stage ) : boolean
+// {
 
-	//unlocks any locked connected stages
-	//unlocked and cleared stages don't change state
+// 	for(  var i : int = 0; i < 4; i++ )
+// 	{
 
-	for( var i : int = 0; i < 4; i++ )
-	{
+// 		if( _stageA.connectedStageIds[i] == _stageB.stageId )
+// 			return true;
 
-		var connectedStage = getStageForId( currentStage.connectedStageIds[i] );
+// 	}
+
+// 	return false;
+
+// }
 
 
-		//skip null stages
-		if( connectedStage == null )
-			continue;
 
-		if( connectedStage.state == Stage.STAGE_STATE_LOCKED )
-			connectedStage.state = Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED;
+// function unlockCurrentStageConnections()
+// {
 
-	}
+// 	//unlocks any locked connected stages
+// 	//unlocked and cleared stages don't change state
 
-}
+// 	for( var i : int = 0; i < 4; i++ )
+// 	{
+
+// 		var connectedStage = getStageForId( currentStage.connectedStageIds[i] );
+
+
+// 		//skip null stages
+// 		if( connectedStage == null )
+// 			continue;
+
+// 		if( connectedStage.state == Stage.STAGE_STATE_LOCKED )
+// 			connectedStage.state = Stage.STAGE_STATE_UNLOCKED_BUT_NOT_CLEARED;
+
+// 	}
+
+// }
 
 
 
@@ -773,27 +817,27 @@ function unlockCurrentStageConnections()
 
 
 
-function loadStages()
-{
+// function loadStages()
+// {
 
-    //copy data from stageData to stageList, setup graphics
-	for( var i : int = 0; i < numStages; i++ )
-	{
+//     //copy data from stageData to stageList, setup graphics
+// 	for( var i : int = 0; i < numStages; i++ )
+// 	{
 
-		if( PlayerData.instance.stageData[i] == null )
-			continue;
+// 		if( PlayerData.instance.stageData[i] == null )
+// 			continue;
 	
-		var stageId : int = PlayerData.instance.stageData[i].stageId;
+// 		var stageId : int = PlayerData.instance.stageData[i].stageId;
 
-		var stage : Stage = getStageForId( stageId );
-		stage.state = PlayerData.instance.stageData[i].state;
-		stage.foundTechItems = PlayerData.instance.stageData[i].foundTechItems;
-		stage.foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
+// 		var stage : Stage = getStageForId( stageId );
+// 		stage.state = PlayerData.instance.stageData[i].state;
+// 		stage.foundTechItems = PlayerData.instance.stageData[i].foundTechItems;
+// 		stage.foundBlackBoxItems = PlayerData.instance.stageData[i].foundBlackBoxItems;
 
-		Debug.Log("set stage " + stageId + "to state: " + PlayerData.instance.stageData[i].state);
+// 		Debug.Log("set stage " + stageId + "to state: " + PlayerData.instance.stageData[i].state);
 	
-	}
+// 	}
     
-}
+// }
 
 

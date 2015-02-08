@@ -69,7 +69,7 @@ function startButtonPressed()
 	// Only allow button press after splash screen has faded in
 	if( state == TITLE_STATE_MAIN_TITLE )
 	{
-		gm.goFromTitleToMap();
+		gm.goFromTitleToGame();
 	}
 }
 

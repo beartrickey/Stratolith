@@ -120,7 +120,7 @@ function startSuccessfulHackSequence()
 		if( index == 0 )
 		{
 			drone.startIdle();
-			GameManager.instance.currentStage.remainingHostileDrones -= 1;
+			// GameManager.instance.currentStage.remainingHostileDrones -= 1;
 			drone.setDroneColor();
 		}
 

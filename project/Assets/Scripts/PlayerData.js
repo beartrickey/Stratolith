@@ -10,11 +10,11 @@ public static var instance : PlayerData;
 
 public var scopeLevel : int = 1;
 public var dockLevel : int = 1;
-public var currentStageId : int = 0;
+// public var currentStageId : int = 0;
 
 
 public var dockedDroneData = new List.<DockedDroneData>();
-public var stageData = new List.<StageData>();
+// public var stageData = new List.<StageData>();
 
 
 
@@ -29,7 +29,7 @@ class DockedDroneData
 class StageData
 {
 
-	var stageId : int = -1;
+	// var stageId : int = -1;
 
 	var state : int = 0;
 
@@ -48,7 +48,15 @@ function Start()
 
 	instance = this;
 
-	Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
+	if( Application.platform == RuntimePlatform.OSXWebPlayer )
+	{
+		
+	}
+	else
+	{
+		// Commenting out for OSXWebPlayer build
+		// Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");	
+	}
 
 }
 
@@ -67,15 +75,15 @@ function loadData()
 
 	dockLevel = PlayerPrefs.GetInt( "dockLevel", 1 );
 
-	currentStageId = PlayerPrefs.GetInt( "currentStageId", 0 );
+	// currentStageId = PlayerPrefs.GetInt( "currentStageId", 0 );
 
 	
 	//STAGE DATA
-	var tempStageData = deserialize( "stageData" );
+	// var tempStageData = deserialize( "stageData" );
 	
-	//don't corrupt stageData if data doesn't exist
-	if( tempStageData != null )
-		stageData = tempStageData;
+	// //don't corrupt stageData if data doesn't exist
+	// if( tempStageData != null )
+	// 	stageData = tempStageData;
 		
 		
 	//DOCK DATA
@@ -109,7 +117,7 @@ function saveData()
 
 	PlayerPrefs.SetInt( "dockLevel", dockLevel );
 
-	PlayerPrefs.SetInt( "currentStageId", GameManager.instance.currentStage.stageId );
+	// PlayerPrefs.SetInt( "currentStageId", GameManager.instance.currentStage.stageId );
 
 
 	//docked drone data
@@ -139,19 +147,18 @@ function saveData()
 
 
 	//stage data
-	for( var i = 0; i < GameManager.instance.numStages; i++ )
-	{
-		if( GameManager.instance.stageList[i] == null )
-			continue;
+	// for( var i = 0; i < GameManager.instance.numStages; i++ )
+	// {
+	// 	if( GameManager.instance.stageList[i] == null )
+	// 		continue;
 	
-		stageData[i].stageId = GameManager.instance.stageList[i].stageId;
-		stageData[i].state = GameManager.instance.stageList[i].state;
-		stageData[i].foundTechItems = GameManager.instance.stageList[i].foundTechItems;
-		stageData[i].foundBlackBoxItems = GameManager.instance.stageList[i].foundBlackBoxItems;
-	
-	}
+	// 	stageData[i].stageId = GameManager.instance.stageList[i].stageId;
+	// 	stageData[i].state = GameManager.instance.stageList[i].state;
+	// 	stageData[i].foundTechItems = GameManager.instance.stageList[i].foundTechItems;
+	// 	stageData[i].foundBlackBoxItems = GameManager.instance.stageList[i].foundBlackBoxItems;
+	// }
 
-	serialize( stageData, "stageData" );
+	// serialize( stageData, "stageData" );
 
 	PlayerPrefs.Save();
 

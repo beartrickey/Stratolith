@@ -16,6 +16,17 @@ public var im : InputManager;
 public var frameNumber : int = 0;
 
 
+// Stratolith movement
+public var worldMap : GameObject = null;
+public var stratolithWorldPosition : Vector2 = Vector2( 0.0, 0.0 );
+public var stratolithSpeed : float = 0.0;
+public var stratolithMoving : boolean = false;
+
+public var stratolithDirectionKnob : ButtonScript = null;
+public var stratolithDestinationDirection : float = 0.0;
+public var stratolithActualDirection : float = 0.0;
+
+
 //base graphics
 public var panel : tk2dSprite = null;
 public var scopeBackground : tk2dSprite = null;
@@ -108,6 +119,7 @@ public var activeScope : Scope = null;
 
 public var draggingScopePhase : boolean = false;
 public var draggingScopeWavelength : boolean = false;
+public var draggingStratolithDirectionKnob : boolean = false;
 
 
 //labels
@@ -213,6 +225,12 @@ function onInstantiate()
 	{
 		dronePerformanceGaugeList[p].onInstantiate();
 	}
+
+
+	// Stratolith direction knob
+	sl.addButton( stratolithDirectionKnob );
+	stratolithDirectionKnob.onTouchDownInsideDelegate = stratolithDirectionKnobPressed;
+	stratolithDirectionKnob.setKnobRotation();
 
 
 	// Cannon
@@ -436,7 +454,7 @@ function resetVarsForNewStage()
 	messageLabel.text = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 	messageLabel.Commit();
 
-	gm.currentStage.foundHealthItems = 0;
+	// gm.currentStage.foundHealthItems = 0;
 
 }
 
@@ -455,7 +473,7 @@ function startGame()
 
 	addSavedDronesToDockSlots();
 	
-	gm.currentStage.initStage();
+	// gm.currentStage.initStage();
 
 }
 
@@ -514,6 +532,82 @@ function sublayerGameUpdate()
 	frameNumber++;
 
 	updateStateMachine();
+
+
+	// Handle stratolith direction knob
+	if( draggingStratolithDirectionKnob == true )
+	{
+
+		var im : InputManager = InputManager.instance;
+
+		if( im.knobPreference == InputManager.KNOB_PREFERENCE_VERTICAL )
+		{
+		
+			//how far did the touch move in the y direction?
+			var ydif : float = im.lastTouchPosition[0].y - im.currentTouchPosition[0].y;
+			
+			ydif *= -0.0025;
+
+			stratolithDestinationDirection += ydif;
+			
+			//wrap value
+			if( stratolithDestinationDirection < 0.0 )
+			{
+				stratolithDestinationDirection = 1.0 + stratolithDestinationDirection;
+			}
+				
+			if( stratolithDestinationDirection > 1.0 )
+			{
+				stratolithDestinationDirection = stratolithDestinationDirection - 1.0;
+			}
+			
+		}
+		else if( im.knobPreference == InputManager.KNOB_PREFERENCE_RADIAL )
+		{
+		
+			var dif : Vector2 = im.lastTouchPosition[0] - activeScope.knob.gameObject.transform.position;
+			var angleInRads : float = Mathf.Atan2( dif.y, dif.x );
+		
+			var angleInDegrees : float = angleInRads * Mathf.Rad2Deg;
+		
+			//change angle to 0 - 360 number
+			angleInDegrees += 90.0;
+			
+			if( angleInDegrees < 0.0 )
+				angleInDegrees += 360.0;
+			
+			var scaledDegrees : float = angleInDegrees / 360.0;
+		}
+
+		//update dial/knob graphics
+		stratolithDirectionKnob.knobPosition = stratolithDestinationDirection;
+		stratolithDirectionKnob.setKnobRotation();
+
+	}
+
+	// Update Stratolith position
+	if( stratolithMoving == true )
+	{
+
+		// The knob value goes from 0.0 to 1.0
+		// The 0.0/1.0 position is at the bottom, which represents a downward direction (3.14 rads)
+		// The 0.5 position is at the top, and represents an upward direction (0.0/6.28 rads)
+		var directionInRads : float = (stratolithDestinationDirection * 6.28) - 3.14;
+		if( directionInRads < 0.0 )
+			directionInRads = 6.28 + directionInRads;
+
+		var xcomp : float = Mathf.Sin( directionInRads );
+		var ycomp : float = Mathf.Cos( directionInRads );
+		
+		var stratolithVelocity : Vector2 = Vector2(xcomp, ycomp );
+		stratolithVelocity *= stratolithSpeed;
+
+		stratolithWorldPosition += stratolithVelocity;
+
+		worldMap.transform.position = shieldScannerCenter.position + stratolithWorldPosition;
+
+	}
+	
 	
 	
 	//handle shield dragging
@@ -530,15 +624,15 @@ function sublayerGameUpdate()
 	
 	
 	//drones
-	for( var d : int = 0; d < numDrones; d++ )
-	{
+	// for( var d : int = 0; d < numDrones; d++ )
+	// {
 	
-		if( droneList[d].isActive == false )
-			continue;
+	// 	if( droneList[d].isActive == false )
+	// 		continue;
 	
-		droneList[d].updateDrone();
+	// 	droneList[d].updateDrone();
 		
-	}
+	// }
 	
 	
 	//bullets
@@ -594,18 +688,18 @@ function sublayerGameUpdate()
 
 
 	// conflict labels
-	hostileDronesRemainingLabel.text = gm.currentStage.remainingHostileDrones.ToString("D2");;
-	hostileDronesRemainingLabel.Commit();
+	// hostileDronesRemainingLabel.text = gm.currentStage.remainingHostileDrones.ToString("D2");;
+	// hostileDronesRemainingLabel.Commit();
 	
 	
 	//game clear condition
-	if( state == GAME_STATE_STAGE && gm.currentStage.remainingHostileDrones <= 0 )
-	{
+	// if( state == GAME_STATE_STAGE && gm.currentStage.remainingHostileDrones <= 0 )
+	// {
 	
-		state = GAME_STATE_END_SUCCESS_DELAY;
-		machineStateCounter = 300;
+	// 	state = GAME_STATE_END_SUCCESS_DELAY;
+	// 	machineStateCounter = 300;
 		
-	}
+	// }
 		
 }
 
@@ -836,67 +930,67 @@ function updateRadarGraphics()
 	}
 	
 	
-	for( d = 0; d < Stage.numDronePaths; d++ )
-	{	
+	// for( d = 0; d < Stage.numDronePaths; d++ )
+	// {	
 		
-		var path : DronePath = gm.currentStage.dronePathList[d];
-		
-		
-		// skip if path is null
-		if( path == null )
-			continue;
+	// 	var path : DronePath = gm.currentStage.dronePathList[d];
 		
 		
-		// skip if already appeared
-		if( path.delayCounter <= -1 )
-			continue;
+	// 	// skip if path is null
+	// 	if( path == null )
+	// 		continue;
+		
+		
+	// 	// skip if already appeared
+	// 	if( path.delayCounter <= -1 )
+	// 		continue;
 		
 		
 		// Find free icon and set it
-		for( i = 0; i < 3; i++ )
-		{
+		// for( i = 0; i < 3; i++ )
+		// {
 		
-			var icon : IncomingDroneIcon = incomingDroneIconList[i];
+		// 	var icon : IncomingDroneIcon = incomingDroneIconList[i];
 			
 			
-			// skip if already active
-			if( icon.gameObject.activeSelf == false )
-			{
+		// 	// skip if already active
+		// 	if( icon.gameObject.activeSelf == false )
+		// 	{
 
-				// Init and display icon at edge of radar where drone will appear
-				icon.dronePath = path;
-				icon.gameObject.SetActive( true );
+		// 		// Init and display icon at edge of radar where drone will appear
+		// 		icon.dronePath = path;
+		// 		icon.gameObject.SetActive( true );
 
-				var iconDistanceFromCenter : float = scannerWidth - 20.0;
-				var firstPointPosition : Vector2 = path.getPositionForIndex(0);
-				var direction : Vector2 = (firstPointPosition - shieldScannerCenter.transform.position).normalized;
-				var position : Vector2 = direction * iconDistanceFromCenter;
-				position += shieldScannerCenter.transform.position;
-				icon.gameObject.transform.position = position;
+		// 		var iconDistanceFromCenter : float = scannerWidth - 20.0;
+		// 		var firstPointPosition : Vector2 = path.getPositionForIndex(0);
+		// 		var direction : Vector2 = (firstPointPosition - shieldScannerCenter.transform.position).normalized;
+		// 		var position : Vector2 = direction * iconDistanceFromCenter;
+		// 		position += shieldScannerCenter.transform.position;
+		// 		icon.gameObject.transform.position = position;
 
-				// Rotate icon
-				var iconAngleInRads : float = Mathf.Atan2( direction.x, direction.y );
-				var iconAngleInDegrees : float = iconAngleInRads * Mathf.Rad2Deg;
-				iconAngleInDegrees -= 180.0;
-				iconAngleInDegrees = Mathf.Abs( iconAngleInDegrees );
-				icon.gameObject.transform.eulerAngles.z = iconAngleInDegrees + 180.0;
+		// 		// Rotate icon
+		// 		var iconAngleInRads : float = Mathf.Atan2( direction.x, direction.y );
+		// 		var iconAngleInDegrees : float = iconAngleInRads * Mathf.Rad2Deg;
+		// 		iconAngleInDegrees -= 180.0;
+		// 		iconAngleInDegrees = Mathf.Abs( iconAngleInDegrees );
+		// 		icon.gameObject.transform.eulerAngles.z = iconAngleInDegrees + 180.0;
 
-				// Position label to the inside of the radar
-				var labelOffset : Vector2 = (shieldScannerCenter.transform.position - position).normalized * 50.0;
-				icon.distanceLabel.gameObject.transform.position = position + labelOffset;
-				icon.distanceLabel.gameObject.transform.eulerAngles.z = 0.0;
+		// 		// Position label to the inside of the radar
+		// 		var labelOffset : Vector2 = (shieldScannerCenter.transform.position - position).normalized * 50.0;
+		// 		icon.distanceLabel.gameObject.transform.position = position + labelOffset;
+		// 		icon.distanceLabel.gameObject.transform.eulerAngles.z = 0.0;
 
-				// Update distance counter
-				icon.distanceLabel.text = path.delayCounter.ToString("D2") + " MU";
-				icon.distanceLabel.Commit();
+		// 		// Update distance counter
+		// 		icon.distanceLabel.text = path.delayCounter.ToString("D2") + " MU";
+		// 		icon.distanceLabel.Commit();
 				
-				break;
+		// 		break;
 
-			}
+		// 	}
 		
-		}
+		// }
 	
-	}
+	// }
 
 }
 
@@ -1068,7 +1162,11 @@ function stratolithHitByBullet( _bullet : Bullet )
 	
 	
 	//show radar static
-	if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
+	if(
+		Application.platform != RuntimePlatform.OSXEditor &&
+		Application.platform != RuntimePlatform.IPhonePlayer &&
+		Application.platform != RuntimePlatform.OSXWebPlayer
+    )
 	{
 
 		radarStaticEffect.gameObject.SetActive( true );
@@ -1119,7 +1217,11 @@ function handleRadarStatic()
 {
 
 	//skip effect if in editor
-	if( Application.platform == RuntimePlatform.OSXEditor || Application.platform != RuntimePlatform.IPhonePlayer )
+	if(
+		Application.platform != RuntimePlatform.OSXEditor ||
+		Application.platform != RuntimePlatform.IPhonePlayer ||
+		Application.platform != RuntimePlatform.OSXWebPlayer
+	)
 		return;
 
 
@@ -1224,7 +1326,11 @@ function updateStateMachine()
     		
     		//bluriness
     		//don't worry about blur if in editor
-    		if( Application.platform != RuntimePlatform.OSXEditor && Application.platform != RuntimePlatform.IPhonePlayer )
+    		if(
+    			Application.platform != RuntimePlatform.OSXEditor &&
+    			Application.platform != RuntimePlatform.IPhonePlayer &&
+    			Application.platform != RuntimePlatform.OSXWebPlayer
+    		)
 			{
 	    		var blurResolution : float = gm.fullScreenBlur.renderer.material.GetFloat( "resolution" );	
 	    		blurResolution *= 0.9;
@@ -1264,13 +1370,6 @@ function updateStateMachine()
     
     
     	case GAME_STATE_STAGE:
-    		
-    		
-    		//update stage
-			if( gm.currentStage != null )
-			{
-				gm.currentStage.updateStage();
-			}			
 	
     		break;
     
@@ -2233,6 +2332,21 @@ function onDroneCollectItem( _drone : Drone )
 	// Change drone graphic
 	_drone.hasItem = true;
 	_drone.itemGraphic.gameObject.SetActive( true );
+
+}
+
+///////////////////////////////////////////////////////////////////////////
+// Stratolith movement
+///////////////////////////////////////////////////////////////////////////
+
+
+
+function stratolithDirectionKnobPressed( _button )
+{
+
+	Debug.Log( "stratolithDirectionKnobPressed" );
+	
+	draggingStratolithDirectionKnob = true;
 
 }
 

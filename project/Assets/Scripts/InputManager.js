@@ -53,6 +53,7 @@ function Update ()
 		
 		case RuntimePlatform.OSXPlayer:
 		case RuntimePlatform.OSXEditor:
+		case RuntimePlatform.OSXWebPlayer:
 		case RuntimePlatform.WindowsPlayer:
 		case RuntimePlatform.WindowsEditor:
 		case RuntimePlatform.LinuxPlayer:
@@ -277,6 +278,7 @@ function mouseEnded()
 	{
 		SublayerGameDelegate.instance.draggingScopePhase = false;
 		SublayerGameDelegate.instance.draggingScopeWavelength = false;
+		SublayerGameDelegate.instance.draggingStratolithDirectionKnob = false;
 		SublayerGameDelegate.instance.activeScope = null;
 	}
 	
@@ -362,6 +364,7 @@ function touchEnded( _touchIndex : int )
 	//stop draging shield wave
 	SublayerGameDelegate.instance.draggingScopePhase = false;
 	SublayerGameDelegate.instance.draggingScopeWavelength = false;
+	SublayerGameDelegate.instance.draggingStratolithDirectionKnob = false;
 	SublayerGameDelegate.instance.activeScope = null;
 
 }
@@ -527,7 +530,10 @@ function checkForButtonRolloverRolloff( _ray : Ray )
 	//bail if dragging a knob/dial
 	if( SublayerGameDelegate.instance != null )
 	{
-		if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+		if( SublayerGameDelegate.instance.draggingScopePhase == true ||
+			SublayerGameDelegate.instance.draggingScopePhase == true ||
+			SublayerGameDelegate.instance.draggingStratolithDirectionKnob == true
+		)
 		{
 			return;
 		}
@@ -551,7 +557,10 @@ function checkForButtonTouchUpInside( _ray : Ray )
 	//bail if dragging a knob/dial
 	if( SublayerGameDelegate.instance != null )
 	{
-		if( SublayerGameDelegate.instance.draggingScopePhase == true || SublayerGameDelegate.instance.draggingScopePhase == true )
+		if( SublayerGameDelegate.instance.draggingScopePhase == true ||
+			SublayerGameDelegate.instance.draggingScopePhase == true ||
+			SublayerGameDelegate.instance.draggingStratolithDirectionKnob == true
+		)
 		{
 			return;
 		}
