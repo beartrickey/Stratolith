@@ -188,8 +188,11 @@ function startPreparingToLaunch()
 function endLaunching()
 {
 
-	//change drone state
+	// Change drone state
 	drone.gameObject.SetActive( true );
+
+	// Set drone's position next to Stratolith
+	drone.position = SublayerGameDelegate.instance.stratolithWorldPosition;
 			
 	drone.startIdle();
 	

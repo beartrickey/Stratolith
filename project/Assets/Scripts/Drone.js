@@ -834,7 +834,7 @@ function initializeDockedDrone( _modelString : String )
 
 	
 	//set position
-	position = slgd.shieldScannerCenter.gameObject.transform.position;
+	position = slgd.stratolithWorldPosition;
 	
 	
 	baseInitialize();
@@ -1287,12 +1287,12 @@ function findHackedDroneWithinAttackRange() : Drone
 
 
 
-function startMove( _touchCoordinates : Vector2 )
+function startMove( _destinationCoordinates : Vector2 )
 {
 	
 	state = DRONE_STATE_MOVE;
 
-	destination = _touchCoordinates;
+	destination = _destinationCoordinates;
 	
 	attackTarget = null;
 
@@ -1522,8 +1522,9 @@ function updateDroneGraphics()
 	var roundedPosX : float = Mathf.RoundToInt( position.x + jitterOffset.x );
 	var roundedPosY : float = Mathf.RoundToInt( position.y + jitterOffset.y );
 	var roundedPos : Vector3 = Vector3( roundedPosX, roundedPosY, -50.0 );
+	var positionScreenCoordinates : Vector2 = slgd.worldMapToScreenCoordinates( roundedPos );
 	
-	gameObject.transform.position = roundedPos;
+	gameObject.transform.position = positionScreenCoordinates;
 	
 	
 	//update rotation
@@ -1570,7 +1571,7 @@ function updateDroneGraphics()
 	// Set selection lines if selected
 	if( slgd.activeDrone == this )
 	{
-		slgd.updateSelectionLines( roundedPos );
+		slgd.updateSelectionLines( positionScreenCoordinates );
 	}
 
 
@@ -1615,17 +1616,16 @@ function setDestinationIcon()
 	
 	destinationIcon.gameObject.SetActive( true );
 	
-	destinationIcon.gameObject.transform.position = destination;
-	
+	var destinationScreenCoordinates : Vector2 = slgd.worldMapToScreenCoordinates( destination );
+	destinationIcon.gameObject.transform.position = destinationScreenCoordinates;
 	destinationIcon.gameObject.transform.position.z = -50.0;
 	
-	
-	//line
+	// Line
 	var iconOffset : float = 40.0;
-	var dif : Vector2 = gameObject.transform.position - destination;
+	var dif : Vector2 = gameObject.transform.position - destinationScreenCoordinates;
 	
 	
-	//bail if too close (don't draw inverse line)
+	// Bail if too close (don't draw inverse line)
 	if( dif.magnitude < iconOffset * 2.0 )
 	{
 		targetLine.setDotState( false );
@@ -1635,7 +1635,7 @@ function setDestinationIcon()
 	dif = dif.normalized * iconOffset;
 	
 	var startPos : Vector2 = gameObject.transform.position - dif;
-	var endPos : Vector2 = destination + ( dif * 0.5 );
+	var endPos : Vector2 = destinationScreenCoordinates + ( dif * 0.5 );
 	
 	targetLine.drawLineBetweenPoints( startPos, endPos );
 	

@@ -49,7 +49,7 @@ public var fullScreenBlur : GameObject;
 
 // Unity Level
 public var onUnityLevelLoadDone : function() = null;
-public static var minimumLoadingFrames : int = 300;  // 5 Seconds
+public static var minimumLoadingFrames : int = 1;  // was 300 (5 Seconds)
 public static var loadingCounter : int = minimumLoadingFrames;
 
 

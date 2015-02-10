@@ -412,17 +412,21 @@ function handleMainGameTouches( _ray : Ray, _touchIndex : int, _buttonScript : B
 	}
 
 	
-	//case when active drone waiting to MOVE
+	// Case when active drone waiting to MOVE
 	if( slgd.activeDroneWaitingForDestination == true )
 	{
 	
-		//cancel select destination state if touch outside of radar circle
+		// Cancel select destination state if touch outside of radar circle
 		if( wasTouchInsideRadarCircle( _ray ) == true )
 		{
 			
-			//set new waypoint
+			// Set new waypoint
 			slgd.turnOffCommandRequest();
-			slgd.activeDrone.startMove( currentTouchPosition[0] );
+
+			// Convert touchPosition to worldCoordinates
+			var worldCoordinates : Vector2 = slgd.screenToWorldMapCoordinates( currentTouchPosition[0] );
+			Debug.Log( "touch world coordinates: " + worldCoordinates );
+			slgd.activeDrone.startMove( worldCoordinates );
 			GameManager.instance.SFX_CHOOSE_TARGET.Play();
 			return;
 			

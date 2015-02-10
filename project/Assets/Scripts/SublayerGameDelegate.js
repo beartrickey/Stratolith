@@ -230,6 +230,7 @@ function onInstantiate()
 	// Stratolith direction knob
 	sl.addButton( stratolithDirectionKnob );
 	stratolithDirectionKnob.onTouchDownInsideDelegate = stratolithDirectionKnobPressed;
+	stratolithDirectionKnob.knobPosition = 0.0;
 	stratolithDirectionKnob.setKnobRotation();
 
 
@@ -336,7 +337,7 @@ function onInstantiate()
 	{
 		
 		var droneGameObject : GameObject = GameObject.Instantiate( dronePrefab, Vector3( 0.0, 0.0, -50.0 ), dronePrefab.transform.rotation );
-		droneGameObject.transform.parent = gameObject.transform;
+		droneGameObject.transform.parent = worldMap.transform;
 		var drone : Drone = droneGameObject.GetComponent( Drone );
 		droneList[d] = drone;
 		
@@ -590,21 +591,21 @@ function sublayerGameUpdate()
 	{
 
 		// The knob value goes from 0.0 to 1.0
-		// The 0.0/1.0 position is at the bottom, which represents a downward direction (3.14 rads)
-		// The 0.5 position is at the top, and represents an upward direction (0.0/6.28 rads)
-		var directionInRads : float = (stratolithDestinationDirection * 6.28) - 3.14;
-		if( directionInRads < 0.0 )
-			directionInRads = 6.28 + directionInRads;
+		// The 0.0/1.0 position is at the top, which represents a upward direction (0.0/6.28 rads)
+		// The 0.5 position is at the top, and represents an upward direction (3.14 rads)
+		var directionInRads : float = (stratolithDestinationDirection * 6.28);
+		// if( directionInRads < 0.0 )
+		// 	directionInRads = 6.28 + directionInRads;
 
 		var xcomp : float = Mathf.Sin( directionInRads );
 		var ycomp : float = Mathf.Cos( directionInRads );
 		
-		var stratolithVelocity : Vector2 = Vector2(xcomp, ycomp );
+		var stratolithVelocity : Vector2 = Vector2( xcomp, ycomp );
 		stratolithVelocity *= stratolithSpeed;
 
 		stratolithWorldPosition += stratolithVelocity;
 
-		worldMap.transform.position = shieldScannerCenter.position + stratolithWorldPosition;
+		worldMap.transform.position = shieldScannerCenter.position - stratolithWorldPosition;
 
 	}
 	
@@ -624,15 +625,15 @@ function sublayerGameUpdate()
 	
 	
 	//drones
-	// for( var d : int = 0; d < numDrones; d++ )
-	// {
+	for( var d : int = 0; d < numDrones; d++ )
+	{
 	
-	// 	if( droneList[d].isActive == false )
-	// 		continue;
+		if( droneList[d].isActive == false )
+			continue;
 	
-	// 	droneList[d].updateDrone();
+		droneList[d].updateDrone();
 		
-	// }
+	}
 	
 	
 	//bullets
@@ -785,6 +786,33 @@ function updateChargeNeedle()
 	var scaledPosition : float = currentChargeNeedlePosition / 3.0; //charge needle is between -3.0 and 3.0
 	
 	chargeNeedle.gameObject.transform.eulerAngles.z = maxAngle * scaledPosition;
+
+}
+
+
+
+
+//////////////////////////////////////////////// WORLD MAP HELPER FUNCTIONS
+
+
+
+function screenToWorldMapCoordinates( _screenCoordinates : Vector2 )
+{
+
+	var radarScreenCoordinates : Vector2 = _screenCoordinates - shieldScannerCenter.position;
+	var worldCoordinates : Vector2 = radarScreenCoordinates + stratolithWorldPosition;
+	return worldCoordinates;
+
+}
+
+
+
+function worldMapToScreenCoordinates( _worldMapCoordinates : Vector2 )
+{
+
+	var radarScreenCoordinates : Vector2 = _worldMapCoordinates - stratolithWorldPosition;
+	var screenCoordinates : Vector2 = radarScreenCoordinates + shieldScannerCenter.position;
+	return screenCoordinates;
 
 }
 
