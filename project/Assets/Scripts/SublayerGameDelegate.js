@@ -234,6 +234,12 @@ function onInstantiate()
 	stratolithDirectionKnob.setKnobRotation();
 
 
+	// Stratolith Position
+	stratolithSpeed = 0.05;
+	stratolithWorldPosition = Vector2( -3000.0, 8000.0 );
+	stratolithMoving = true;
+
+
 	// Cannon
 	sl.addButton( cannonButton );
 	cannonButton.onTouchDownInsideDelegate = cannonButtonPressed;
@@ -368,7 +374,7 @@ function onInstantiate()
 
 
 	// Make clouds
-	var windSpeed : float = Random.Range(0.0, 0.1);
+	var windSpeed : float = Random.Range(0.0, 0.2);
 	
 	windVelocity = new Vector2(
 		Random.Range(-windSpeed, windSpeed),
@@ -378,12 +384,13 @@ function onInstantiate()
 	for( var c : int = 0; c < numClouds; c++ )
 	{
 		
-		var scannerRadius = scannerWidth;
+		var scannerRadius = scannerWidth * 2.0;
 		var posx : float = Random.Range(-scannerRadius, scannerRadius) + shieldScannerCenter.position.x;
 		var posy : float = Random.Range(-scannerRadius, scannerRadius) + shieldScannerCenter.position.y;
+		var cloudPosition : Vector3 = stratolithWorldPosition + Vector3( posx, posy, -75.0 );
 
-		var cloudGameObject : GameObject = GameObject.Instantiate( cloudPrefab, Vector3( posx, posy, -75.0 ), cloudPrefab.transform.rotation );
-		cloudGameObject.transform.parent = gameObject.transform;
+		var cloudGameObject : GameObject = GameObject.Instantiate( cloudPrefab, cloudPosition, cloudPrefab.transform.rotation );
+		cloudGameObject.transform.parent = worldMap.transform;
 		var cloud : Cloud = cloudGameObject.GetComponent( Cloud );
 		cloudList[c] = cloud;
 		

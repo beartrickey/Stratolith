@@ -129,7 +129,21 @@ function arrangeVerts()
 function updateCloud()
 {
 
-	gameObject.transform.position += slgd.windVelocity;
+	gameObject.transform.localPosition += slgd.windVelocity;
+
+	// Wrap position if outside of radar
+	var vectorDif : Vector2 = slgd.stratolithWorldPosition - gameObject.transform.localPosition;
+	var distanceFromStratolith : float = vectorDif.magnitude;
+	var threshold : float = slgd.scannerWidth * 1.75;
+
+	if( distanceFromStratolith > threshold )
+	{
+
+		var normalDirection : Vector2 = vectorDif.normalized;
+		var newPosition : Vector2 = slgd.stratolithWorldPosition + (normalDirection * slgd.scannerWidth * 1.5);
+		gameObject.transform.localPosition = newPosition;
+
+	}
 
 }
 

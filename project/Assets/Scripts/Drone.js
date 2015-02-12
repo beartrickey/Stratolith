@@ -990,7 +990,7 @@ function handleNavigation()
 	if( state == DRONE_STATE_ATTK )
 	{
 	
-		//update destination to target position
+		// Update destination to target position
 		destination = attackTarget.transform.position;
 		
 		distanceFromTarget = turnTowardTargetPosition();
@@ -1003,6 +1003,9 @@ function handleNavigation()
 	
 		//stop if close enough to target
 		stopThreshold = 100.0;
+
+		// Update destination to match stratolith actual position
+		destination = slgd.stratolithWorldPosition;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 		
