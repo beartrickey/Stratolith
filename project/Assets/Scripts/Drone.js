@@ -1884,16 +1884,9 @@ function adjustStatsForPowerDiversion()
 	rangeIndex = parseInt( "" + modelString[2] );
 	shieldIndex = parseInt( "" + modelString[3] );
 
-	var powerModifier : int = 1;
-
-	// Surge stats
-	if( surgeState == SURGE_STATE_ON )
-	{
-		powerModifier = 2;
-	}
-
-
+	
 	// Diverted stats
+	var powerModifier : int = 1;
 	if( dronePowerState == DRONE_POWER_WEAP )
 	{
 		damageIndex += powerModifier;
@@ -1921,6 +1914,29 @@ function adjustStatsForPowerDiversion()
 		velocityIndex -= powerModifier;
 		rangeIndex -= powerModifier;
 		shieldIndex += powerModifier;
+	}
+
+
+	// Surge stats
+	var surgeModifier : int = 1;
+	if( surgeState == SURGE_STATE_ON )
+	{
+		if( dronePowerState == DRONE_POWER_WEAP )
+		{
+			damageIndex += surgeModifier;
+		}
+		else if( dronePowerState == DRONE_POWER_VELO )
+		{
+			velocityIndex += surgeModifier;
+		}
+		else if( dronePowerState == DRONE_POWER_RNGE )
+		{
+			rangeIndex += surgeModifier;
+		}
+		else if( dronePowerState == DRONE_POWER_SHLD )
+		{
+			shieldIndex += surgeModifier;
+		}
 	}
 
 

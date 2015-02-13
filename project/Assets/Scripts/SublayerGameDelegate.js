@@ -235,7 +235,7 @@ function onInstantiate()
 
 
 	// Stratolith Position
-	stratolithSpeed = 0.05;
+	stratolithSpeed = 0.025;
 	stratolithWorldPosition = Vector2( -3000.0, 8000.0 );
 	stratolithMoving = true;
 
