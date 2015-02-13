@@ -1604,7 +1604,7 @@ function updateDroneGraphics()
 			// if( slgd.activeDrone == this )
 			// 	slgd.deselectRadarObject();
 
-			gameObject.SetActive( false );
+			// gameObject.SetActive( false );
 			insideCloud = true;
 
 		}
