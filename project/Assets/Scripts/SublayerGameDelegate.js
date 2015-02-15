@@ -183,7 +183,7 @@ public var cannonModeActive : boolean;
 // Items
 public var itemContainer : GameObject = null;
 public var itemLocatorPrefab : GameObject = null;
-public static var numItems : int = 8;
+public static var numItems : int = 64;
 public var itemLocatorList = new ItemLocator[numItems];
 
 //print text
@@ -243,23 +243,6 @@ function onInstantiate()
 	// Cannon
 	sl.addButton( cannonButton );
 	cannonButton.onTouchDownInsideDelegate = cannonButtonPressed;
-
-
-	// Item Locator buttons
-	for( var i : int = 0; i < numItems; i++ )
-	{
-
-		var itemLocatorGameObject : GameObject = GameObject.Instantiate( itemLocatorPrefab, Vector3( 0.0, 0.0, 0.0 ), itemLocatorPrefab.transform.rotation );
-		itemLocatorGameObject.transform.parent = itemContainer.transform;
-
-		var itemLocator : ItemLocator = itemLocatorGameObject.GetComponent( ItemLocator );
-		itemLocatorList[i] = itemLocator;
-
-		var itemLocatorButton : ButtonScript = itemLocatorGameObject.GetComponent( ButtonScript );
-		sl.addButton( itemLocatorButton );
-		itemLocatorButton.onTouchDownInsideDelegate = selectItem;
-
-	}
 	
 	
 	//standby button
@@ -336,26 +319,61 @@ function onInstantiate()
 	turnOffScopes();
 	
 	setScopesForScopeLevel();
-	
-	
-	//make drones
-	for( var d : int = 0; d < numDrones; d++ )
-	{
-		
-		var droneGameObject : GameObject = GameObject.Instantiate( dronePrefab, Vector3( 0.0, 0.0, -50.0 ), dronePrefab.transform.rotation );
-		droneGameObject.transform.parent = worldMap.transform;
-		var drone : Drone = droneGameObject.GetComponent( Drone );
-		droneList[d] = drone;
-		
-		drone.onInstantiate();
-		
-	
-		var droneButton : ButtonScript = droneGameObject.GetComponent( ButtonScript );
+
+	// Get drones from scene and add them to list
+	var droneGameObjects : GameObject[];
+    droneGameObjects = GameObject.FindGameObjectsWithTag("Drone");
+    for( var d : int = 0; d < droneGameObjects.length; d++ )
+    {
+    	// Drone component
+    	droneList[d] = droneGameObjects[d].GetComponent( Drone );
+    	droneList[d].onInstantiate();
+    	droneList[d].initPresetDrone();
+
+    	// ButtonScript component
+    	var droneButton : ButtonScript = droneGameObjects[d].GetComponent( ButtonScript );
 		sl.addButton( droneButton );
 		droneButton.onTouchDownInsideDelegate = selectDrone;
 		droneButton.buttonTag = d;
-	
+    }
+
+
+    // Item Locators
+    var itemGameObjects : GameObject[];
+    itemGameObjects = GameObject.FindGameObjectsWithTag("Item");
+	for( var i : int = 0; i < itemGameObjects.length; i++ )
+	{
+
+		// Drone component
+    	itemLocatorList[i] = itemGameObjects[i].GetComponent( ItemLocator );
+    	itemLocatorList[i].onInitialize( itemGameObjects[i].transform.position );
+
+    	// ButtonScript component
+    	var itemButton : ButtonScript = itemGameObjects[i].GetComponent( ButtonScript );
+		sl.addButton( itemButton );
+		itemButton.onTouchDownInsideDelegate = selectItem;
+
 	}
+	
+	
+	// //make drones
+	// for( d : int = 0; d < numDrones; d++ )
+	// {
+		
+	// 	var droneGameObject : GameObject = GameObject.Instantiate( dronePrefab, Vector3( 0.0, 0.0, -50.0 ), dronePrefab.transform.rotation );
+	// 	droneGameObject.transform.parent = worldMap.transform;
+	// 	var drone : Drone = droneGameObject.GetComponent( Drone );
+	// 	droneList[d] = drone;
+		
+	// 	drone.onInstantiate();
+		
+	
+	// 	var droneButton : ButtonScript = droneGameObject.GetComponent( ButtonScript );
+	// 	sl.addButton( droneButton );
+	// 	droneButton.onTouchDownInsideDelegate = selectDrone;
+	// 	droneButton.buttonTag = d;
+	
+	// }
 	
 	
 	
@@ -634,6 +652,9 @@ function sublayerGameUpdate()
 	//drones
 	for( var d : int = 0; d < numDrones; d++ )
 	{
+
+		if( !droneList[d] )
+			continue;
 	
 		if( droneList[d].isActive == false )
 			continue;
@@ -917,6 +938,9 @@ function updateRadarGraphics()
 	// Update itemLocators
 	for( var il : int = 0; il < numItems; il++ )
 	{
+
+		if( !itemLocatorList[il] )
+			continue;
 	
 		if( itemLocatorList[il].isActive == false )
 			continue;
@@ -937,6 +961,9 @@ function updateRadarGraphics()
 	//drones
 	for( var d : int = 0; d < numDrones; d++ )
 	{
+
+		if( !droneList[d] )
+			continue;
 	
 		if( droneList[d].isActive == false )
 			continue;
@@ -1568,6 +1595,9 @@ function resetDroneColors()
 
 	for( var d : int = 0; d < numDrones; d++ )
 	{
+
+		if( !droneList[d] )
+			continue;
 	
 		if( droneList[d].isActive == false )
 			continue;

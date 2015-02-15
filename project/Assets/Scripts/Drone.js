@@ -728,6 +728,49 @@ function onInstantiate()
 
 
 
+function initPresetDrone()
+{
+
+	var _droneHashtable : System.Collections.Hashtable = getDroneWithModelNumber( modelString );
+
+	modelString = _droneHashtable["modelNumber"];
+
+	dronePowerState = DRONE_POWER_NONE;
+
+	adjustStatsForPowerDiversion();
+
+	health = maxHealth;
+
+	nullifiable = _droneHashtable["hackable"];
+
+	waveTypes = _droneHashtable["waveTypes"];
+
+	state = DRONE_STATE_FOLLOWING_PATH;
+
+	hackedScopeList[0] = false;
+	hackedScopeList[1] = false;
+	hackedScopeList[2] = false;
+
+	// Set position
+	position = gameObject.transform.localPosition;
+	
+	
+	// Set proper direction
+	var dif : Vector2 = position - destination;
+	var angleFromDroneToTargetInRads : float = Mathf.Atan2( dif.x, dif.y );
+	var angleFromDroneToTargetInDegrees : float = angleFromDroneToTargetInRads * Mathf.Rad2Deg;
+	angleFromDroneToTargetInDegrees -= 180.0;
+	angleFromDroneToTargetInDegrees = Mathf.Abs( angleFromDroneToTargetInDegrees );
+	
+	icon.gameObject.transform.localEulerAngles.z = angleFromDroneToTargetInDegrees;
+	direction = icon.gameObject.transform.localEulerAngles.z;
+	
+	baseInitialize();
+
+}
+
+
+
 function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _dronePath : DronePath )
 {
 
@@ -1169,6 +1212,9 @@ function droneCollision()
 
 	for( var d : int = 0; d < slgd.numDrones; d++ )
 	{
+
+		if( !slgd.droneList[d] )
+			continue;
 		
 		var drone : Drone = slgd.droneList[d];
 	
@@ -1256,6 +1302,9 @@ function findHackedDroneWithinAttackRange() : Drone
 
 	for( var d : int = 0; d < slgd.numDrones; d++ )
 	{
+		// Skip null drones
+		if( !slgd.droneList[d] )
+			continue;
 		
 		var drone : Drone = slgd.droneList[d];
 	
@@ -1310,7 +1359,7 @@ function startSlvg( _itemLocator : ItemLocator )
 
 	targetItem = _itemLocator;
 
-	destination = _itemLocator.gameObject.transform.position;
+	destination = _itemLocator.gameObject.transform.localPosition;
 	
 	attackTarget = null;
 
@@ -1525,9 +1574,8 @@ function updateDroneGraphics()
 	var roundedPosX : float = Mathf.RoundToInt( position.x + jitterOffset.x );
 	var roundedPosY : float = Mathf.RoundToInt( position.y + jitterOffset.y );
 	var roundedPos : Vector3 = Vector3( roundedPosX, roundedPosY, -50.0 );
-	var positionScreenCoordinates : Vector2 = slgd.worldMapToScreenCoordinates( roundedPos );
 	
-	gameObject.transform.position = positionScreenCoordinates;
+	gameObject.transform.localPosition = roundedPos;
 	
 	
 	//update rotation
@@ -1574,7 +1622,7 @@ function updateDroneGraphics()
 	// Set selection lines if selected
 	if( slgd.activeDrone == this )
 	{
-		slgd.updateSelectionLines( positionScreenCoordinates );
+		slgd.updateSelectionLines( gameObject.transform.position );
 	}
 
 

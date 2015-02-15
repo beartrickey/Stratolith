@@ -135,42 +135,40 @@ function updateItemLocator()
 {
 
 	// Lifespan
-	frames++;
+	// frames++;
 
-	if( frames >= itemLifespan )
-	{
-		deactivate();
-	}
+	// if( frames >= itemLifespan )
+	// {
+	// 	deactivate();
+	// }
 
-	var framesRemaining = itemLifespan - frames;
+	// var framesRemaining = itemLifespan - frames;
 
-	// Blink
-	counter--;
+	// // Blink
+	// counter--;
 
-	if( counter <= 0 )
-	{
-		if( sprite.color.a == 0.0 )
-		{
-			sprite.color.a = 1.0;
+	// if( counter <= 0 )
+	// {
+	// 	if( sprite.color.a == 0.0 )
+	// 	{
+	// 		sprite.color.a = 1.0;
 
-			counter = blinkCounterOnFramesNormal;
+	// 		counter = blinkCounterOnFramesNormal;
 
-			if( framesRemaining < 600 )
-				counter = blinkCounterOnFramesFast;				
+	// 		if( framesRemaining < 600 )
+	// 			counter = blinkCounterOnFramesFast;				
 
-		}
-		else
-		{
-			sprite.color.a = 0.0;
+	// 	}
+	// 	else
+	// 	{
+	// 		sprite.color.a = 0.0;
 
-			counter = blinkCounterOffFramesNormal;
+	// 		counter = blinkCounterOffFramesNormal;
 
-			if( framesRemaining < 600 )
-				counter = blinkCounterOffFramesFast;
-		}
-	}
-
-	
+	// 		if( framesRemaining < 600 )
+	// 			counter = blinkCounterOffFramesFast;
+	// 	}
+	// }	
 
 }
 
