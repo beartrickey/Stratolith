@@ -181,10 +181,14 @@ public var cannonButton : ButtonScript;
 public var cannonModeActive : boolean;
 
 // Items
-public var itemContainer : GameObject = null;
 public var itemLocatorPrefab : GameObject = null;
 public static var numItems : int = 64;
 public var itemLocatorList = new ItemLocator[numItems];
+
+public var collectedItemsLabel : tk2dTextMesh = null;
+public var collectedItems : int = 0;
+
+
 
 //print text
 public var messageLabel : tk2dTextMesh;
@@ -2268,6 +2272,16 @@ function addDroneToFreeDockSlot( _drone : Drone ) : boolean
 	
 		if( dockSlotList[d].drone == null )
 		{
+
+			// Remove any collected items from drone.
+			if( _drone.hasItem )
+			{
+				_drone.hasItem = false;
+				_drone.itemGraphic.gameObject.SetActive( false );
+				collectedItems += 1;
+				collectedItemsLabel.text = "ITEMS: " +  collectedItems.ToString("D3");
+				collectedItemsLabel.Commit();
+			} 
 		
 			dockSlotList[d].startPreparingToDock( _drone );
 			return;
