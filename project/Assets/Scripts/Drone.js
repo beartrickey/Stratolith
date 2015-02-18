@@ -652,8 +652,6 @@ public var attackRange : float = 200.0;
 public var reloadCounterMax : int = 180;
 public var reloadCounter : int = 0;
 
-public var attackNullDroneNextReload : boolean = false;
-
 
 public var slgd : SublayerGameDelegate;
 
@@ -1321,7 +1319,6 @@ function findHackedDroneWithinAttackRange() : Drone
 		//skip if not hacked
 		if( drone.hackedScopeList[0] == false )
 			continue;
-			
 		
 		//get distance
 		var dif : Vector2 = position - drone.position;
@@ -1739,16 +1736,16 @@ function handleTactical()
 	
 	
 	//go idle if attack target dies
-	if( state == DRONE_STATE_ATTK )
-	{
-		var targetDrone : Drone = attackTarget.gameObject.GetComponent( Drone );
+	// if( state == DRONE_STATE_ATTK )
+	// {
+	// 	var targetDrone : Drone = attackTarget.gameObject.GetComponent( Drone );
 		
-		if( targetDrone.isActive == false || targetDrone.state == DRONE_STATE_DYING )
-		{
-			startIdle();
-		}
+	// 	if( targetDrone.isActive == false || targetDrone.state == DRONE_STATE_DYING )
+	// 	{
+	// 		startIdle();
+	// 	}
 		
-	}
+	// }
 	
 	
 	//bail if not yet reloaded
@@ -1761,15 +1758,10 @@ function handleTactical()
 		
 	if( enemyDrone != null )
 	{
-	
-		if( attackNullDroneNextReload == true )
-		{
-			attackNullDroneNextReload = false;
-			
-			fireOnTarget( enemyDrone.gameObject );
-			reloadCounter = reloadCounterMax;
-			return;
-		}
+		
+		fireOnTarget( enemyDrone.gameObject );
+		reloadCounter = reloadCounterMax;
+		return;
 	
 	}
 	
@@ -1880,19 +1872,6 @@ function hitByBullet( _bullet : Bullet )
 	damageDrone( damage );
 	
 	GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
-	
-	//hostile units attack hacked drones in area
-	if( hackedScopeList[0] == false )
-	{
-	
-		var drone : Drone = findHackedDroneWithinAttackRange();
-		
-		if( drone != null )
-		{
-			attackNullDroneNextReload = true;
-		}
-	
-	}
 
 }
 

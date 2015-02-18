@@ -386,7 +386,7 @@ function onInstantiate()
 	{
 		
 		var bulletGameObject : GameObject = GameObject.Instantiate( bulletPrefab, Vector3( 0.0, 0.0, -50.0 ), bulletPrefab.transform.rotation );
-		bulletGameObject.transform.parent = gameObject.transform;
+		bulletGameObject.transform.parent = worldMap.transform;
 		var bullet : Bullet = bulletGameObject.GetComponent( Bullet );
 		bulletList[b] = bullet;
 		

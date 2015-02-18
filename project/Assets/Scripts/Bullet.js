@@ -47,7 +47,6 @@ function onInit( _source : Drone, _target : GameObject )
 
 	damage = _source.bulletDamage;
 	
-	
 	//color
 	if( _source.hackedScopeList[0] == true )
 	{
@@ -62,8 +61,8 @@ function onInit( _source : Drone, _target : GameObject )
 
 	
 	//set velocity
-	position = _source.position;
-	gameObject.transform.position = _source.gameObject.transform.position;
+	position = _source.gameObject.transform.position;
+	gameObject.transform.position = position;
 	
 	var positionDif : Vector2 = target.transform.position - gameObject.transform.position;
 	
@@ -136,8 +135,8 @@ function updateBullet()
 function updateBulletGraphics()
 {
 
-	gameObject.transform.localPosition = position;
-	gameObject.transform.localPosition.z = -50.0;
+	gameObject.transform.position = position;
+	gameObject.transform.position.z = -50.0;
 
 }
 
