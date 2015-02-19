@@ -1071,7 +1071,7 @@ function handleNavigation()
 	{
 	
 		//stop if close enough to target
-		stopThreshold = 80.0;
+		stopThreshold = 60.0;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 		
@@ -1507,7 +1507,7 @@ function updatePosition()
 	}
 	else if( state == DRONE_STATE_SLVG )
 	{
-		accelThreshold = 80.0;
+		accelThreshold = 60.0;
 	}
 	else if( state == DRONE_STATE_PREPARING_TO_DOCK ||
 			 state == DRONE_STATE_DOCKED ||

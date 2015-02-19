@@ -235,13 +235,13 @@ function onInstantiate()
 	// Stratolith direction knob
 	sl.addButton( stratolithDirectionKnob );
 	stratolithDirectionKnob.onTouchDownInsideDelegate = stratolithDirectionKnobPressed;
-	stratolithDirectionKnob.knobPosition = 0.0;
+	stratolithDirectionKnob.knobPosition = stratolithDestinationDirection = 0.125;
 	stratolithDirectionKnob.setKnobRotation();
 
 
 	// Stratolith Position
 	stratolithSpeed = 0.025;
-	stratolithWorldPosition = Vector2( -3000.0, 8000.0 );
+	stratolithWorldPosition = Vector2( -3389.343, 7784.517 );
 	stratolithMoving = true;
 
 
@@ -357,6 +357,17 @@ function onInstantiate()
 		sl.addButton( itemButton );
 		itemButton.onTouchDownInsideDelegate = selectItem;
 	}
+
+
+	// Checkpoints
+    var checkpointGameObjects : GameObject[];
+    checkpointGameObjects = GameObject.FindGameObjectsWithTag("Checkpoint");
+	for( var c : int = 0; c < checkpointGameObjects.length; c++ )
+	{
+		var checkpointSprite : tk2dSprite = checkpointGameObjects[c].GetComponent( tk2dSprite );
+		checkpointSprite.color.a = 0.5;
+	}
+
 	
 	
 	// //make drones
@@ -402,7 +413,7 @@ function onInstantiate()
 		Random.Range(-windSpeed, windSpeed)
 	);
 
-	for( var c : int = 0; c < numClouds; c++ )
+	for( c = 0; c < numClouds; c++ )
 	{
 		
 		var scannerRadius = scannerWidth * 2.0;
@@ -635,6 +646,11 @@ function sublayerGameUpdate()
 		stratolithIcon.transform.localPosition = stratolithWorldPosition;
 
 		worldMap.transform.position = shieldScannerCenter.position - stratolithWorldPosition;
+
+		// Checkpoint collision
+		var checkpointGameObjects : GameObject[];
+		checkpointGameObjects = GameObject.FindGameObjectsWithTag("Checkpoint");
+
 
 	}
 	
