@@ -97,7 +97,7 @@ function updateBullet()
 		{
 			
 			//bullet hit stratolith
-			if( target == slgd.shieldScannerCenter.gameObject )
+			if( target == slgd.stratolithIcon )
 			{
 				slgd.stratolithHitByBullet( this );
 			}

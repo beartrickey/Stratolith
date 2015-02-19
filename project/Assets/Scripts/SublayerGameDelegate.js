@@ -18,6 +18,7 @@ public var frameNumber : int = 0;
 
 // Stratolith movement
 public var worldMap : GameObject = null;
+public var stratolithIcon : GameObject = null;
 public var stratolithWorldPosition : Vector2 = Vector2( 0.0, 0.0 );
 public var stratolithSpeed : float = 0.0;
 public var stratolithMoving : boolean = false;
@@ -631,6 +632,7 @@ function sublayerGameUpdate()
 		stratolithVelocity *= stratolithSpeed;
 
 		stratolithWorldPosition += stratolithVelocity;
+		stratolithIcon.transform.localPosition = stratolithWorldPosition;
 
 		worldMap.transform.position = shieldScannerCenter.position - stratolithWorldPosition;
 

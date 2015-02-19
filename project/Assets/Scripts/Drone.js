@@ -703,7 +703,7 @@ public static var DRONE_STATE_DOCKED : int = 6;
 public static var DRONE_STATE_PREPARING_TO_LAUNCH : int = 7;
 public static var DRONE_STATE_DYING : int = 8;
 public static var DRONE_STATE_CHARGED_TO_DEATH : int = 9;
-public static var DRONE_STATE_FOLLOWING_PATH : int = 10;
+public static var DRONE_STATE_ATTACK_STRATOLITH : int = 10;
 
 public var state : int = DRONE_STATE_IDLE;
 
@@ -743,7 +743,7 @@ function initPresetDrone()
 
 	waveTypes = _droneHashtable["waveTypes"];
 
-	state = DRONE_STATE_FOLLOWING_PATH;
+	state = DRONE_STATE_ATTACK_STRATOLITH;
 
 	hackedScopeList[0] = false;
 	hackedScopeList[1] = false;
@@ -751,7 +751,10 @@ function initPresetDrone()
 
 	// Set position
 	position = gameObject.transform.localPosition;
-	
+
+	// Set target
+	attackTarget = slgd.stratolithIcon;
+	destination = slgd.stratolithIcon.transform.localPosition;
 	
 	// Set proper direction
 	var dif : Vector2 = position - destination;
@@ -784,13 +787,13 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 
 	waveTypes = _droneHashtable["waveTypes"];
 
-	state = DRONE_STATE_FOLLOWING_PATH;
+	state = DRONE_STATE_ATTACK_STRATOLITH;
 
 	hackedScopeList[0] = false;
 	hackedScopeList[1] = false;
 	hackedScopeList[2] = false;
 
-	attackTarget = slgd.shieldScannerCenter.gameObject;
+	attackTarget = slgd.stratolithIcon;
 	
 	
 	// Set position
@@ -987,26 +990,20 @@ function handleNavigation()
 {
 
 
-	if( state == DRONE_STATE_FOLLOWING_PATH )
+	if( state == DRONE_STATE_ATTACK_STRATOLITH )
 	{		
 		
-		//change points if close enough to target
-		var stopThreshold = 10.0;
-		
-		var distanceFromTarget = turnTowardTargetPosition();
-		
-		if( distanceFromTarget < stopThreshold )
-		{
-		
-			// currentPoint = dronePath.getNextPointIndex( currentPoint );
-			
-			// destination = dronePath.getPositionForIndex(currentPoint);
-			
-			adjustForNewTargetPoint();
+		// Update destination to target position
+		destination = attackTarget.transform.localPosition;
 
-			//deactivate drones that have completed paths that leave radar
-			deactivateIfOutsideRadar();
-			
+		// Don't move if close enough to attack
+		var positionDif : Vector2 = destination - position;
+		var distanceFromTarget : float = positionDif.magnitude;
+		var stopThreshold : float = attackRange - 10.0;
+
+		if( distanceFromTarget > stopThreshold )
+		{
+			turnTowardTargetPosition();
 		}
 		
 	}
@@ -1033,8 +1030,16 @@ function handleNavigation()
 	
 		// Update destination to target position
 		destination = attackTarget.transform.localPosition;
+
+		// Don't move if close enough to attack
+		positionDif = attackTarget.transform.localPosition - position;
+		distanceFromTarget = positionDif.magnitude;
+		stopThreshold = attackRange - 10.0;
 		
-		distanceFromTarget = turnTowardTargetPosition();
+		if( distanceFromTarget > stopThreshold )
+		{
+			turnTowardTargetPosition();
+		}
 	
 	}
 	
@@ -1043,10 +1048,10 @@ function handleNavigation()
 	{
 	
 		//stop if close enough to target
-		stopThreshold = 100.0;
+		stopThreshold = 80.0;
 
 		// Update destination to match stratolith actual position
-		destination = slgd.stratolithWorldPosition;
+		destination = slgd.stratolithIcon.transform.localPosition;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 		
@@ -1066,7 +1071,7 @@ function handleNavigation()
 	{
 	
 		//stop if close enough to target
-		stopThreshold = 100.0;
+		stopThreshold = 80.0;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 		
@@ -1367,7 +1372,7 @@ function startSlvg( _itemLocator : ItemLocator )
 function startDock( )
 {
 	
-	destination = slgd.shieldScannerCenter.position;
+	destination = slgd.stratolithIcon.transform.localPosition;
 	
 	attackTarget = null;
 	
@@ -1480,9 +1485,9 @@ function updatePosition()
 	// (when drone is closer than this threshold, it will stop)
 	var accelThreshold : float = 0.0;
 	
-	if( state == DRONE_STATE_FOLLOWING_PATH )
+	if( state == DRONE_STATE_ATTACK_STRATOLITH )
 	{
-		accelThreshold = 0.0;
+		accelThreshold = attackRange;
 	}
 	if( state == DRONE_STATE_IDLE )
 	{
@@ -1735,7 +1740,7 @@ function handleTactical()
 	reloadCounter--;
 	
 	
-	// go idle if attack target dies
+	// Go idle if attack target dies
 	if( state == DRONE_STATE_ATTK )
 	{
 		var targetDrone : Drone = attackTarget.gameObject.GetComponent( Drone );
@@ -1748,36 +1753,31 @@ function handleTactical()
 	}
 	
 	
-	//bail if not yet reloaded
+	// Bail if not yet reloaded
 	if( reloadCounter > 0 )
 		return;
 		
 		
-	//hostile drone fire back at null drones if reloaded
+	// Hostile drone fire at null drones or Stratolith?
 	if( hackedScopeList[0] == false )
 	{
 
 		var enemyDrone : Drone = findHackedDroneWithinAttackRange();
 		
-		if( enemyDrone != null )
-		{
-			
-			fireOnTarget( enemyDrone.gameObject );
-			reloadCounter = reloadCounterMax;
-			return;
-		
+		if( enemyDrone )
+			attackTarget = enemyDrone.gameObject;
+		else
+			attackTarget = slgd.stratolithIcon;
 
-		}
-	
 	}
 	
 	
-	//bail if no attack target
+	// Bail if no attack target
 	if( attackTarget == null )
 		return;
 		
 	
-	//measure distance to target
+	// Measure distance to target
 	var positionDif : Vector2 = attackTarget.transform.localPosition - position;
 	var distance : float = positionDif.magnitude;
 	
