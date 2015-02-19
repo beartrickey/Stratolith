@@ -40,7 +40,7 @@ public var incomingDroneIconList = new IncomingDroneIcon[3];
 
 //drones
 public var dronePrefab : GameObject;
-public static var numDrones : int = 8;
+public static var numDrones : int = 256;
 public var droneList = new Drone[numDrones];
 public var activeDrone : Drone;
 
@@ -73,7 +73,7 @@ public var windVelocity : Vector2;
 
 //bullets
 public var bulletPrefab : GameObject;
-public static var numBullets : int = 8;
+public static var numBullets : int = 16;
 public var bulletList = new Bullet[numBullets];
 
 
@@ -182,7 +182,7 @@ public var cannonModeActive : boolean;
 
 // Items
 public var itemLocatorPrefab : GameObject = null;
-public static var numItems : int = 64;
+public static var numItems : int = 256;
 public var itemLocatorList = new ItemLocator[numItems];
 
 public var collectedItemsLabel : tk2dTextMesh = null;
@@ -347,7 +347,6 @@ function onInstantiate()
     itemGameObjects = GameObject.FindGameObjectsWithTag("Item");
 	for( var i : int = 0; i < itemGameObjects.length; i++ )
 	{
-
 		// Drone component
     	itemLocatorList[i] = itemGameObjects[i].GetComponent( ItemLocator );
     	itemLocatorList[i].onInitialize( itemGameObjects[i].transform.position );
@@ -356,7 +355,6 @@ function onInstantiate()
     	var itemButton : ButtonScript = itemGameObjects[i].GetComponent( ButtonScript );
 		sl.addButton( itemButton );
 		itemButton.onTouchDownInsideDelegate = selectItem;
-
 	}
 	
 	
@@ -2359,18 +2357,56 @@ function selectItem( _buttonScript : ButtonScript )
 
 
 
+function makeNewItem( _position : Vector2 ) : ItemLocator
+{
+
+	// Find a free space in the list
+	for( var i : int = 0; i < numItems; i++ )
+	{
+
+		// Skip array elements that exist
+		if( itemLocatorList[i] )
+			continue;
+		
+		var itemGameObject : GameObject = GameObject.Instantiate(
+			itemLocatorPrefab,
+			Vector3( 0.0, 0.0, 0.0 ),
+			itemLocatorPrefab.transform.rotation
+		);
+
+		itemGameObject.transform.parent = worldMap.transform;
+
+		itemLocatorList[i] = itemGameObject.GetComponent( ItemLocator );
+    	itemLocatorList[i].onInitialize( _position );
+
+    	// ButtonScript component
+    	var itemButton : ButtonScript = itemGameObject.GetComponent( ButtonScript );
+		sl.addButton( itemButton );
+		itemButton.onTouchDownInsideDelegate = selectItem;
+
+		return itemLocatorList[i];
+
+	}
+
+	return null;
+
+}
+
+
+
 function getFreeItem() : ItemLocator
 {
 
 	for( var i : int = 0; i < numItems; i++ )
 	{
 
-		if( itemLocatorList[i].isActive == false )
-		{
+		if( !itemLocatorList[i] )
+			continue;
 
-			return itemLocatorList[i];
+		if( itemLocatorList[i].isActive == true )
+			continue;
 
-		}
+		return itemLocatorList[i];
 
 	}
 
@@ -2383,14 +2419,7 @@ function getFreeItem() : ItemLocator
 function placeItemAtPosition( _position : Vector2 )
 {
 
-	var item : ItemLocator = getFreeItem();
-
-	if( item != null )
-	{
-
-		item.onInitialize( _position );
-
-	}
+	var item : ItemLocator = makeNewItem( _position );
 
 }
 

@@ -915,7 +915,7 @@ function handleSurge()
 		surgeAmount -= surgeUseRate;
 
 		// Surge finished
-		if( surgeAmount <= 0.1 )
+		if( surgeAmount <= 0.0 )
 		{
 			surgeFinished();
 		}
@@ -1032,7 +1032,7 @@ function handleNavigation()
 	{
 	
 		// Update destination to target position
-		destination = attackTarget.transform.position;
+		destination = attackTarget.transform.localPosition;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 	
@@ -1422,7 +1422,7 @@ function startDroneDeath()
 	//GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
 
 	// Leave item
-	SublayerGameDelegate.instance.placeItemAtPosition( position );
+	SublayerGameDelegate.instance.placeItemAtPosition( gameObject.transform.position );
 	
 }
 
@@ -1498,11 +1498,11 @@ function updatePosition()
 	}
 	else if( state == DRONE_STATE_DOCK )
 	{
-		accelThreshold = 110.0;
+		accelThreshold = 80.0;
 	}
 	else if( state == DRONE_STATE_SLVG )
 	{
-		accelThreshold = 110.0;
+		accelThreshold = 80.0;
 	}
 	else if( state == DRONE_STATE_PREPARING_TO_DOCK ||
 			 state == DRONE_STATE_DOCKED ||
@@ -1735,17 +1735,17 @@ function handleTactical()
 	reloadCounter--;
 	
 	
-	//go idle if attack target dies
-	// if( state == DRONE_STATE_ATTK )
-	// {
-	// 	var targetDrone : Drone = attackTarget.gameObject.GetComponent( Drone );
+	// go idle if attack target dies
+	if( state == DRONE_STATE_ATTK )
+	{
+		var targetDrone : Drone = attackTarget.gameObject.GetComponent( Drone );
 		
-	// 	if( targetDrone.isActive == false || targetDrone.state == DRONE_STATE_DYING )
-	// 	{
-	// 		startIdle();
-	// 	}
+		if( targetDrone.isActive == false || targetDrone.state == DRONE_STATE_DYING )
+		{
+			startIdle();
+		}
 		
-	// }
+	}
 	
 	
 	//bail if not yet reloaded
@@ -1754,14 +1754,20 @@ function handleTactical()
 		
 		
 	//hostile drone fire back at null drones if reloaded
-	var enemyDrone : Drone = findHackedDroneWithinAttackRange();
-		
-	if( enemyDrone != null )
+	if( hackedScopeList[0] == false )
 	{
+
+		var enemyDrone : Drone = findHackedDroneWithinAttackRange();
 		
-		fireOnTarget( enemyDrone.gameObject );
-		reloadCounter = reloadCounterMax;
-		return;
+		if( enemyDrone != null )
+		{
+			
+			fireOnTarget( enemyDrone.gameObject );
+			reloadCounter = reloadCounterMax;
+			return;
+		
+
+		}
 	
 	}
 	
@@ -1772,7 +1778,7 @@ function handleTactical()
 		
 	
 	//measure distance to target
-	var positionDif : Vector2 = attackTarget.transform.position - position;
+	var positionDif : Vector2 = attackTarget.transform.localPosition - position;
 	var distance : float = positionDif.magnitude;
 	
 	if( distance < attackRange )
