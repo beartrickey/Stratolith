@@ -31,32 +31,32 @@ public var difficultyLevel : int = 0;
 function initStage()
 {
 
-	if( dronePathList[0] == null )
-		generateStage();
+	// if( dronePathList[0] == null )
+	// 	generateStage();
 
 
-	//reset remaining hostile drones for stage
-	remainingHostileDrones = 0;
+	// //reset remaining hostile drones for stage
+	// remainingHostileDrones = 0;
 	
 
-	//reset path counters
-	for( var i : int = 0; i < numDronePaths; i++ )
-	{
+	// //reset path counters
+	// for( var i : int = 0; i < numDronePaths; i++ )
+	// {
 	
-		var dronePath : DronePath = dronePathList[i];
+	// 	var dronePath : DronePath = dronePathList[i];
 		
 		
-		//skip null paths
-		if( dronePath == null )
-			continue;
+	// 	//skip null paths
+	// 	if( dronePath == null )
+	// 		continue;
 		
 		
-		//reset path counters
-		dronePath.delayCounter = dronePath.delayTime;
+	// 	//reset path counters
+	// 	dronePath.delayCounter = dronePath.delayTime;
 		
-		remainingHostileDrones += 1;
+	// 	remainingHostileDrones += 1;
 		
-	}
+	// }
 	
 }
 
@@ -65,64 +65,64 @@ function initStage()
 function updateStage()
 {
 	
-	var slgd : SublayerGameDelegate = SublayerGameDelegate.instance;
+	// var slgd : SublayerGameDelegate = SublayerGameDelegate.instance;
 	
-	var hostileDronesExist : boolean = false;
+	// var hostileDronesExist : boolean = false;
 
 
-	for( var i : int = 0; i < numDronePaths; i++ )
-	{
+	// for( var i : int = 0; i < numDronePaths; i++ )
+	// {
 	
-		var dronePath : DronePath = dronePathList[ i ];
+	// 	var dronePath : DronePath = dronePathList[ i ];
 		
 		
-		//skip null paths
-		if( dronePath == null )
-			continue;
+	// 	//skip null paths
+	// 	if( dronePath == null )
+	// 		continue;
 			
 		
-		//paths count down to zero
-		if( dronePath.delayCounter > 0 )
-		{
+	// 	//paths count down to zero
+	// 	if( dronePath.delayCounter > 0 )
+	// 	{
 		
-			hostileDronesExist = true;
+	// 		hostileDronesExist = true;
 		
-			dronePath.delayCounter --;
+	// 		dronePath.delayCounter --;
 			
-		}
-		else if( dronePath.delayCounter == 0 )
-		{
+	// 	}
+	// 	else if( dronePath.delayCounter == 0 )
+	// 	{
 		
-			dronePath.delayCounter = -1;
-			hostileDronesExist = true;
+	// 		dronePath.delayCounter = -1;
+	// 		hostileDronesExist = true;
 			
 			
-			// Setup new drone
-			var drone : Drone = slgd.getFreeDrone();
-			dronePath.drone = drone;
+	// 		// Setup new drone
+	// 		var drone : Drone = slgd.getFreeDrone();
+	// 		dronePath.drone = drone;
 
-			var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithModelNumber( dronePath.droneModelNumber );
+	// 		var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithModelNumber( dronePath.droneModelNumber );
 
-			dronePath.drone.initRandomDrone( droneHashtable, dronePath );
+	// 		dronePath.drone.initRandomDrone( droneHashtable, dronePath );
 
 			
-			// Add message to stack
-			SublayerGameDelegate.instance.addMessage( dronePath.message );
+	// 		// Add message to stack
+	// 		SublayerGameDelegate.instance.addMessage( dronePath.message );
 			
-		}
-		else if( dronePath.delayCounter == -1 )
-		{
+	// 	}
+	// 	else if( dronePath.delayCounter == -1 )
+	// 	{
 		
-			if( dronePath.drone.isActive == true &&  dronePath.drone.hackedScopeList[0] == false )
-			{
+	// 		if( dronePath.drone.isActive == true &&  dronePath.drone.hackedScopeList[0] == false )
+	// 		{
 			
-				hostileDronesExist = true;
+	// 			hostileDronesExist = true;
 				
-			}
+	// 		}
 			
-		}
+	// 	}
 	
-	}
+	// }
 
 }
 
@@ -131,79 +131,79 @@ function updateStage()
 function generateStage()
 {
 
-	// Theme
-	// Circle Long Range Attack
-	// Circle Medium Range Attack
-	// Few strong drones to protect against many weak drones
-	// Big bruiser to be taken down by many small drones
-	// Linear Convoy
-	// Hasami attack
-	// Friendly drone(s) in encounter getting attacked by enemies
-	// Tokkou Attack
-	// Mixed attack
-	var STAGE_THEME_CIRCLE_LONG : int = 0;
-	var STAGE_THEME_CIRCLE_MEDIUM : int = 1;
-	var STAGE_THEME_CIRCLE_CLOSE : int = 2;
-	var STAGE_THEME_LINEAR : int = 4;
+	// // Theme
+	// // Circle Long Range Attack
+	// // Circle Medium Range Attack
+	// // Few strong drones to protect against many weak drones
+	// // Big bruiser to be taken down by many small drones
+	// // Linear Convoy
+	// // Hasami attack
+	// // Friendly drone(s) in encounter getting attacked by enemies
+	// // Tokkou Attack
+	// // Mixed attack
+	// var STAGE_THEME_CIRCLE_LONG : int = 0;
+	// var STAGE_THEME_CIRCLE_MEDIUM : int = 1;
+	// var STAGE_THEME_CIRCLE_CLOSE : int = 2;
+	// var STAGE_THEME_LINEAR : int = 4;
 
-	var randTheme : int = Random.Range(0, 3);
+	// var randTheme : int = Random.Range(0, 3);
 
-	// Difficulty
-	// attackRange = _range;
-	// modelString = "????";
-	// health = _health;
-	// reloadCounterMax = 200;
-	// maxSpeed = _speed;
-	// bulletDamage = _damage;
-	// nullifiable = _hackable;
+	// // Difficulty
+	// // attackRange = _range;
+	// // modelString = "????";
+	// // health = _health;
+	// // reloadCounterMax = 200;
+	// // maxSpeed = _speed;
+	// // bulletDamage = _damage;
+	// // nullifiable = _hackable;
 
-	// num drones
-	var numDrones : int = Random.Range(5, 8);
+	// // num drones
+	// var numDrones : int = Random.Range(5, 8);
 
-	// Drone Path Prefab
-	var dronePathPrefab : GameObject = Resources.Load("DronePath");
+	// // Drone Path Prefab
+	// var dronePathPrefab : GameObject = Resources.Load("DronePath");
 	
-	// Delay between drone appearances
-	var delayGap : int = 1700;
-	var conflictTime : int = 0;
+	// // Delay between drone appearances
+	// var delayGap : int = 1700;
+	// var conflictTime : int = 0;
 
-	for( var i : int = 0; i < numDrones; i++ )
-	{
+	// for( var i : int = 0; i < numDrones; i++ )
+	// {
 
-		var hackable : int = 0;
+	// 	var hackable : int = 0;
 
-		if( i % 2 == 0 )
-			hackable = 1;
-
-
-		// Drone information
-		var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 14, hackable );
+	// 	if( i % 2 == 0 )
+	// 		hackable = 1;
 
 
-		// Drone Path
-		var dpgo : GameObject = GameObject.Instantiate( dronePathPrefab, Vector3.zero, dronePathPrefab.transform.rotation );
-		dronePathList[i] = dpgo.GetComponent( DronePath );
-		dronePathList[i].delayTime = conflictTime;
-		dronePathList[i].pathRotation = Random.Range(0.0, 360.0);
+	// 	// Drone information
+	// 	var droneHashtable : System.Collections.Hashtable = Drone.getDroneWithAttributes( 14, hackable );
 
 
-		// Path Template
-		var availablePathList : int[] = droneHashtable["dronePaths"];
-		var numPathChoices : int = availablePathList.length;
-		var randomPathTemplate : int = availablePathList[Random.Range(0, numPathChoices)];
-		dronePathList[i].pathTemplate = GameManager.instance.pathTemplateList[randomPathTemplate];
+	// 	// Drone Path
+	// 	var dpgo : GameObject = GameObject.Instantiate( dronePathPrefab, Vector3.zero, dronePathPrefab.transform.rotation );
+	// 	dronePathList[i] = dpgo.GetComponent( DronePath );
+	// 	dronePathList[i].delayTime = conflictTime;
+	// 	dronePathList[i].pathRotation = Random.Range(0.0, 360.0);
 
 
-		// Drone
-		dronePathList[i].droneModelNumber = droneHashtable["modelNumber"];
-		dronePathList[i].message = "INCOMING HOSTILE";
+	// 	// Path Template
+	// 	var availablePathList : int[] = droneHashtable["dronePaths"];
+	// 	var numPathChoices : int = availablePathList.length;
+	// 	var randomPathTemplate : int = availablePathList[Random.Range(0, numPathChoices)];
+	// 	dronePathList[i].pathTemplate = GameManager.instance.pathTemplateList[randomPathTemplate];
 
 
-		// Timing between drone appearances gets shorter
-		conflictTime += delayGap;
-		delayGap *= 0.91;
+	// 	// Drone
+	// 	dronePathList[i].droneModelNumber = droneHashtable["modelNumber"];
+	// 	dronePathList[i].message = "INCOMING HOSTILE";
 
-	}
+
+	// 	// Timing between drone appearances gets shorter
+	// 	conflictTime += delayGap;
+	// 	delayGap *= 0.91;
+
+	// }
 
 }
 

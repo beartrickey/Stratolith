@@ -772,7 +772,7 @@ function initPresetDrone()
 
 
 
-function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _dronePath : DronePath )
+function initRandomDrone( _droneHashtable : System.Collections.Hashtable )
 {
 
 	modelString = _droneHashtable["modelNumber"];
@@ -797,15 +797,11 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable, _drone
 	
 	
 	// Set position
-	// position = dronePath.getPositionForIndex(0);
-	
-	
+	position = gameObject.transform.localPosition;
+
 	// Set target
-	// destination = dronePath.getPositionForIndex(1);
-	
-	
-	// Adjust for new target
-	adjustForNewTargetPoint();
+	attackTarget = slgd.stratolithIcon;
+	destination = slgd.stratolithIcon.transform.localPosition;
 	
 	
 	// Set proper direction
@@ -1071,7 +1067,7 @@ function handleNavigation()
 	{
 	
 		//stop if close enough to target
-		stopThreshold = 60.0;
+		stopThreshold = 10.0;
 		
 		distanceFromTarget = turnTowardTargetPosition();
 		
@@ -1337,6 +1333,8 @@ function findHackedDroneWithinAttackRange() : Drone
 		
 	}
 
+	return null;
+
 }
 
 
@@ -1507,7 +1505,7 @@ function updatePosition()
 	}
 	else if( state == DRONE_STATE_SLVG )
 	{
-		accelThreshold = 60.0;
+		accelThreshold = 40.0;
 	}
 	else if( state == DRONE_STATE_PREPARING_TO_DOCK ||
 			 state == DRONE_STATE_DOCKED ||
@@ -1756,18 +1754,30 @@ function handleTactical()
 	// Bail if not yet reloaded
 	if( reloadCounter > 0 )
 		return;
-		
-		
-	// Hostile drone fire at null drones or Stratolith?
+
+
+	// Special case for hostile drones
+	// If not within range of Stratolith, attack closer nulled drone first
+	// If no null drones nearby, proceed to Stratolith
 	if( hackedScopeList[0] == false )
 	{
 
-		var enemyDrone : Drone = findHackedDroneWithinAttackRange();
-		
-		if( enemyDrone )
-			attackTarget = enemyDrone.gameObject;
-		else
+		var stratolithPositionDif : Vector2 = slgd.stratolithWorldPosition - position;
+		var distanceToStratolith : float = stratolithPositionDif.magnitude;
+
+		if( distanceToStratolith < attackRange )
+		{
 			attackTarget = slgd.stratolithIcon;
+		}
+		else
+		{
+			var enemyDrone : Drone = findHackedDroneWithinAttackRange();
+		
+			if( enemyDrone )
+				attackTarget = enemyDrone.gameObject;
+			else
+				attackTarget = slgd.stratolithIcon;
+		}
 
 	}
 	
@@ -1783,13 +1793,6 @@ function handleTactical()
 	
 	if( distance < attackRange )
 	{
-				
-		// //hack for self destruct drones
-		// if( droneType == DRONE_MODEL_1111 )
-		// {
-		// 	hostileSelfDestruct();
-		// 	return;
-		// }
 		
 		fireOnTarget( attackTarget );
 		

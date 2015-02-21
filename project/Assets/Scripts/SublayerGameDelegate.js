@@ -434,7 +434,9 @@ function onInstantiate()
 
 
 
-//////////////////////////////////////////////////CLEARING SCENE
+//////////////////////////////////////////////////
+// CLEARING SCENE
+//////////////////////////////////////////////////
 
 
 
@@ -838,9 +840,49 @@ function updateChargeNeedle()
 }
 
 
+//////////////////////////////////////////////////
+// HOSTILE DRONE ALGORITHM
+//////////////////////////////////////////////////
 
 
-//////////////////////////////////////////////// WORLD MAP HELPER FUNCTIONS
+
+function hostileDroneRandomGenerator()
+{
+
+	// Position
+	var randGenerate : int = Random.Range( 0, 4000 );
+	if( randGenerate != 0 )
+		return;
+
+	var randDirection : float = Random.Range(0.0, 6.28);
+
+	var position : Vector2 = Vector2(
+		Mathf.Sin(randDirection) * scannerWidth,
+		Mathf.Cos(randDirection) * scannerWidth
+	);
+	position += stratolithWorldPosition;
+
+
+	// Instantiate drone object
+	var drone : Drone = makeNewDrone( position );
+
+
+	// Hackable or not?
+	var randHackable : int = Random.Range(0, 2);
+
+
+	// Drone stats
+	var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
+	drone.initRandomDrone( randDroneHashTable );
+
+}
+
+
+
+
+//////////////////////////////////////////////////
+// WORLD MAP HELPER FUNCTIONS
+//////////////////////////////////////////////////
 
 
 
@@ -1215,6 +1257,45 @@ function getFreeDrone() : Drone
 
 
 
+function makeNewDrone( _position : Vector2 ) : Drone
+{
+
+	// Find a free space in the list
+	for( var d : int = 0; d < numDrones; d++ )
+	{
+
+		// Skip array elements that exist
+		if( droneList[d] )
+			continue;
+		
+		var droneGameObject : GameObject = GameObject.Instantiate(
+			dronePrefab,
+			Vector3( 0.0, 0.0, 0.0 ),
+			dronePrefab.transform.rotation
+		);
+
+		droneGameObject.transform.parent = worldMap.transform;
+		droneGameObject.transform.localPosition = _position;
+
+		droneList[d] = droneGameObject.GetComponent( Drone );
+		droneList[d].onInstantiate();
+
+    	// ButtonScript component
+    	var droneButton : ButtonScript = droneGameObject.GetComponent( ButtonScript );
+		sl.addButton( droneButton );
+		droneButton.onTouchDownInsideDelegate = selectDrone;
+		droneButton.buttonTag = d;
+
+		return droneList[d];
+
+	}
+
+	return null;
+
+}
+
+
+
 function getFreeBullet() : Bullet
 {
 
@@ -1452,6 +1533,8 @@ function updateStateMachine()
     
     
     	case GAME_STATE_STAGE:
+
+    		hostileDroneRandomGenerator();
 	
     		break;
     
