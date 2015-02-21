@@ -1771,6 +1771,7 @@ function handleTactical()
 		}
 		else
 		{
+			
 			var enemyDrone : Drone = findHackedDroneWithinAttackRange();
 		
 			if( enemyDrone )
