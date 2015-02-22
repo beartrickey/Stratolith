@@ -23,6 +23,7 @@ public var stratolithWorldPosition : Vector2 = Vector2( 0.0, 0.0 );
 public var stratolithSpeed : float = 0.0;
 public var stratolithMoving : boolean = false;
 
+public var stratolithMoveButton : ButtonScript = null;
 public var stratolithDirectionKnob : ButtonScript = null;
 public var stratolithDestinationDirection : float = 0.0;
 public var stratolithActualDirection : float = 0.0;
@@ -239,9 +240,15 @@ function onInstantiate()
 	stratolithDirectionKnob.setKnobRotation();
 
 
+	// Stratolith move button
+	sl.addButton( stratolithMoveButton );
+	stratolithMoveButton.onTouchUpInsideDelegate = stratolithMoveButtonPressed;
+	stratolithMoveButton.setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+
+
 	// Stratolith Position
 	stratolithSpeed = 0.025;
-	stratolithWorldPosition = Vector2( -3389.343, 7784.517 );
+	stratolithWorldPosition = Vector2( -3417.0, 7802.0 );
 	stratolithMoving = true;
 
 
@@ -366,6 +373,16 @@ function onInstantiate()
 	{
 		var checkpointSprite : tk2dSprite = checkpointGameObjects[c].GetComponent( tk2dSprite );
 		checkpointSprite.color.a = 0.5;
+
+		// Color checkpoints
+		var checkpoint : Checkpoint = checkpointGameObjects[c].GetComponent( Checkpoint );
+		if( checkpoint.secured == false )
+		{
+			checkpointSprite.color.r = 255.0 / 255.0;
+			checkpointSprite.color.g = 239.0 / 255.0;
+			checkpointSprite.color.b = 64.0 / 255.0;
+		}
+
 	}
 
 	
@@ -653,6 +670,43 @@ function sublayerGameUpdate()
 		var checkpointGameObjects : GameObject[];
 		checkpointGameObjects = GameObject.FindGameObjectsWithTag("Checkpoint");
 
+		for( var c : int = 0; c < checkpointGameObjects.length; c++ )
+		{
+
+			var checkpoint : Checkpoint = checkpointGameObjects[c].GetComponent( Checkpoint );
+
+			// Skip secured checkpoints
+			if( checkpoint.secured == true )
+				continue;
+
+			// Measure distance from checkpoint
+			var vectorFromCheckpoint : Vector2 = checkpointGameObjects[c].transform.localPosition - stratolithWorldPosition;
+			var distanceFromCheckpoint : float = vectorFromCheckpoint.magnitude;
+
+			if( distanceFromCheckpoint < 10.0 )
+			{
+
+				// Stop Stratolith
+				stratolithMoving = false;
+				stratolithMoveButton.setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
+
+				// Turn checkpoint white
+				var checkpointSprite : tk2dSprite = checkpointGameObjects[c].GetComponent( tk2dSprite );
+				checkpointSprite.color.r = 1.0;
+				checkpointSprite.color.g = 1.0;
+				checkpointSprite.color.b = 1.0;
+
+				// Secure checkpoint
+				checkpoint.secured = true;
+
+				// Give rewards
+
+				// Save data
+
+			}
+
+		}
+
 
 	}
 	
@@ -838,45 +892,6 @@ function updateChargeNeedle()
 	chargeNeedle.gameObject.transform.eulerAngles.z = maxAngle * scaledPosition;
 
 }
-
-
-//////////////////////////////////////////////////
-// HOSTILE DRONE ALGORITHM
-//////////////////////////////////////////////////
-
-
-
-function hostileDroneRandomGenerator()
-{
-
-	// Position
-	var randGenerate : int = Random.Range( 0, 4000 );
-	if( randGenerate != 0 )
-		return;
-
-	var randDirection : float = Random.Range(0.0, 6.28);
-
-	var position : Vector2 = Vector2(
-		Mathf.Sin(randDirection) * scannerWidth,
-		Mathf.Cos(randDirection) * scannerWidth
-	);
-	position += stratolithWorldPosition;
-
-
-	// Instantiate drone object
-	var drone : Drone = makeNewDrone( position );
-
-
-	// Hackable or not?
-	var randHackable : int = Random.Range(0, 2);
-
-
-	// Drone stats
-	var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
-	drone.initRandomDrone( randDroneHashTable );
-
-}
-
 
 
 
@@ -1241,6 +1256,55 @@ function onHackWaveChanged()
 
 
 
+///////////////////////////////////////////////////////////////////////////
+// DRONES
+///////////////////////////////////////////////////////////////////////////
+
+
+
+function randomDroneGenerator()
+{
+
+	// Position
+	var randGenerate : int = Random.Range( 0, 4000 );
+	if( randGenerate != 0 )
+		return;
+
+	var randDirection : float = Random.Range(0.0, 6.28);
+
+	var position : Vector2 = Vector2(
+		Mathf.Sin(randDirection) * scannerWidth,
+		Mathf.Cos(randDirection) * scannerWidth
+	);
+	position += stratolithWorldPosition;
+
+
+	// Instantiate drone object
+	var drone : Drone = makeNewDrone( position );
+
+
+	// Hackable or not?
+	var randHackable : int = Random.Range(0, 2);
+
+
+	// If player has no hacked drones, give them one
+	if( getNullifiedDroneCount() == 0 )
+		randHackable = 1;
+
+
+	// If player has max null drone count, give them a non-hackable one
+	var maxNullDroneCount : int = PlayerData.instance.dockLevel + 4;
+	if( getNullifiedDroneCount() >=  maxNullDroneCount )
+		randHackable = 0;
+
+	// Drone stats
+	var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
+	drone.initRandomDrone( randDroneHashTable );
+
+}
+
+
+
 function getFreeDrone() : Drone
 {
 
@@ -1253,6 +1317,29 @@ function getFreeDrone() : Drone
 	}
 	
 	return null;
+}
+
+
+
+function getNullifiedDroneCount() : int
+{
+
+	var nullifiedDroneCount : int = 0;
+
+	for( var d : int = 0; d < numDrones; d++ )
+	{
+		if( !droneList[d] )
+			continue;
+
+		if( droneList[d].isActive == false )
+			continue;
+
+		if( droneList[d].hackedScopeList[0] == true )
+			nullifiedDroneCount++;
+
+	}
+	
+	return nullifiedDroneCount;
 }
 
 
@@ -1293,6 +1380,12 @@ function makeNewDrone( _position : Vector2 ) : Drone
 	return null;
 
 }
+
+
+
+///////////////////////////////////////////////////////////////////////////
+// BULLETS
+///////////////////////////////////////////////////////////////////////////
 
 
 
@@ -1534,7 +1627,7 @@ function updateStateMachine()
     
     	case GAME_STATE_STAGE:
 
-    		hostileDroneRandomGenerator();
+    		randomDroneGenerator();
 	
     		break;
     
@@ -2558,6 +2651,28 @@ function stratolithDirectionKnobPressed( _button )
 	draggingStratolithDirectionKnob = true;
 
 }
+
+
+
+function stratolithMoveButtonPressed( _button )
+{
+
+	Debug.Log( "stratolithMoveButtonPressed" );
+	
+	if( stratolithMoving == true )
+	{
+		stratolithMoving = false;
+		stratolithMoveButton.setupButtonGraphics( "Interface-Tactical-ComButtonOFF", "Interface-Tactical-ComButtonOFFpressed" );
+	}
+	else
+	{
+		stratolithMoving = true;
+		stratolithMoveButton.setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+	}
+	
+
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////

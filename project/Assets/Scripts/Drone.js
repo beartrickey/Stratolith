@@ -704,6 +704,7 @@ public static var DRONE_STATE_PREPARING_TO_LAUNCH : int = 7;
 public static var DRONE_STATE_DYING : int = 8;
 public static var DRONE_STATE_CHARGED_TO_DEATH : int = 9;
 public static var DRONE_STATE_ATTACK_STRATOLITH : int = 10;
+public static var DRONE_STATE_PRESET_IDLE : int = 11;
 
 public var state : int = DRONE_STATE_IDLE;
 
@@ -743,7 +744,9 @@ function initPresetDrone()
 
 	waveTypes = _droneHashtable["waveTypes"];
 
-	state = DRONE_STATE_ATTACK_STRATOLITH;
+	state = DRONE_STATE_PRESET_IDLE;
+
+	circleRenderer.gameObject.SetActive( false );
 
 	hackedScopeList[0] = false;
 	hackedScopeList[1] = false;
@@ -788,6 +791,7 @@ function initRandomDrone( _droneHashtable : System.Collections.Hashtable )
 	waveTypes = _droneHashtable["waveTypes"];
 
 	state = DRONE_STATE_ATTACK_STRATOLITH;
+	circleRenderer.gameObject.SetActive( true );
 
 	hackedScopeList[0] = false;
 	hackedScopeList[1] = false;
@@ -846,7 +850,6 @@ function baseInitialize()
 	
 	setDroneColor();
 
-	circleRenderer.gameObject.SetActive( true );
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
 }
@@ -885,6 +888,21 @@ function initializeDockedDrone( _modelString : String )
 
 function updateDrone()
 {
+
+	// Preset drones wait to come into radar view
+	if( state == DRONE_STATE_PRESET_IDLE )
+	{
+		if( insideRadar() == true )
+		{
+			state = DRONE_STATE_ATTACK_STRATOLITH;
+			circleRenderer.gameObject.SetActive( true );
+		}
+		else
+		{
+			return;
+		}
+	}
+
 
 	handleSurge();
 
@@ -1111,20 +1129,17 @@ function handleNavigation()
 
 
 
-function deactivateIfOutsideRadar()
+function insideRadar() : boolean
 {
 
-	var dif : Vector2 = position - SublayerGameDelegate.instance.shieldScannerCenter.position;
+	var dif : Vector2 = position - slgd.instance.stratolithWorldPosition;
 	
 	var distance : float = dif.magnitude;
 	
 	if( distance > SublayerGameDelegate.instance.scannerWidth )
-	{
-
-		//deactivate
-		deactivate();
-
-	}
+		return false;
+	else
+		return true;
 
 }
 
@@ -1493,7 +1508,7 @@ function updatePosition()
 	}
 	if( state == DRONE_STATE_MOVE )
 	{
-		accelThreshold = 40.0;
+		accelThreshold = 30.0;
 	}
 	else if( state == DRONE_STATE_ATTK )
 	{
@@ -1505,7 +1520,7 @@ function updatePosition()
 	}
 	else if( state == DRONE_STATE_SLVG )
 	{
-		accelThreshold = 40.0;
+		accelThreshold = 30.0;
 	}
 	else if( state == DRONE_STATE_PREPARING_TO_DOCK ||
 			 state == DRONE_STATE_DOCKED ||
