@@ -12,7 +12,8 @@ public var currentTouchPosition = new Vector2[2];
 public static var KNOB_PREFERENCE_RADIAL : int = 0;
 public static var KNOB_PREFERENCE_VERTICAL : int = 1;
 
-public var knobPreference : int = KNOB_PREFERENCE_VERTICAL;
+// public var knobPreference : int = KNOB_PREFERENCE_VERTICAL;
+public var knobPreference : int = KNOB_PREFERENCE_RADIAL;
 
 
 function Start ()

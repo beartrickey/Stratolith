@@ -66,7 +66,7 @@ function onInit( _source : Drone, _target : GameObject )
 	
 	var positionDif : Vector2 = target.transform.position - gameObject.transform.position;
 	
-	var speed : float = 4.0;
+	var speed : float = 0.01;//4.0;
 	
 	velocity = positionDif.normalized * speed;
 
@@ -77,8 +77,16 @@ function onInit( _source : Drone, _target : GameObject )
 function updateBullet()
 {
 
-	//increase velocity
-	velocity *= 1.12;
+	// Increase speed
+	var speed : float = velocity.magnitude;
+	speed *= 1.25;
+
+	// Cap speed
+	if( speed >= 2.0 )
+		speed = 2.0;
+
+	// Update velocity
+	velocity = velocity.normalized * speed;
 	
 	
 	//update position
@@ -93,7 +101,8 @@ function updateBullet()
 		var distance : float = positionDif.magnitude;
 		
 		
-		if( distance < ( velocity.magnitude * 0.75 ) )
+		// if( distance < ( velocity.magnitude * 0.75 ) )
+		if( distance < 10.0 )
 		{
 			
 			//bullet hit stratolith

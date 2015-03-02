@@ -602,7 +602,7 @@ public var waveTypes : int = 0;
 
 
 //movement
-public var position : Vector2; //the absolute position of drone icon
+public var position : Vector2; // The absolute position of drone icon
 
 public var direction : float;
 
@@ -775,7 +775,123 @@ function initPresetDrone()
 
 
 
-function initRandomDrone( _droneHashtable : System.Collections.Hashtable )
+function initRandomDrone( _totalPower : int )
+{
+
+	// Initial setup
+	var remainingPower : int = _totalPower;
+	var statsArray = [0, 0, 0, 0];
+	var statsIndex : int = 0;
+	var hasWeapons : int = Random.Range(0, 2);
+	var iteration : int = 0;
+
+	// Setup based on weapons
+	if( hasWeapons == 0 )
+	{
+		statsArray = [0, 1, 0, 1];
+		remainingPower -= 2;
+	}
+	else if( hasWeapons == 1 )
+	{
+		statsArray = [1, 1, 1, 1];
+		remainingPower -= 4;
+	}
+
+	// Populate stats inside while loop
+	while( remainingPower > 0 )
+	{
+
+		statsIndex += 1;
+
+		if( statsIndex >= 4 )
+		{
+			statsIndex = 0;
+		}
+
+		// Skip damage and range attributes if no weapons available
+		if( hasWeapons == 0 && statsIndex == 0 )
+			continue;
+		if( hasWeapons == 0 && statsIndex == 2 )
+			continue;
+
+		// Skip if this attribute is already maxed out
+		if( statsArray[statsIndex] >= 9 )
+			continue;
+
+		var randIncrease : int = Random.Range(0, 2);
+		statsArray[statsIndex] += randIncrease;
+		remainingPower -= randIncrease;
+
+		// Skip if all attributes maxed out
+		if(
+			hasWeapons == 0 &&
+			statsArray[1] >= 9 &&
+			statsArray[3] >= 9
+		)
+		{
+			remainingPower = 0;
+		}
+		
+		if(
+			hasWeapons == 1 &&
+			statsArray[0] >= 9 &&
+			statsArray[1] >= 9 &&
+			statsArray[2] >= 9 &&
+			statsArray[3] >= 9
+		)
+		{
+			remainingPower = 0;
+		}
+
+	}
+	
+	modelString = statsArray[0].ToString("D0") + statsArray[1].ToString("D0") + statsArray[2].ToString("D0") + statsArray[3].ToString("D0");
+
+	dronePowerState = DRONE_POWER_NONE;
+
+	adjustStatsForPowerDiversion();
+
+	health = maxHealth;
+
+	nullifiable = true;
+
+	// waveTypes = 3;
+
+	state = DRONE_STATE_ATTACK_STRATOLITH;
+	circleRenderer.gameObject.SetActive( true );
+
+	hackedScopeList[0] = false;
+	hackedScopeList[1] = false;
+	hackedScopeList[2] = false;
+
+	attackTarget = slgd.stratolithIcon;
+	
+	
+	// Set position
+	position = gameObject.transform.localPosition;
+
+	// Set target
+	attackTarget = slgd.stratolithIcon;
+	destination = slgd.stratolithIcon.transform.localPosition;
+	
+	
+	// Set proper direction
+	var dif : Vector2 = position - destination;
+	var angleFromDroneToTargetInRads : float = Mathf.Atan2( dif.x, dif.y );
+	var angleFromDroneToTargetInDegrees : float = angleFromDroneToTargetInRads * Mathf.Rad2Deg;
+	angleFromDroneToTargetInDegrees -= 180.0;
+	angleFromDroneToTargetInDegrees = Mathf.Abs( angleFromDroneToTargetInDegrees );
+	
+	icon.gameObject.transform.localEulerAngles.z = angleFromDroneToTargetInDegrees;
+	direction = icon.gameObject.transform.localEulerAngles.z;
+	
+	baseInitialize();
+
+}
+
+
+
+function initDroneFromHashtable( _droneHashtable : System.Collections.Hashtable )
 {
 
 	modelString = _droneHashtable["modelNumber"];
@@ -1048,7 +1164,7 @@ function handleNavigation()
 		// Don't move if close enough to attack
 		positionDif = attackTarget.transform.localPosition - position;
 		distanceFromTarget = positionDif.magnitude;
-		stopThreshold = attackRange - 10.0;
+		stopThreshold = attackRange - 5.0;
 		
 		if( distanceFromTarget > stopThreshold )
 		{
@@ -1224,6 +1340,25 @@ function droneCollision()
 	)
 		return;
 
+
+	// Hostile drone vs. Stratolith collision
+	if( hackedScopeList[0] == false )
+	{
+		var vectorToStratolith : Vector2 = slgd.stratolithWorldPosition - position;
+		var distanceToStratolith : float = vectorToStratolith.magnitude;
+
+		if( distanceToStratolith < 70.0 )
+		{
+
+			slgd.stratolithTakesDamage( 1.0 );
+			damageDrone( 1.0 );
+
+		}
+
+	}
+
+
+	// Drone vs. drone collision
 	for( var d : int = 0; d < slgd.numDrones; d++ )
 	{
 
@@ -1440,7 +1575,14 @@ function startDroneDeath()
 	//GameManager.instance.SFX_HOSTILE_DESTROYED.Play();
 
 	// Leave item
-	SublayerGameDelegate.instance.placeItemAtPosition( gameObject.transform.position );
+	var itemsOnRadarCount : int = slgd.getItemsOnRadarCount();
+	var dropPercentage : float = 100.0 - ( itemsOnRadarCount * 10.0 );
+
+	var randDropItem : float = Random.Range(0.0, 100.0);
+	if( randDropItem <= dropPercentage )
+	{
+		SublayerGameDelegate.instance.placeItemAtPosition( gameObject.transform.position );
+	}
 	
 }
 
@@ -1512,7 +1654,7 @@ function updatePosition()
 	}
 	else if( state == DRONE_STATE_ATTK )
 	{
-		accelThreshold = attackRange;
+		accelThreshold = attackRange + 5.0;
 	}
 	else if( state == DRONE_STATE_DOCK )
 	{
@@ -1810,7 +1952,6 @@ function handleTactical()
 	{
 		
 		fireOnTarget( attackTarget );
-		
 		reloadCounter = reloadCounterMax;
 	
 	}
@@ -2020,7 +2161,8 @@ function adjustStatsForPowerDiversion()
 	reloadCounterMax = 200;
 	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (velocityIndex / 10.0));
 	attackRange = (900.0 * (rangeIndex / 10.0));  // From 0 to 900
-	maxHealth = shieldIndex;
+	// maxHealth = shieldIndex * 2;
+	maxHealth = damageIndex + velocityIndex + rangeIndex + shieldIndex;
 
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 

@@ -624,18 +624,20 @@ function sublayerGameUpdate()
 		else if( im.knobPreference == InputManager.KNOB_PREFERENCE_RADIAL )
 		{
 		
-			var dif : Vector2 = im.lastTouchPosition[0] - activeScope.knob.gameObject.transform.position;
+			var dif : Vector2 = im.lastTouchPosition[0] - stratolithDirectionKnob.gameObject.transform.position;
 			var angleInRads : float = Mathf.Atan2( dif.y, dif.x );
 		
 			var angleInDegrees : float = angleInRads * Mathf.Rad2Deg;
 		
 			//change angle to 0 - 360 number
-			angleInDegrees += 90.0;
+			angleInDegrees += 270.0;
 			
 			if( angleInDegrees < 0.0 )
 				angleInDegrees += 360.0;
 			
 			var scaledDegrees : float = angleInDegrees / 360.0;
+			
+			stratolithDestinationDirection = 1.0 - scaledDegrees;
 		}
 
 		//update dial/knob graphics
@@ -1030,7 +1032,7 @@ function updateRadarGraphics()
 	//update active drone stats
 	if( activeDrone != null )
 	{
-		activeDronePowerLabel.text = activeDrone.health.ToString("F0") + "p";
+		activeDronePowerLabel.text = activeDrone.health.ToString("F1") + "p";
 		activeDronePowerLabel.Commit();
 	}
 	
@@ -1266,7 +1268,8 @@ function randomDroneGenerator()
 {
 
 	// Position
-	var randGenerate : int = Random.Range( 0, 4000 );
+	var randGenerate : int = Random.Range( 0, 3000 );
+	// var randGenerate : int = Random.Range( 0, 1000 );
 	if( randGenerate != 0 )
 		return;
 
@@ -1293,13 +1296,14 @@ function randomDroneGenerator()
 
 
 	// If player has max null drone count, give them a non-hackable one
-	var maxNullDroneCount : int = PlayerData.instance.dockLevel + 4;
+	var maxNullDroneCount : int = PlayerData.instance.dockLevel + 2;
 	if( getNullifiedDroneCount() >=  maxNullDroneCount )
 		randHackable = 0;
 
 	// Drone stats
-	var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
-	drone.initRandomDrone( randDroneHashTable );
+	// var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
+	// drone.initDroneFromHashtable( randDroneHashTable );
+	drone.initRandomDrone(12);
 
 }
 
@@ -1408,14 +1412,23 @@ function getFreeBullet() : Bullet
 function stratolithHitByBullet( _bullet : Bullet )
 {
 
+	stratolithTakesDamage( _bullet.damage );
+
+}
+
+
+
+function stratolithTakesDamage( _damage : float )
+{
+
 	vibrationCounter = Random.Range( 20, 40 );
-	
-	var damage : float = _bullet.damage;
-	
-	mainPower -= damage;
-	
+
+	// Stratolith takes less damage than drones
+	_damage *= 0.5;
+
+	mainPower -= _damage;
+
 	damageCharge = 3.0;
-	
 	
 	//show radar static
 	if(
@@ -1677,7 +1690,7 @@ function selectDrone( _button : ButtonScript )
 	activeDroneModelLabel.text = activeDrone.modelString;
 	activeDroneModelLabel.Commit();
 	
-	activeDronePowerLabel.text = activeDrone.health.ToString("F0") + "p";
+	activeDronePowerLabel.text = activeDrone.health.ToString("F1") + "p";
 	activeDronePowerLabel.Commit();
 
 	setActiveDronePerformanceGauges();	
@@ -1686,9 +1699,9 @@ function selectDrone( _button : ButtonScript )
 	activeDroneBlueprint.gameObject.SetActive( true );
 	// var droneHashtable : System.Collections.Hashtable = getDroneWithModelNumber(drone.modelString);
 
-	activeDroneBlueprint.SetSprite(
-			Drone.getDroneWithModelNumber(drone.modelString)["texture"] as String
-	);
+	// activeDroneBlueprint.SetSprite(
+	// 		Drone.getDroneWithModelNumber(drone.modelString)["texture"] as String
+	// );
 
 
     // HACK: SFX for IGF build
@@ -2471,10 +2484,10 @@ function addDroneToFreeDockSlot( _drone : Drone ) : boolean
 				_drone.hasItem = false;
 				_drone.itemGraphic.gameObject.SetActive( false );
 				collectedItems += 1;
-				collectedItemsLabel.text = "ITEMS: " +  collectedItems.ToString("D3");
+				collectedItemsLabel.text = "PARTS: " +  collectedItems.ToString("D3");
 				collectedItemsLabel.Commit();
-			} 
-		
+			}
+			
 			dockSlotList[d].startPreparingToDock( _drone );
 			return;
 			
@@ -2520,6 +2533,35 @@ function getNumberOfDocksUsed() : int
 ///////////////////////////////////////////////////////////////////////////
 // Items
 ///////////////////////////////////////////////////////////////////////////
+
+
+
+function getItemsOnRadarCount() : int
+{
+
+	var itemsOnRadarCount : int = 0;
+
+	// Find a free space in the list
+	for( var i : int = 0; i < numItems; i++ )
+	{
+
+		// Skip array elements that exist
+		if( !itemLocatorList[i] )
+			continue;
+
+		var vectorToStratolith : Vector2 = stratolithWorldPosition - itemLocatorList[i].gameObject.transform.localPosition;
+		var distanceToStratolith : float = vectorToStratolith.magnitude;
+
+		if( distanceToStratolith < scannerWidth )
+		{
+			itemsOnRadarCount++;
+		}
+
+	}
+
+	return itemsOnRadarCount;
+
+}
 
 
 
