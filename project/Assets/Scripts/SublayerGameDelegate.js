@@ -206,6 +206,13 @@ public var messageLinePrintCounter : int = 0;
 public var standbyButton : ButtonScript;
 
 
+// Link
+public var linkList = new Link[3];
+
+// Encounter generator
+public var encounterGenerator : EncounterGenerator = null;
+
+
 
 
 function onInstantiate()
@@ -385,7 +392,16 @@ function onInstantiate()
 
 	}
 
-	
+
+	// Link modules
+	for( var l : int = 0; l < 3; l++ )
+	{
+
+		var link : Link = linkList[l];
+		sl.addButton( link.unlinkButton );
+		link.unlinkButton.onTouchDownInsideDelegate = link.unlinkButtonPressed;
+
+	}
 	
 	// //make drones
 	// for( d : int = 0; d < numDrones; d++ )
@@ -405,8 +421,6 @@ function onInstantiate()
 	// 	droneButton.buttonTag = d;
 	
 	// }
-	
-	
 	
 	//make bullets
 	for( var b : int = 0; b < numBullets; b++ )
@@ -896,6 +910,31 @@ function updateChargeNeedle()
 }
 
 
+//////////////////////////////////////////////////
+// LINK
+//////////////////////////////////////////////////
+
+
+function getFreeLink() : Link
+{
+
+	for( var l : int = 0; l < 3; l++ )
+	{
+
+		if( linkList[l].drone == null )
+		{
+
+			return linkList[l];
+			
+		}
+
+	}
+
+	return null;
+
+}
+
+
 
 //////////////////////////////////////////////////
 // WORLD MAP HELPER FUNCTIONS
@@ -1264,51 +1303,6 @@ function onHackWaveChanged()
 
 
 
-function randomDroneGenerator()
-{
-
-	// Position
-	var randGenerate : int = Random.Range( 0, 3000 );
-	// var randGenerate : int = Random.Range( 0, 1000 );
-	if( randGenerate != 0 )
-		return;
-
-	var randDirection : float = Random.Range(0.0, 6.28);
-
-	var position : Vector2 = Vector2(
-		Mathf.Sin(randDirection) * scannerWidth,
-		Mathf.Cos(randDirection) * scannerWidth
-	);
-	position += stratolithWorldPosition;
-
-
-	// Instantiate drone object
-	var drone : Drone = makeNewDrone( position );
-
-
-	// Hackable or not?
-	var randHackable : int = Random.Range(0, 2);
-
-
-	// If player has no hacked drones, give them one
-	if( getNullifiedDroneCount() == 0 )
-		randHackable = 1;
-
-
-	// If player has max null drone count, give them a non-hackable one
-	var maxNullDroneCount : int = PlayerData.instance.dockLevel + 2;
-	if( getNullifiedDroneCount() >=  maxNullDroneCount )
-		randHackable = 0;
-
-	// Drone stats
-	// var randDroneHashTable : Hashtable = Drone.getDroneWithAttributes( 12, randHackable );
-	// drone.initDroneFromHashtable( randDroneHashTable );
-	drone.initRandomDrone(12);
-
-}
-
-
-
 function getFreeDrone() : Drone
 {
 
@@ -1344,6 +1338,35 @@ function getNullifiedDroneCount() : int
 	}
 	
 	return nullifiedDroneCount;
+}
+
+
+
+function getNullifiedDroneTotalPower() : float
+{
+
+	var totalPower : float = 0.0;
+
+	for( var d : int = 0; d < numDrones; d++ )
+	{
+		var drone : Drone = droneList[d];
+
+		if( !drone )
+			continue;
+
+		if( drone.isActive == false )
+			continue;
+
+		if( drone.hackedScopeList[0] == true )
+		{
+			var scaledHealth : float = drone.health / drone.getDroneMaxHealth();
+			var relativePower : float = drone.powerLevel * scaledHealth;
+			totalPower += relativePower;
+		}
+	}
+	
+	return totalPower;
+
 }
 
 
@@ -1424,7 +1447,7 @@ function stratolithTakesDamage( _damage : float )
 	vibrationCounter = Random.Range( 20, 40 );
 
 	// Stratolith takes less damage than drones
-	_damage *= 0.5;
+	_damage *= 0.1;
 
 	mainPower -= _damage;
 
@@ -1640,7 +1663,7 @@ function updateStateMachine()
     
     	case GAME_STATE_STAGE:
 
-    		randomDroneGenerator();
+    		encounterGenerator.encounterGeneratorUpdate();
 	
     		break;
     
@@ -2483,7 +2506,8 @@ function addDroneToFreeDockSlot( _drone : Drone ) : boolean
 			{
 				_drone.hasItem = false;
 				_drone.itemGraphic.gameObject.SetActive( false );
-				collectedItems += 1;
+				var randItemsAwarded : int = Random.Range(10, 30);
+				collectedItems += randItemsAwarded;
 				collectedItemsLabel.text = "PARTS: " +  collectedItems.ToString("D3");
 				collectedItemsLabel.Commit();
 			}

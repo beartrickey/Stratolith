@@ -120,16 +120,17 @@ function startSuccessfulHackSequence()
 		if( index == 0 )
 		{
 			drone.startIdle();
-			// GameManager.instance.currentStage.remainingHostileDrones -= 1;
 			drone.setDroneColor();
-		}
 
-        // HACK: for IGF build
-        if( drone.hackedScopeList[0] == true && drone.hackedScopeList[1] == true )
-        {
-            GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
+			GameManager.instance.SFX_NULLIFICATION_IN_PROGRESS.Stop();
             GameManager.instance.SFX_DRONE_HACKED.Play();
-        }
+
+            var link : Link = SublayerGameDelegate.instance.getFreeLink();
+            drone.link = link;
+            link.drone = drone;
+            link.unlinkButton.setupButtonGraphics( "Interface-Tactical-ComButtonON2", "Interface-Tactical-ComButtonONpressed" );
+
+		}
 
 	}
 

@@ -6,6 +6,8 @@ public var position : Vector2;
 
 public var velocity : Vector2;
 
+public var maxSpeed : float;
+
 public var target : GameObject;
 
 public var isActive : boolean;
@@ -46,6 +48,8 @@ function onInit( _source : Drone, _target : GameObject )
 	bulletType = _source.droneType;
 
 	damage = _source.bulletDamage;
+
+	maxSpeed = _source.bulletDamage * 0.1;
 	
 	//color
 	if( _source.hackedScopeList[0] == true )
@@ -66,7 +70,7 @@ function onInit( _source : Drone, _target : GameObject )
 	
 	var positionDif : Vector2 = target.transform.position - gameObject.transform.position;
 	
-	var speed : float = 0.01;//4.0;
+	var speed : float = 0.075;
 	
 	velocity = positionDif.normalized * speed;
 
@@ -79,11 +83,11 @@ function updateBullet()
 
 	// Increase speed
 	var speed : float = velocity.magnitude;
-	speed *= 1.25;
+	speed *= 1.2;
 
 	// Cap speed
-	if( speed >= 2.0 )
-		speed = 2.0;
+	if( speed >= maxSpeed )
+		speed = maxSpeed;
 
 	// Update velocity
 	velocity = velocity.normalized * speed;

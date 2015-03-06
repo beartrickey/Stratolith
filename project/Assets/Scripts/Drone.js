@@ -620,6 +620,8 @@ public var decelRate : float = 0.998;
 //paths
 public var destination : Vector2 = Vector2( 0.0, 0.0 );
 
+// Power Level
+public var powerLevel : int = 0;
 
 //power diversion
 public var damageIndex : int = 0;
@@ -709,6 +711,8 @@ public static var DRONE_STATE_PRESET_IDLE : int = 11;
 public var state : int = DRONE_STATE_IDLE;
 
 public var insideCloud : boolean = false;
+
+public var link : Link = null;
 
 
 
@@ -997,6 +1001,38 @@ function initializeDockedDrone( _modelString : String )
 	
 	
 	baseInitialize();
+
+}
+
+
+function unlink()
+{
+
+	link = null;
+
+
+	// Reset scopes
+	hackedScopeList[0] = false;
+	hackedScopeList[1] = false;
+	hackedScopeList[2] = false;
+
+
+	// Set state
+	state = DRONE_STATE_ATTACK_STRATOLITH;
+
+
+	// Set targets and destinations
+	attackTarget = slgd.stratolithIcon;
+	destination = slgd.stratolithIcon.transform.localPosition;
+
+
+	// Deselect if necessary
+	if( slgd.activeDrone == this )
+	{
+		slgd.deselectRadarObject();
+	}
+
+	setDroneColor();
 
 }
 
@@ -2050,6 +2086,9 @@ function damageDrone( _damage : float )
 	var damageReductionFactor : float = 1.0 - (shieldIndex * 0.1);
 	_damage *= damageReductionFactor;
 
+	// Round up to nearest whole number
+	_damage = Mathf.Ceil(_damage);
+
 	health -= _damage;
 	
 	updateLabelText();
@@ -2073,6 +2112,15 @@ function damageDrone( _damage : float )
 
 
 
+function getDroneMaxHealth() : float
+{
+
+	return powerLevel * 10.0;
+
+}
+
+
+
 function adjustStatsForPowerDiversion()
 {
 
@@ -2081,6 +2129,7 @@ function adjustStatsForPowerDiversion()
 	rangeIndex = parseInt( "" + modelString[2] );
 	shieldIndex = parseInt( "" + modelString[3] );
 
+	powerLevel = damageIndex + velocityIndex + rangeIndex + shieldIndex;
 	
 	// Diverted stats
 	var powerModifier : int = 1;
@@ -2157,12 +2206,11 @@ function adjustStatsForPowerDiversion()
 		shieldIndex = 10;
 
 
-	bulletDamage = damageIndex;
-	reloadCounterMax = 200;
+	bulletDamage = damageIndex * 10.0;
+	reloadCounterMax = 200 - bulletDamage;
 	maxSpeed = 0.0375 + ((0.15 - 0.0375) * (velocityIndex / 10.0));
-	attackRange = (900.0 * (rangeIndex / 10.0));  // From 0 to 900
-	// maxHealth = shieldIndex * 2;
-	maxHealth = damageIndex + velocityIndex + rangeIndex + shieldIndex;
+	attackRange = (1000.0 * (rangeIndex / 10.0));  // From 0 to 1000
+	maxHealth = getDroneMaxHealth();
 
 	circleRenderer.onInitialize( attackRange, hackedScopeList[0] );
 
